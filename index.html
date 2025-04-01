@@ -2,9 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7, maximum-scale=0.7, user-scalable=no">
     <title>Neon Lottery Mini App</title>
-    <!-- Warpcast Frame Meta Tags -->
     <meta property="fc:frame" content="vNext">
     <meta property="fc:frame:image" content="https://neon-maksims-projects-24c3f70e.vercel.app/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
@@ -15,10 +14,8 @@
     <meta property="og:image" content="https://neon-maksims-projects-24c3f70e.vercel.app/neon-lottery-share.png">
     <meta property="og:title" content="Neon Lottery - Win ETH!">
     <meta property="og:description" content="Buy tickets, win prizes and earn Neon Points!">
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- WalletConnect -->
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
     <style>
         :root {
@@ -31,13 +28,11 @@
             --card-bg: rgba(15, 15, 26, 0.9);
             --glass-border: rgba(255, 255, 255, 0.1);
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
             margin: 0;
             padding: 10px;
@@ -51,8 +46,9 @@
             align-items: center;
             overflow: hidden;
             position: relative;
+            transform: scale(0.85);
+            transform-origin: center;
         }
-
         .neon-bg {
             position: fixed;
             top: 0;
@@ -62,7 +58,6 @@
             z-index: -1;
             overflow: hidden;
         }
-
         .neon-circle {
             position: absolute;
             border-radius: 50%;
@@ -70,7 +65,6 @@
             opacity: 0.25;
             animation: float 15s infinite ease-in-out;
         }
-
         .circle-1 {
             width: 200px;
             height: 200px;
@@ -79,7 +73,6 @@
             left: 5%;
             animation-delay: 0s;
         }
-
         .circle-2 {
             width: 250px;
             height: 250px;
@@ -88,7 +81,6 @@
             right: 5%;
             animation-delay: 3s;
         }
-
         .circle-3 {
             width: 180px;
             height: 180px;
@@ -97,7 +89,6 @@
             left: 20%;
             animation-delay: 6s;
         }
-
         .circle-4 {
             width: 150px;
             height: 150px;
@@ -106,14 +97,12 @@
             right: 15%;
             animation-delay: 9s;
         }
-
         @keyframes float {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(30px, 30px) rotate(5deg); }
             50% { transform: translate(-20px, 50px) rotate(-5deg); }
             75% { transform: translate(30px, -20px) rotate(3deg); }
         }
-
         .container {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -131,13 +120,11 @@
             z-index: 1;
             animation: pulse 4s infinite;
         }
-
         @keyframes pulse {
             0% { box-shadow: 0 0 10px var(--neon-blue); }
             50% { box-shadow: 0 0 20px var(--neon-blue), 0 0 30px var(--neon-pink); }
             100% { box-shadow: 0 0 10px var(--neon-blue); }
         }
-
         h1 {
             font-size: 1.8rem;
             margin: 0 0 1rem;
@@ -149,7 +136,6 @@
             display: inline-block;
             letter-spacing: 1px;
         }
-
         h1::after {
             content: '';
             position: absolute;
@@ -160,7 +146,6 @@
             background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
             border-radius: 2px;
         }
-
         .points-display {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--neon-yellow);
@@ -174,7 +159,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .points-display::before {
             content: '';
             position: absolute;
@@ -185,12 +169,10 @@
             background: linear-gradient(90deg, rgba(255,247,0,0.1), rgba(255,247,0,0.05));
             z-index: -1;
         }
-
         @keyframes glow {
             from { box-shadow: 0 0 5px rgba(255, 247, 0, 0.3); }
             to { box-shadow: 0 0 15px rgba(255, 247, 0, 0.5); }
         }
-
         .points-label {
             display: flex;
             align-items: center;
@@ -199,14 +181,12 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
-
         .points-value {
             font-weight: 700;
             font-size: 1.1rem;
             color: var(--neon-yellow);
             text-shadow: 0 0 10px rgba(255, 247, 0, 0.7);
         }
-
         .timer-container {
             background: rgba(0, 0, 0, 0.3);
             padding: 1rem;
@@ -216,7 +196,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .timer-container::before {
             content: '';
             position: absolute;
@@ -227,7 +206,6 @@
             background: linear-gradient(90deg, rgba(157,0,255,0.1), rgba(157,0,255,0.05));
             z-index: -1;
         }
-
         .timer {
             font-size: 1.8rem;
             font-weight: bold;
@@ -238,12 +216,10 @@
             letter-spacing: 2px;
             text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
         }
-
         #round-status {
             font-size: 0.8rem;
             color: rgba(255,255,255,0.8);
         }
-
         .pool-info {
             background: rgba(0, 0, 0, 0.3);
             padding: 1rem;
@@ -253,7 +229,6 @@
             text-align: left;
             position: relative;
         }
-
         .pool-info::before {
             content: '';
             position: absolute;
@@ -264,7 +239,6 @@
             background: linear-gradient(90deg, rgba(0,243,255,0.1), rgba(0,243,255,0.05));
             z-index: -1;
         }
-
         .info-item {
             margin: 0.8rem 0;
             display: flex;
@@ -272,13 +246,11 @@
             align-items: center;
             font-size: 0.9rem;
         }
-
         .info-value {
             font-weight: 700;
             color: var(--neon-blue);
             font-size: 0.95rem;
         }
-
         .button-group {
             display: flex;
             flex-wrap: wrap;
@@ -286,7 +258,6 @@
             gap: 0.8rem;
             margin: 1rem 0;
         }
-
         button {
             background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
             border: none;
@@ -308,16 +279,13 @@
             z-index: 1;
             border: 1px solid rgba(255,255,255,0.1);
         }
-
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(0, 243, 255, 0.5);
         }
-
         button:active {
             transform: translateY(1px);
         }
-
         button::before {
             content: '';
             position: absolute;
@@ -329,23 +297,18 @@
             transition: 0.5s;
             z-index: -1;
         }
-
         button:hover::before {
             left: 100%;
         }
-
         button:disabled {
             background: linear-gradient(45deg, #555, #333);
             color: #999;
             cursor: not-allowed;
             box-shadow: none;
         }
-
         button:disabled:hover::before {
             left: -100%;
         }
-
-        /* Модальные окна */
         .modal {
             display: none;
             position: fixed;
@@ -359,7 +322,6 @@
             align-items: center;
             padding: 10px;
         }
-
         .modal-content {
             background: var(--card-bg);
             padding: 1.5rem;
@@ -376,12 +338,10 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
-
         @keyframes modalFadeIn {
             from { opacity: 0; transform: translateY(-40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .close-modal {
             position: absolute;
             top: 12px;
@@ -399,20 +359,16 @@
             border-radius: 50%;
             transition: all 0.3s;
         }
-
         .close-modal:hover {
             background: rgba(255, 0, 255, 0.2);
             transform: rotate(90deg);
         }
-
-        /* Стили для таблицы лидеров */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
             margin: 1rem 0;
             font-size: 0.8rem;
         }
-
         .leaderboard-table th {
             background: rgba(0, 243, 255, 0.2);
             padding: 0.6rem;
@@ -420,81 +376,64 @@
             color: var(--neon-blue);
             font-weight: 600;
         }
-
         .leaderboard-table td {
             padding: 0.6rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .leaderboard-table tr:nth-child(even) {
             background: rgba(255, 255, 255, 0.05);
         }
-
         .leaderboard-table tr:hover {
             background: rgba(0, 243, 255, 0.1);
         }
-
         .rank {
             font-weight: bold;
             color: var(--neon-yellow);
             width: 30px;
         }
-
         .user-address {
             max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
-        /* Адаптация для мобильных устройств */
         @media (max-width: 500px) {
             body {
                 padding: 5px;
+                transform: scale(0.8);
             }
-            
             .container {
                 padding: 1rem;
             }
-            
             h1 {
                 font-size: 1.5rem;
             }
-            
             button {
                 padding: 0.7rem 0.8rem;
                 min-width: 120px;
                 font-size: 0.8rem;
             }
-            
             .timer {
                 font-size: 1.5rem;
             }
-
             .button-group {
                 gap: 0.6rem;
             }
-            
             .leaderboard-table {
                 font-size: 0.75rem;
             }
-            
             .leaderboard-table th, 
             .leaderboard-table td {
                 padding: 0.5rem;
             }
-            
             .modal-content {
                 padding: 1rem;
             }
         }
-        
-        /* Анимация для выигрыша */
         @keyframes confetti {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
         }
-        
         .confetti {
             position: fixed;
             width: 8px;
@@ -504,8 +443,6 @@
             z-index: 9999;
             animation: confetti 3s ease-out forwards;
         }
-        
-        /* Улучшенный инпут для количества билетов */
         .ticket-input {
             display: flex;
             align-items: center;
@@ -513,7 +450,6 @@
             gap: 8px;
             margin: 0.8rem 0;
         }
-        
         .ticket-input button {
             min-width: 32px;
             width: 32px;
@@ -522,7 +458,6 @@
             border-radius: 50%;
             font-size: 1rem;
         }
-        
         .ticket-input input {
             background: rgba(0,0,0,0.3);
             border: 1px solid var(--neon-blue);
@@ -534,13 +469,10 @@
             border-radius: 6px;
             outline: none;
         }
-        
         .ticket-input input:focus {
             border-color: var(--neon-pink);
             box-shadow: 0 0 8px rgba(255,0,255,0.3);
         }
-
-        /* Стиль для модального окна истории */
         .history-item {
             background: rgba(0,0,0,0.2);
             padding: 0.7rem;
@@ -550,30 +482,26 @@
             text-align: left;
             font-size: 0.85rem;
         }
-
         .history-item-date {
             font-size: 0.75rem;
             color: rgba(255,255,255,0.6);
             margin-bottom: 0.2rem;
         }
-
         .history-item-details {
             display: flex;
             justify-content: space-between;
         }
-        
-        /* Для очень маленьких экранов */
         @media (max-width: 350px) {
+            body {
+                transform: scale(0.75);
+            }
             .button-group {
                 flex-direction: column;
             }
-            
             button {
                 width: 100%;
             }
         }
-
-        /* Стили для уведомлений */
         .notification {
             position: fixed;
             top: 20px;
@@ -590,59 +518,45 @@
             gap: 10px;
             animation: slideIn 0.3s ease-out;
         }
-
         @keyframes slideIn {
             from { top: -50px; opacity: 0; }
             to { top: 20px; opacity: 1; }
         }
-
         .notification.success {
             border-color: var(--neon-green);
         }
-
         .notification.error {
             border-color: var(--neon-pink);
         }
-
         .notification.warning {
             border-color: var(--neon-yellow);
         }
-
         .notification i {
             font-size: 1.2rem;
         }
-
         .notification.success i {
             color: var(--neon-green);
         }
-
         .notification.error i {
             color: var(--neon-pink);
         }
-
         .notification.warning i {
             color: var(--neon-yellow);
         }
     </style>
 </head>
 <body>
-    <!-- Warpcast Frame Content -->
     <div id="frame-content" style="display: none;">
         <img id="frame-image" src="https://neon-maksims-projects-24c3f70e.vercel.app/neon-lottery-preview.png" alt="Neon Lottery">
     </div>
-
-    <!-- Main App Content -->
     <div class="neon-bg">
         <div class="neon-circle circle-1"></div>
         <div class="neon-circle circle-2"></div>
         <div class="neon-circle circle-3"></div>
         <div class="neon-circle circle-4"></div>
     </div>
-
     <div class="container" id="main-container">
         <h1>✨ NEON LOTTERY ✨</h1>
-        
-        <!-- Отображение Neon Points -->
         <div class="points-display">
             <div class="points-label">
                 <i class="fas fa-coins" style="color: var(--neon-yellow);"></i>
@@ -650,12 +564,10 @@
             </div>
             <div class="points-value" id="neon-points">0</div>
         </div>
-
         <div class="timer-container">
             <div class="timer" id="countdown">00:00:00</div>
             <div id="round-status">Loading...</div>
         </div>
-
         <div class="pool-info">
             <div class="info-item">
                 <span>Ticket Price:</span>
@@ -674,7 +586,6 @@
                 <span class="info-value" id="user-tickets">0</span>
             </div>
         </div>
-
         <div class="button-group">
             <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
             <button id="walletconnect-btn"><i class="fas fa-mobile-alt"></i> WalletConnect</button>
@@ -685,19 +596,15 @@
             <button id="help-btn"><i class="fas fa-question-circle"></i> Help</button>
         </div>
     </div>
-
-    <!-- Модальное окно покупки билетов -->
     <div class="modal" id="buy-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 style="color: var(--neon-blue); margin-bottom: 1rem;">Buy Tickets</h2>
-            
             <div class="ticket-input">
                 <button id="decrement-ticket">-</button>
                 <input type="number" id="ticket-amount" value="1" min="1" max="100">
                 <button id="increment-ticket">+</button>
             </div>
-            
             <div style="margin: 1.2rem 0;">
                 <div class="info-item">
                     <span>Total Cost:</span>
@@ -708,19 +615,15 @@
                     <span class="info-value" style="color: var(--neon-yellow);" id="points-earned">0 Points</span>
                 </div>
             </div>
-            
             <button id="confirm-buy" style="width: 100%;">
                 <i class="fas fa-shopping-cart"></i> Confirm Purchase
             </button>
         </div>
     </div>
-
-    <!-- Модальное окно лидерборда -->
     <div class="modal" id="leaderboard-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 style="color: var(--neon-yellow); margin-bottom: 1rem;">Leaderboard</h2>
-            
             <table class="leaderboard-table">
                 <thead>
                     <tr>
@@ -730,37 +633,26 @@
                         <th>Points</th>
                     </tr>
                 </thead>
-                <tbody id="leaderboard-body">
-                    <!-- Заполняется JavaScript -->
-                </tbody>
+                <tbody id="leaderboard-body"></tbody>
             </table>
         </div>
     </div>
-
-    <!-- Модальное окно истории -->
     <div class="modal" id="history-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 style="color: var(--neon-green); margin-bottom: 1rem;">Round History</h2>
-            
-            <div id="history-content">
-                <!-- Заполняется JavaScript -->
-            </div>
+            <div id="history-content"></div>
         </div>
     </div>
-
-    <!-- Модальное окно помощи -->
     <div class="modal" id="help-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 style="color: var(--neon-pink); margin-bottom: 1rem;">How It Works</h2>
-            
             <div style="text-align: left; font-size: 0.9rem;">
                 <p><strong>1. Buy Tickets:</strong> Each ticket costs $1 in ETH. The more tickets you buy, the higher your chances to win!</p>
                 <p><strong>2. Daily Draw:</strong> Every day at 16:00 UTC, a winner is selected randomly.</p>
                 <p><strong>3. Win Prizes:</strong> 80% of the pool goes to the winner, 20% is the platform fee.</p>
                 <p><strong>4. Earn Points:</strong> For each ticket you buy, you earn Neon Points that can be used for future benefits.</p>
-                
                 <div style="margin-top: 1.5rem; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px;">
                     <h3 style="color: var(--neon-blue); margin-top: 0;">Fairness Guaranteed</h3>
                     <p>The winner is selected using a provably fair random number generated from blockchain data.</p>
@@ -768,590 +660,39 @@
             </div>
         </div>
     </div>
-
-    <!-- Подключаем Web3 и другие библиотеки -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <script>
-        // Конфигурация контракта
         const CONTRACT_ADDRESS = "0xDCAF0cC3BC5ADff93DDd31EfcD8EE86eebB16386";
-        const CONTRACT_ABI = [
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_tickets",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "buyTickets",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "forceEndRound",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "forceStartRound",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "oldOwner",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "newOwner",
-                        "type": "address"
-                    }
-                ],
-                "name": "OwnershipTransferred",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "bytes32",
-                        "name": "seed",
-                        "type": "bytes32"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "blockNumber",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "RandomSeedUpdated",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "prize",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "RoundEnded",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "startTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "RoundStarted",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "buyer",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "tickets",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "ethCost",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "TicketPurchased",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "newOwner",
-                        "type": "address"
-                    }
-                ],
-                "name": "transferOwnership",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "winner",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "prize",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "winningTicket",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Winner",
-                "type": "event"
-            },
-            {
-                "inputs": [],
-                "name": "currentRoundInfo",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "startTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentPrizePool",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentParticipants",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentTickets",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentEthPrice",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "active",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ethPerTicket",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "ethUsdcPool",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "FEE_PERCENT",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "feeWallet",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getEthPrice",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_tickets",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "getTicketCostETH",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "isRoundActive",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "lastPrize",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "lastWinner",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "owner",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "participants",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "wallet",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "tickets",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ticketFrom",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ticketTo",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "PRIZE_POOL_PERCENT",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "prizePool",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "RANDOM_SEED_UPDATE_DELAY",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "randomSeed",
-                "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "",
-                        "type": "bytes32"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "randomSeedBlock",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "roundEndTime",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "roundStartTime",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "TICKET_PRICE_USD",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "totalTickets",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "USDC",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "UTC_HOUR",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "WETH",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":false,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ethUsdcPool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"USDC","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"WETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
 
-        // Инициализация Web3 и контракта
         let web3;
         let lotteryContract;
         let account = null;
         let isWarpcast = false;
         let currentRoundData = null;
 
-        // Проверяем, является ли пользователь Warpcast
-        function checkFrameEnvironment() {
-            if (window.ethereum && window.ethereum.isMiniPay) {
-                isWarpcast = true;
-                document.getElementById('connect-btn').style.display = 'none';
-                document.getElementById('walletconnect-btn').style.display = 'none';
-            }
-        }
-
-        // Показываем уведомление
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(notification);
-            
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 
-        // Инициализация приложения
         async function initApp() {
-            checkFrameEnvironment();
+            isWarpcast = window.ethereum && window.ethereum.isMiniPay;
+            if (isWarpcast) {
+                document.getElementById('connect-btn').style.display = 'none';
+                document.getElementById('walletconnect-btn').style.display = 'none';
+            }
             
             try {
-                // Инициализируем Web3
                 if (window.ethereum) {
                     web3 = new Web3(window.ethereum);
                     try {
-                        // Запрашиваем доступ к аккаунту
                         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                         account = accounts[0];
                         updateUI();
@@ -1359,29 +700,22 @@
                         console.log("User denied account access", error);
                     }
                     
-                    // Слушаем изменения аккаунта
                     window.ethereum.on('accountsChanged', (accounts) => {
                         account = accounts[0] || null;
                         updateUI();
                         updateRoundInfo();
                     });
                     
-                    // Слушаем изменения сети
                     window.ethereum.on('chainChanged', () => {
                         window.location.reload();
                     });
                 } else {
-                    console.log("Non-Ethereum browser detected. Consider installing MetaMask!");
+                    console.log("Non-Ethereum browser detected");
                 }
 
-                // Инициализируем контракт
                 lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-
-                // Обновляем данные каждые 10 секунд
                 setInterval(updateRoundInfo, 10000);
                 updateRoundInfo();
-                
-                // Инициализируем обработчики событий
                 initEventHandlers();
             } catch (error) {
                 console.error("Initialization error:", error);
@@ -1389,27 +723,19 @@
             }
         }
 
-        // Инициализация обработчиков событий
         function initEventHandlers() {
-            // Подключение кошелька
             document.getElementById('connect-btn').addEventListener('click', connectWallet);
             document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
-            
-            // Покупка билетов
             document.getElementById('buy-btn').addEventListener('click', () => {
                 document.getElementById('buy-modal').style.display = 'flex';
                 updateTicketCost();
             });
-            
             document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
-            
-            // Изменение количества билетов
             document.getElementById('increment-ticket').addEventListener('click', () => {
                 const input = document.getElementById('ticket-amount');
                 input.value = parseInt(input.value) + 1;
                 updateTicketCost();
             });
-            
             document.getElementById('decrement-ticket').addEventListener('click', () => {
                 const input = document.getElementById('ticket-amount');
                 if (input.value > 1) {
@@ -1417,34 +743,26 @@
                     updateTicketCost();
                 }
             });
-            
             document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
-            
-            // Закрытие модальных окон
             document.querySelectorAll('.close-modal').forEach(button => {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
                 });
             });
-            
-            // Другие кнопки
             document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
             document.getElementById('history-btn').addEventListener('click', showHistory);
             document.getElementById('help-btn').addEventListener('click', () => {
                 document.getElementById('help-modal').style.display = 'flex';
             });
-            
             document.getElementById('share-btn').addEventListener('click', shareApp);
         }
 
-        // Подключение MetaMask
         async function connectWallet() {
             try {
                 if (!window.ethereum) {
                     showNotification("Please install MetaMask!", "error");
                     return;
                 }
-                
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = accounts[0];
                 updateUI();
@@ -1455,19 +773,14 @@
             }
         }
 
-        // Подключение WalletConnect
         async function connectWalletConnect() {
             try {
                 const provider = new WalletConnectProvider.default({
-                    rpc: {
-                        10: "https://mainnet.optimism.io" // Optimism Mainnet
-                    }
+                    rpc: { 10: "https://mainnet.optimism.io" }
                 });
-                
                 await provider.enable();
                 web3 = new Web3(provider);
                 lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                
                 const accounts = await web3.eth.getAccounts();
                 account = accounts[0];
                 updateUI();
@@ -1478,86 +791,56 @@
             }
         }
 
-        // Обновление UI после подключения кошелька
         function updateUI() {
             if (account) {
                 const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
                 document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
                 document.getElementById('buy-btn').disabled = false;
-                
-                // Обновляем количество билетов пользователя
                 updateUserTickets();
             }
         }
 
-        // Обновление информации о раунде
         async function updateRoundInfo() {
             if (!lotteryContract) return;
-            
             try {
                 const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
                 currentRoundData = roundInfo;
-                
-                // Обновляем таймер
                 updateCountdown(roundInfo.endTime);
-                
-                // Обновляем информацию о раунде
-                document.getElementById('round-status').textContent = 
-                    roundInfo.active ? "Round Active" : "Round Not Active";
-                
-                // Обновляем информацию о пуле
+                document.getElementById('round-status').textContent = roundInfo.active ? "Round Active" : "Round Not Active";
                 const ethPrice = roundInfo.currentEthPrice / 1e18;
-                const ticketPriceUSD = 1; // $1 по условиям контракта
-                const ticketPriceETH = ticketPriceUSD / ethPrice;
-                
-                document.getElementById('ticket-price').textContent = 
-                    `${ticketPriceETH.toFixed(6)} ETH (~$${ticketPriceUSD.toFixed(2)})`;
-                
-                document.getElementById('current-pool').textContent = 
-                    `${web3.utils.fromWei(roundInfo.currentPrizePool, 'ether')} ETH`;
-                
+                const ticketPriceETH = 1 / ethPrice;
+                document.getElementById('ticket-price').textContent = `${ticketPriceETH.toFixed(6)} ETH (~$1.00)`;
+                document.getElementById('current-pool').textContent = `${web3.utils.fromWei(roundInfo.currentPrizePool, 'ether')} ETH`;
                 document.getElementById('participants').textContent = roundInfo.currentParticipants;
-                
-                // Если пользователь подключен, обновляем его билеты
-                if (account) {
-                    updateUserTickets();
-                }
+                if (account) updateUserTickets();
             } catch (error) {
                 console.error("Error updating round info:", error);
                 showNotification("Failed to update round info", "error");
             }
         }
 
-        // Обновление количества билетов пользователя
         async function updateUserTickets() {
             if (!account || !lotteryContract) return;
-            
             try {
                 const userTickets = await getUserTickets(account);
                 document.getElementById('user-tickets').textContent = userTickets;
-                
-                // Обновляем баллы (1 билет = 10 баллов)
                 document.getElementById('neon-points').textContent = userTickets * 10;
             } catch (error) {
                 console.error("Error updating user tickets:", error);
             }
         }
 
-        // Получение количества билетов пользователя
         async function getUserTickets(userAddress) {
             if (!lotteryContract) return 0;
-            
             try {
                 const participantsCount = await lotteryContract.methods.participants.length().call();
                 let totalTickets = 0;
-                
                 for (let i = 0; i < participantsCount; i++) {
                     const participant = await lotteryContract.methods.participants(i).call();
                     if (participant.wallet.toLowerCase() === userAddress.toLowerCase()) {
                         totalTickets += parseInt(participant.tickets);
                     }
                 }
-                
                 return totalTickets;
             } catch (error) {
                 console.error("Error getting user tickets:", error);
@@ -1565,74 +848,52 @@
             }
         }
 
-        // Обновление таймера
         function updateCountdown(endTime) {
             const now = Math.floor(Date.now() / 1000);
             const distance = endTime - now;
-            
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "Round Ended";
                 return;
             }
-            
-            const hours = Math.floor((distance % (60 * 60 * 24)) / (60 * 60));
-            const minutes = Math.floor((distance % (60 * 60)) / 60);
+            const hours = Math.floor(distance / 3600);
+            const minutes = Math.floor((distance % 3600) / 60);
             const seconds = Math.floor(distance % 60);
-            
-            document.getElementById('countdown').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('countdown').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        // Обновление стоимости билетов
         async function updateTicketCost() {
             if (!lotteryContract || !currentRoundData) return;
-            
             try {
                 const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-                if (isNaN(ticketAmount) return;
-                
+                if (isNaN(ticketAmount)) return;
                 const ethPrice = currentRoundData.currentEthPrice / 1e18;
-                const ticketPriceUSD = 1; // $1 по условиям контракта
-                const totalCostETH = (ticketAmount * ticketPriceUSD) / ethPrice;
-                const totalCostWei = web3.utils.toWei(totalCostETH.toString(), 'ether');
-                
-                document.getElementById('total-cost').textContent = 
-                    `${totalCostETH.toFixed(6)} ETH (~$${(ticketAmount * ticketPriceUSD).toFixed(2)})`;
-                
-                document.getElementById('points-earned').textContent = 
-                    `${ticketAmount * 10} Points`; // 10 points per ticket
+                const totalCostETH = ticketAmount / ethPrice;
+                document.getElementById('total-cost').textContent = `${totalCostETH.toFixed(6)} ETH (~$${ticketAmount.toFixed(2)})`;
+                document.getElementById('points-earned').textContent = `${ticketAmount * 10} Points`;
             } catch (error) {
                 console.error("Error calculating ticket cost:", error);
                 showNotification("Failed to calculate ticket cost", "error");
             }
         }
 
-        // Подтверждение покупки билетов
         async function confirmPurchase() {
             const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-            
             if (!account) {
                 showNotification("Please connect your wallet first!", "error");
                 return;
             }
-            
-            if (isNaN(ticketAmount) {
+            if (isNaN(ticketAmount)) {
                 showNotification("Please enter a valid number of tickets!", "error");
                 return;
             }
-            
             try {
                 const ethPrice = currentRoundData.currentEthPrice / 1e18;
-                const ticketPriceUSD = 1; // $1 по условиям контракта
-                const totalCostETH = (ticketAmount * ticketPriceUSD) / ethPrice;
+                const totalCostETH = ticketAmount / ethPrice;
                 const totalCostWei = web3.utils.toWei(totalCostETH.toString(), 'ether');
-                
-                // Отправляем транзакцию
                 await lotteryContract.methods.buyTickets(ticketAmount).send({
                     from: account,
                     value: totalCostWei
                 });
-                
                 showNotification("Tickets purchased successfully!");
                 document.getElementById('buy-modal').style.display = 'none';
                 updateRoundInfo();
@@ -1642,7 +903,6 @@
             }
         }
 
-        // Поделиться приложением
         function shareApp() {
             const shareUrl = window.location.href;
             if (navigator.share) {
@@ -1651,7 +911,6 @@
                     text: 'Join the Neon Lottery and win ETH prizes!',
                     url: shareUrl
                 }).catch(err => {
-                    console.log('Error sharing:', err);
                     copyToClipboard(shareUrl);
                 });
             } else {
@@ -1659,7 +918,6 @@
             }
         }
 
-        // Копирование в буфер обмена
         function copyToClipboard(text) {
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -1670,30 +928,22 @@
             showNotification("Link copied to clipboard!");
         }
 
-        // Показать таблицу лидеров
         async function showLeaderboard() {
             if (!lotteryContract) return;
-            
             try {
                 const participantsCount = await lotteryContract.methods.participants.length().call();
                 const leaderboardBody = document.getElementById('leaderboard-body');
                 leaderboardBody.innerHTML = '';
-                
-                // Собираем всех участников
                 const participants = [];
                 for (let i = 0; i < participantsCount; i++) {
                     const participant = await lotteryContract.methods.participants(i).call();
                     participants.push({
                         address: participant.wallet,
                         tickets: parseInt(participant.tickets),
-                        points: parseInt(participant.tickets) * 10 // 10 points per ticket
+                        points: parseInt(participant.tickets) * 10
                     });
                 }
-                
-                // Сортируем по количеству билетов
                 participants.sort((a, b) => b.tickets - a.tickets);
-                
-                // Отображаем топ-10
                 const topParticipants = participants.slice(0, 10);
                 if (topParticipants.length === 0) {
                     leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No participants yet</td></tr>';
@@ -1709,7 +959,6 @@
                         leaderboardBody.appendChild(row);
                     });
                 }
-                
                 document.getElementById('leaderboard-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
@@ -1717,13 +966,9 @@
             }
         }
 
-        // Показать историю раундов
         async function showHistory() {
             try {
                 const historyContent = document.getElementById('history-content');
-                
-                // Здесь можно добавить загрузку реальной истории из контракта или API
-                // В данном примере используем заглушку
                 historyContent.innerHTML = `
                     <div class="history-item">
                         <div class="history-item-date">Round #1 - ${new Date().toLocaleDateString()}</div>
@@ -1740,7 +985,6 @@
                         </div>
                     </div>
                 `;
-                
                 document.getElementById('history-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading history:", error);
@@ -1748,18 +992,15 @@
             }
         }
 
-        // Обработка Warpcast Frame
         if (isWarpcast) {
-            // Обработка POST-запросов от фрейма
             window.addEventListener('message', async (event) => {
                 if (event.data && event.data.type === 'frame-action') {
                     const buttonIndex = event.data.buttonIndex;
-                    
                     switch(buttonIndex) {
-                        case 1: // Buy Tickets
+                        case 1:
                             document.getElementById('buy-modal').style.display = 'flex';
                             break;
-                        case 2: // My Points
+                        case 2:
                             if (account) {
                                 const userTickets = await getUserTickets(account);
                                 showNotification(`You have ${userTickets * 10} Neon Points`);
@@ -1767,10 +1008,10 @@
                                 showNotification("Please connect your wallet first", "error");
                             }
                             break;
-                        case 3: // Invite Friends
+                        case 3:
                             shareApp();
                             break;
-                        case 4: // Leaderboard
+                        case 4:
                             showLeaderboard();
                             break;
                     }
@@ -1778,7 +1019,6 @@
             });
         }
 
-        // Инициализация при загрузке страницы
         window.addEventListener('load', initApp);
     </script>
 </body>
