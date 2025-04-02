@@ -2,21 +2,21 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.7, maximum-scale=0.7, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Lottery Mini App</title>
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://neon-maksims-projects-24c3f70e.vercel.app/neon-lottery-preview.png">
+    <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🌟 My Points">
     <meta property="fc:frame:button:3" content="📣 Invite Friends">
     <meta property="fc:frame:button:4" content="🏆 Leaderboard">
-    <meta property="fc:frame:post_url" content="https://neon-maksims-projects-24c3f70e.vercel.app/api/frame">
-    <meta property="og:image" content="https://neon-maksims-projects-24c3f70e.vercel.app/neon-lottery-share.png">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    <meta property="og:image" content="https://neon-xi.vercel.app/neon-lottery-share.png">
     <meta property="og:title" content="Neon Lottery - Win ETH!">
     <meta property="og:description" content="Buy tickets, win prizes and earn Neon Points!">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -32,6 +32,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             margin: 0;
@@ -44,10 +45,8 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow: auto;
             position: relative;
-            transform: scale(0.85);
-            transform-origin: center;
         }
         .neon-bg {
             position: fixed;
@@ -64,6 +63,7 @@
             filter: blur(80px);
             opacity: 0.25;
             animation: float 15s infinite ease-in-out;
+            will-change: transform;
         }
         .circle-1 {
             width: 200px;
@@ -112,18 +112,12 @@
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
             border: 1px solid var(--glass-border);
             max-width: 450px;
-            width: 100%;
+            width: calc(100% - 20px);
             text-align: center;
             margin: 1rem 0;
             position: relative;
             overflow: hidden;
             z-index: 1;
-            animation: pulse 4s infinite;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px var(--neon-blue); }
-            50% { box-shadow: 0 0 20px var(--neon-blue), 0 0 30px var(--neon-pink); }
-            100% { box-shadow: 0 0 10px var(--neon-blue); }
         }
         h1 {
             font-size: 1.8rem;
@@ -131,10 +125,10 @@
             background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
             position: relative;
             display: inline-block;
             letter-spacing: 1px;
+            font-weight: 700;
         }
         h1::after {
             content: '';
@@ -155,23 +149,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            animation: glow 2s infinite alternate;
             position: relative;
             overflow: hidden;
-        }
-        .points-display::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(255,247,0,0.1), rgba(255,247,0,0.05));
-            z-index: -1;
-        }
-        @keyframes glow {
-            from { box-shadow: 0 0 5px rgba(255, 247, 0, 0.3); }
-            to { box-shadow: 0 0 15px rgba(255, 247, 0, 0.5); }
         }
         .points-label {
             display: flex;
@@ -185,7 +164,6 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: var(--neon-yellow);
-            text-shadow: 0 0 10px rgba(255, 247, 0, 0.7);
         }
         .timer-container {
             background: rgba(0, 0, 0, 0.3);
@@ -196,16 +174,6 @@
             position: relative;
             overflow: hidden;
         }
-        .timer-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(157,0,255,0.1), rgba(157,0,255,0.05));
-            z-index: -1;
-        }
         .timer {
             font-size: 1.8rem;
             font-weight: bold;
@@ -214,7 +182,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+            font-weight: 700;
         }
         #round-status {
             font-size: 0.8rem;
@@ -228,16 +196,6 @@
             border-left: 3px solid var(--neon-blue);
             text-align: left;
             position: relative;
-        }
-        .pool-info::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(0,243,255,0.1), rgba(0,243,255,0.05));
-            z-index: -1;
         }
         .info-item {
             margin: 0.8rem 0;
@@ -275,13 +233,12 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            box-shadow: 0 3px 15px rgba(0, 243, 255, 0.3);
-            z-index: 1;
             border: 1px solid rgba(255,255,255,0.1);
+            flex: 1 1 calc(50% - 10px);
+            max-width: calc(50% - 10px);
         }
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 243, 255, 0.5);
         }
         button:active {
             transform: translateY(1px);
@@ -304,10 +261,6 @@
             background: linear-gradient(45deg, #555, #333);
             color: #999;
             cursor: not-allowed;
-            box-shadow: none;
-        }
-        button:disabled:hover::before {
-            left: -100%;
         }
         .modal {
             display: none;
@@ -327,10 +280,9 @@
             padding: 1.5rem;
             border-radius: 16px;
             max-width: 400px;
-            width: 100%;
+            width: calc(100% - 20px);
             text-align: center;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
             position: relative;
             animation: modalFadeIn 0.3s ease-out;
             max-height: 90vh;
@@ -383,9 +335,6 @@
         .leaderboard-table tr:nth-child(even) {
             background: rgba(255, 255, 255, 0.05);
         }
-        .leaderboard-table tr:hover {
-            background: rgba(0, 243, 255, 0.1);
-        }
         .rank {
             font-weight: bold;
             color: var(--neon-yellow);
@@ -396,52 +345,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-        }
-        @media (max-width: 500px) {
-            body {
-                padding: 5px;
-                transform: scale(0.8);
-            }
-            .container {
-                padding: 1rem;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-            button {
-                padding: 0.7rem 0.8rem;
-                min-width: 120px;
-                font-size: 0.8rem;
-            }
-            .timer {
-                font-size: 1.5rem;
-            }
-            .button-group {
-                gap: 0.6rem;
-            }
-            .leaderboard-table {
-                font-size: 0.75rem;
-            }
-            .leaderboard-table th, 
-            .leaderboard-table td {
-                padding: 0.5rem;
-            }
-            .modal-content {
-                padding: 1rem;
-            }
-        }
-        @keyframes confetti {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-        .confetti {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: var(--neon-yellow);
-            opacity: 0;
-            z-index: 9999;
-            animation: confetti 3s ease-out forwards;
         }
         .ticket-input {
             display: flex;
@@ -457,6 +360,7 @@
             padding: 0;
             border-radius: 50%;
             font-size: 1rem;
+            flex: none;
         }
         .ticket-input input {
             background: rgba(0,0,0,0.3);
@@ -471,7 +375,6 @@
         }
         .ticket-input input:focus {
             border-color: var(--neon-pink);
-            box-shadow: 0 0 8px rgba(255,0,255,0.3);
         }
         .history-item {
             background: rgba(0,0,0,0.2);
@@ -491,17 +394,6 @@
             display: flex;
             justify-content: space-between;
         }
-        @media (max-width: 350px) {
-            body {
-                transform: scale(0.75);
-            }
-            .button-group {
-                flex-direction: column;
-            }
-            button {
-                width: 100%;
-            }
-        }
         .notification {
             position: fixed;
             top: 20px;
@@ -510,7 +402,6 @@
             background: var(--card-bg);
             padding: 0.8rem 1.5rem;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
             border: 1px solid var(--neon-blue);
             z-index: 1001;
             display: flex;
@@ -528,9 +419,6 @@
         .notification.error {
             border-color: var(--neon-pink);
         }
-        .notification.warning {
-            border-color: var(--neon-yellow);
-        }
         .notification i {
             font-size: 1.2rem;
         }
@@ -540,14 +428,36 @@
         .notification.error i {
             color: var(--neon-pink);
         }
-        .notification.warning i {
-            color: var(--neon-yellow);
+        @media (max-width: 500px) {
+            .container {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            button {
+                padding: 0.7rem 0.8rem;
+                min-width: 120px;
+                font-size: 0.8rem;
+            }
+            .timer {
+                font-size: 1.5rem;
+            }
+            .button-group {
+                gap: 0.6rem;
+            }
+        }
+        @media (max-width: 400px) {
+            button {
+                min-width: 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div id="frame-content" style="display: none;">
-        <img id="frame-image" src="https://neon-maksims-projects-24c3f70e.vercel.app/neon-lottery-preview.png" alt="Neon Lottery">
+        <img id="frame-image" src="https://neon-xi.vercel.app/neon-lottery-preview.png" alt="Neon Lottery">
     </div>
     <div class="neon-bg">
         <div class="neon-circle circle-1"></div>
@@ -588,7 +498,6 @@
         </div>
         <div class="button-group">
             <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
-            <button id="walletconnect-btn"><i class="fas fa-mobile-alt"></i> WalletConnect</button>
             <button id="buy-btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
             <button id="share-btn"><i class="fas fa-share-alt"></i> Invite Friends</button>
             <button id="leaderboard-btn"><i class="fas fa-trophy"></i> Leaderboard</button>
@@ -660,10 +569,9 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <script>
-        const CONTRACT_ADDRESS = "0xDCAF0cC3BC5ADff93DDd31EfcD8EE86eebB16386";
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":false,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ethUsdcPool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"USDC","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"WETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
+        const CONTRACT_ADDRESS = "0x09b81fe5AC4011D2d4930038DDb4022985879181";
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"ETH_USD_PRICE_FEED","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_FEED_HEARTBEAT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
         let web3;
         let lotteryContract;
@@ -674,7 +582,7 @@
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'}"></i><span>${message}</span>`;
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(notification);
             setTimeout(() => {
                 notification.style.opacity = '0';
@@ -686,7 +594,6 @@
             isWarpcast = window.ethereum && window.ethereum.isMiniPay;
             if (isWarpcast) {
                 document.getElementById('connect-btn').style.display = 'none';
-                document.getElementById('walletconnect-btn').style.display = 'none';
             }
             
             try {
@@ -725,7 +632,6 @@
 
         function initEventHandlers() {
             document.getElementById('connect-btn').addEventListener('click', connectWallet);
-            document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
             document.getElementById('buy-btn').addEventListener('click', () => {
                 document.getElementById('buy-modal').style.display = 'flex';
                 updateTicketCost();
@@ -770,24 +676,6 @@
             } catch (error) {
                 console.error("Error connecting wallet:", error);
                 showNotification("Failed to connect wallet", "error");
-            }
-        }
-
-        async function connectWalletConnect() {
-            try {
-                const provider = new WalletConnectProvider.default({
-                    rpc: { 10: "https://mainnet.optimism.io" }
-                });
-                await provider.enable();
-                web3 = new Web3(provider);
-                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                const accounts = await web3.eth.getAccounts();
-                account = accounts[0];
-                updateUI();
-                showNotification("WalletConnect connected successfully");
-            } catch (error) {
-                console.error("WalletConnect error:", error);
-                showNotification("Failed to connect via WalletConnect", "error");
             }
         }
 
@@ -992,7 +880,7 @@
             }
         }
 
-        if (isWarpcast) {
+        if (window.ethereum && window.ethereum.isMiniPay) {
             window.addEventListener('message', async (event) => {
                 if (event.data && event.data.type === 'frame-action') {
                     const buttonIndex = event.data.buttonIndex;
