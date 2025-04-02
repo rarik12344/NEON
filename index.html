@@ -17,7 +17,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -633,7 +632,6 @@
         let account = null;
         let isWarpcast = false;
         let currentRoundData = null;
-        let walletConnectProvider = null;
 
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
@@ -648,8 +646,10 @@
 
         async function initApp() {
             isWarpcast = window.ethereum && window.ethereum.isMiniPay;
-            if (isWarpcast) {
-                document.getElementById('connect-btn').style.display = 'none';
+            
+            // Initialize Web3
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
                 try {
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     account = accounts[0];
@@ -657,34 +657,46 @@
                 } catch (error) {
                     console.log("User denied account access", error);
                 }
+                
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    account = accounts[0] || null;
+                    updateUI();
+                });
+                
+                window.ethereum.on('chainChanged', () => {
+                    window.location.reload();
+                });
+            } else {
+                console.log("Non-Ethereum browser detected");
             }
+
+            // Initialize contract
+            lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
             
-            try {
-                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                setInterval(updateRoundInfo, 10000);
-                updateRoundInfo();
-                initEventHandlers();
-            } catch (error) {
-                console.error("Initialization error:", error);
-                showNotification("Failed to initialize app", "error");
-            }
+            // Update round info every 10 seconds
+            setInterval(updateRoundInfo, 10000);
+            updateRoundInfo();
+            
+            // Initialize event handlers
+            initEventHandlers();
         }
 
         function initEventHandlers() {
+            // Connect Wallet button
             document.getElementById('connect-btn').addEventListener('click', () => {
                 document.getElementById('connect-modal').style.display = 'flex';
             });
             
-            document.getElementById('metamask-btn').addEventListener('click', connectMetaMask);
-            document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
-            document.getElementById('coinbase-btn').addEventListener('click', connectCoinbase);
-            
+            // Buy Tickets button
             document.getElementById('buy-btn').addEventListener('click', () => {
                 document.getElementById('buy-modal').style.display = 'flex';
                 updateTicketCost();
             });
             
+            // Confirm Purchase button
             document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
+            
+            // Ticket amount controls
             document.getElementById('increment-ticket').addEventListener('click', () => {
                 const input = document.getElementById('ticket-amount');
                 input.value = parseInt(input.value) + 1;
@@ -701,12 +713,14 @@
             
             document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
             
+            // Close modal buttons
             document.querySelectorAll('.close-modal').forEach(button => {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
                 });
             });
             
+            // Other buttons
             document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
             document.getElementById('history-btn').addEventListener('click', showHistory);
             document.getElementById('help-btn').addEventListener('click', () => {
@@ -714,6 +728,11 @@
             });
             
             document.getElementById('share-btn').addEventListener('click', shareApp);
+            
+            // Wallet connection options
+            document.getElementById('metamask-btn').addEventListener('click', connectMetaMask);
+            document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
+            document.getElementById('coinbase-btn').addEventListener('click', connectCoinbase);
         }
 
         async function connectMetaMask() {
@@ -723,25 +742,14 @@
                     return;
                 }
                 
-                web3 = new Web3(window.ethereum);
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = accounts[0];
-                
-                window.ethereum.on('accountsChanged', (accounts) => {
-                    account = accounts[0] || null;
-                    updateUI();
-                    updateRoundInfo();
-                });
-                
-                window.ethereum.on('chainChanged', () => {
-                    window.location.reload();
-                });
                 
                 document.getElementById('connect-modal').style.display = 'none';
                 updateUI();
                 showNotification("MetaMask connected successfully");
                 
-                // Initialize contract after connection
+                // Update contract with new provider
                 lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 updateRoundInfo();
             } catch (error) {
@@ -751,86 +759,11 @@
         }
 
         async function connectWalletConnect() {
-            try {
-                // Initialize WalletConnect provider
-                walletConnectProvider = new WalletConnectProvider.default({
-                    rpc: {
-                        1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-                        5: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-                    }
-                });
-                
-                // Enable session (triggers QR Code modal)
-                await walletConnectProvider.enable();
-                
-                // Create Web3 instance
-                web3 = new Web3(walletConnectProvider);
-                
-                // Get accounts
-                const accounts = await web3.eth.getAccounts();
-                account = accounts[0];
-                
-                // Subscribe to accounts change
-                walletConnectProvider.on("accountsChanged", (accounts) => {
-                    account = accounts[0] || null;
-                    updateUI();
-                    updateRoundInfo();
-                });
-                
-                // Subscribe to chainId change
-                walletConnectProvider.on("chainChanged", () => {
-                    window.location.reload();
-                });
-                
-                document.getElementById('connect-modal').style.display = 'none';
-                updateUI();
-                showNotification("WalletConnect connected successfully");
-                
-                // Initialize contract after connection
-                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                updateRoundInfo();
-            } catch (error) {
-                console.error("Error connecting WalletConnect:", error);
-                showNotification("Failed to connect WalletConnect", "error");
-            }
+            showNotification("WalletConnect integration coming soon!", "error");
         }
 
         async function connectCoinbase() {
-            try {
-                if (window.ethereum && window.ethereum.isCoinbaseWallet) {
-                    web3 = new Web3(window.ethereum);
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    account = accounts[0];
-                } else if (window.coinbaseWalletExtension) {
-                    web3 = new Web3(window.coinbaseWalletExtension);
-                    const accounts = await window.coinbaseWalletExtension.request({ method: 'eth_requestAccounts' });
-                    account = accounts[0];
-                } else {
-                    showNotification("Please install Coinbase Wallet!", "error");
-                    return;
-                }
-                
-                window.ethereum.on('accountsChanged', (accounts) => {
-                    account = accounts[0] || null;
-                    updateUI();
-                    updateRoundInfo();
-                });
-                
-                window.ethereum.on('chainChanged', () => {
-                    window.location.reload();
-                });
-                
-                document.getElementById('connect-modal').style.display = 'none';
-                updateUI();
-                showNotification("Coinbase Wallet connected successfully");
-                
-                // Initialize contract after connection
-                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                updateRoundInfo();
-            } catch (error) {
-                console.error("Error connecting Coinbase Wallet:", error);
-                showNotification("Failed to connect Coinbase Wallet", "error");
-            }
+            showNotification("Coinbase Wallet integration coming soon!", "error");
         }
 
         function updateUI() {
@@ -844,17 +777,32 @@
 
         async function updateRoundInfo() {
             if (!lotteryContract) return;
+            
             try {
                 const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
                 currentRoundData = roundInfo;
+                
+                // Update countdown timer
                 updateCountdown(roundInfo.endTime);
+                
+                // Update round status
                 document.getElementById('round-status').textContent = roundInfo.active ? "Round Active" : "Round Not Active";
+                
+                // Update ticket price
                 const ethPrice = roundInfo.currentEthPrice / 1e18;
                 const ticketPriceETH = 1 / ethPrice;
                 document.getElementById('ticket-price').textContent = `${ticketPriceETH.toFixed(6)} ETH (~$1.00)`;
+                
+                // Update prize pool
                 document.getElementById('current-pool').textContent = `${web3.utils.fromWei(roundInfo.currentPrizePool, 'ether')} ETH`;
+                
+                // Update participants count
                 document.getElementById('participants').textContent = roundInfo.currentParticipants;
-                if (account) updateUserTickets();
+                
+                // Update user tickets if connected
+                if (account) {
+                    updateUserTickets();
+                }
             } catch (error) {
                 console.error("Error updating round info:", error);
                 showNotification("Failed to update round info", "error");
@@ -863,8 +811,17 @@
 
         async function updateUserTickets() {
             if (!account || !lotteryContract) return;
+            
             try {
-                const userTickets = await getUserTickets(account);
+                const participants = await lotteryContract.methods.participants().call();
+                let userTickets = 0;
+                
+                for (const participant of participants) {
+                    if (participant.wallet.toLowerCase() === account.toLowerCase()) {
+                        userTickets += parseInt(participant.tickets);
+                    }
+                }
+                
                 document.getElementById('user-tickets').textContent = userTickets;
                 document.getElementById('neon-points').textContent = userTickets * 10;
             } catch (error) {
@@ -872,43 +829,33 @@
             }
         }
 
-        async function getUserTickets(userAddress) {
-            if (!lotteryContract) return 0;
-            try {
-                const participants = await lotteryContract.methods.getParticipants().call();
-                let totalTickets = 0;
-                for (const participant of participants) {
-                    if (participant.wallet.toLowerCase() === userAddress.toLowerCase()) {
-                        totalTickets += parseInt(participant.tickets);
-                    }
-                }
-                return totalTickets;
-            } catch (error) {
-                console.error("Error getting user tickets:", error);
-                return 0;
-            }
-        }
-
         function updateCountdown(endTime) {
             const now = Math.floor(Date.now() / 1000);
             const distance = endTime - now;
+            
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "Round Ended";
                 return;
             }
+            
             const hours = Math.floor(distance / 3600);
             const minutes = Math.floor((distance % 3600) / 60);
             const seconds = Math.floor(distance % 60);
-            document.getElementById('countdown').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('countdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        async function updateTicketCost() {
+        function updateTicketCost() {
             if (!lotteryContract || !currentRoundData) return;
+            
             try {
                 const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
                 if (isNaN(ticketAmount)) return;
+                
                 const ethPrice = currentRoundData.currentEthPrice / 1e18;
                 const totalCostETH = ticketAmount / ethPrice;
+                
                 document.getElementById('total-cost').textContent = `${totalCostETH.toFixed(6)} ETH (~$${ticketAmount.toFixed(2)})`;
                 document.getElementById('points-earned').textContent = `${ticketAmount * 10} Points`;
             } catch (error) {
@@ -919,14 +866,17 @@
 
         async function confirmPurchase() {
             const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
+            
             if (!account) {
                 showNotification("Please connect your wallet first!", "error");
                 return;
             }
+            
             if (isNaN(ticketAmount)) {
                 showNotification("Please enter a valid number of tickets!", "error");
                 return;
             }
+            
             try {
                 const ethPrice = currentRoundData.currentEthPrice / 1e18;
                 const totalCostETH = ticketAmount / ethPrice;
@@ -984,8 +934,9 @@
 
         async function showLeaderboard() {
             if (!lotteryContract) return;
+            
             try {
-                const participants = await lotteryContract.methods.getParticipants().call();
+                const participants = await lotteryContract.methods.participants().call();
                 const leaderboardBody = document.getElementById('leaderboard-body');
                 leaderboardBody.innerHTML = '';
                 
@@ -1012,6 +963,7 @@
                         leaderboardBody.appendChild(row);
                     });
                 }
+                
                 document.getElementById('leaderboard-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
@@ -1038,6 +990,7 @@
                         </div>
                     </div>
                 `;
+                
                 document.getElementById('history-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading history:", error);
@@ -1050,13 +1003,22 @@
             window.addEventListener('message', async (event) => {
                 if (event.data && event.data.type === 'frame-action') {
                     const buttonIndex = event.data.buttonIndex;
+                    
                     switch(buttonIndex) {
                         case 1:
                             document.getElementById('buy-modal').style.display = 'flex';
                             break;
                         case 2:
                             if (account) {
-                                const userTickets = await getUserTickets(account);
+                                const participants = await lotteryContract.methods.participants().call();
+                                let userTickets = 0;
+                                
+                                for (const participant of participants) {
+                                    if (participant.wallet.toLowerCase() === account.toLowerCase()) {
+                                        userTickets += parseInt(participant.tickets);
+                                    }
+                                }
+                                
                                 showNotification(`You have ${userTickets * 10} Neon Points`);
                             } else {
                                 showNotification("Please connect your wallet first", "error");
@@ -1073,6 +1035,7 @@
             });
         }
 
+        // Initialize the app when the page loads
         window.addEventListener('load', initApp);
     </script>
 </body>
