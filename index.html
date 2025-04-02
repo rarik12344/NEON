@@ -8,7 +8,7 @@
     <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🌟 My Points">
-    <meta property="fc:frame:button:3" content="📣 Invite Friends">
+    <meta property="fc:frame:button:3" content="📣 Share">
     <meta property="fc:frame:button:4" content="🏆 Leaderboard">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     <meta property="og:image" content="https://neon-xi.vercel.app/neon-lottery-share.png">
@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -99,10 +99,10 @@
             animation-delay: 9s;
         }
         @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(30px, 30px) rotate(5deg); }
-            50% { transform: translate(-20px, 50px) rotate(-5deg); }
-            75% { transform: translate(30px, -20px) rotate(3deg); }
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, 30px) scale(1.05); }
+            50% { transform: translate(-20px, 50px) scale(0.95); }
+            75% { transform: translate(30px, -20px) scale(1.03); }
         }
         .container {
             background: var(--card-bg);
@@ -115,7 +115,7 @@
             max-width: 450px;
             width: calc(100% - 40px);
             text-align: center;
-            margin: 1rem 0;
+            margin: 1rem auto;
             position: relative;
             overflow: hidden;
             z-index: 1;
@@ -263,7 +263,8 @@
             background: linear-gradient(45deg, #555, #333);
             color: #999;
             cursor: not-allowed;
-            box-shadow: none;
+            transform: none !important;
+            box-shadow: none !important;
         }
         .modal {
             display: none;
@@ -276,14 +277,14 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
         }
         .modal-content {
             background: var(--card-bg);
             padding: 1.5rem;
             border-radius: 16px;
             max-width: 400px;
-            width: calc(100% - 40px);
+            width: calc(100% - 20px);
             text-align: center;
             border: 1px solid var(--glass-border);
             position: relative;
@@ -431,50 +432,33 @@
         .notification.error i {
             color: var(--neon-pink);
         }
-        .wallet-connect-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .wallet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 1.5rem;
         }
-        .wallet-connect-content {
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 16px;
-            max-width: 400px;
-            width: calc(100% - 40px);
-            text-align: center;
-            border: 1px solid var(--glass-border);
-            position: relative;
-            animation: modalFadeIn 0.3s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        .wallet-option {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--neon-blue);
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 0.8rem 0;
-            cursor: pointer;
-            transition: all 0.3s;
+        .wallet-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .wallet-option:hover {
-            background: rgba(0, 243, 255, 0.2);
+        .wallet-btn:hover {
+            background: rgba(255,255,255,0.2);
             transform: translateY(-2px);
+        }
+        .wallet-btn img {
+            width: 24px;
+            height: 24px;
         }
         @media (max-width: 500px) {
             .container {
@@ -608,36 +592,41 @@
             <div style="text-align: left; font-size: 0.9rem;">
                 <p><strong>1. Buy Tickets:</strong> Each ticket costs $1 in ETH. The more tickets you buy, the higher your chances to win!</p>
                 <p><strong>2. Daily Draw:</strong> Every day at 16:00 UTC, a winner is selected randomly.</p>
-                <p><strong>3. Win Prizes:</strong> 80% of the pool goes to the winner, 20% is the platform fee.</p>
+                <p><strong>3. Win Prizes:</strong> The winner receives the prize pool after platform fee deduction.</p>
                 <p><strong>4. Earn Points:</strong> For each ticket you buy, you earn Neon Points that can be used for future benefits.</p>
                 <div style="margin-top: 1.5rem; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px;">
                     <h3 style="color: var(--neon-blue); margin-top: 0;">Fairness Guaranteed</h3>
                     <p>The winner is selected using a provably fair random number generated from blockchain data.</p>
                 </div>
+                <button onclick="window.open('https://warpcast.com/rarik12344', '_blank')" style="width: 100%; margin-top: 1.5rem; background: var(--neon-purple);">
+                    <i class="fas fa-headset"></i> Contact Support
+                </button>
             </div>
         </div>
     </div>
-    <div class="wallet-connect-modal" id="wallet-connect-modal">
-        <div class="wallet-connect-content">
+    <div class="modal" id="connect-modal">
+        <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 style="color: var(--neon-blue); margin-bottom: 1rem;">Connect Wallet</h2>
-            <div class="wallet-option" id="metamask-option">
-                <i class="fab fa-ethereum"></i>
-                <span>MetaMask</span>
-            </div>
-            <div class="wallet-option" id="walletconnect-option">
-                <i class="fas fa-wallet"></i>
-                <span>WalletConnect</span>
-            </div>
-            <div class="wallet-option" id="coinbase-option">
-                <i class="fab fa-bitcoin"></i>
-                <span>Coinbase Wallet</span>
+            <div class="wallet-options">
+                <button class="wallet-btn" id="metamask-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+                    MetaMask
+                </button>
+                <button class="wallet-btn" id="walletconnect-btn">
+                    <img src="https://walletconnect.com/walletconnect-logo.png" alt="WalletConnect">
+                    WalletConnect
+                </button>
+                <button class="wallet-btn" id="coinbase-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Coinbase_Wordmark.svg" alt="Coinbase Wallet">
+                    Coinbase Wallet
+                </button>
             </div>
         </div>
     </div>
     <script>
         const CONTRACT_ADDRESS = "0xB2524E429fbB12B2212bbF3Fc28B62Cee1eB6811";
-        const CONTRACT_ABI = [{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"DEFAULT_OWNER","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ETH_USD_PRICE_FEED","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_WALLET","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_FEED_HEARTBEAT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
         let web3;
         let lotteryContract;
@@ -661,6 +650,13 @@
             isWarpcast = window.ethereum && window.ethereum.isMiniPay;
             if (isWarpcast) {
                 document.getElementById('connect-btn').style.display = 'none';
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                    updateUI();
+                } catch (error) {
+                    console.log("User denied account access", error);
+                }
             }
             
             try {
@@ -676,12 +672,12 @@
 
         function initEventHandlers() {
             document.getElementById('connect-btn').addEventListener('click', () => {
-                document.getElementById('wallet-connect-modal').style.display = 'flex';
+                document.getElementById('connect-modal').style.display = 'flex';
             });
             
-            document.getElementById('metamask-option').addEventListener('click', connectMetaMask);
-            document.getElementById('walletconnect-option').addEventListener('click', connectWalletConnect);
-            document.getElementById('coinbase-option').addEventListener('click', connectCoinbase);
+            document.getElementById('metamask-btn').addEventListener('click', connectMetaMask);
+            document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
+            document.getElementById('coinbase-btn').addEventListener('click', connectCoinbase);
             
             document.getElementById('buy-btn').addEventListener('click', () => {
                 document.getElementById('buy-modal').style.display = 'flex';
@@ -704,6 +700,7 @@
             });
             
             document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
+            
             document.querySelectorAll('.close-modal').forEach(button => {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
@@ -715,6 +712,7 @@
             document.getElementById('help-btn').addEventListener('click', () => {
                 document.getElementById('help-modal').style.display = 'flex';
             });
+            
             document.getElementById('share-btn').addEventListener('click', shareApp);
         }
 
@@ -725,12 +723,91 @@
                     return;
                 }
                 
+                web3 = new Web3(window.ethereum);
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = accounts[0];
                 
-                if (!web3) {
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    account = accounts[0] || null;
+                    updateUI();
+                    updateRoundInfo();
+                });
+                
+                window.ethereum.on('chainChanged', () => {
+                    window.location.reload();
+                });
+                
+                document.getElementById('connect-modal').style.display = 'none';
+                updateUI();
+                showNotification("MetaMask connected successfully");
+                
+                // Initialize contract after connection
+                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                updateRoundInfo();
+            } catch (error) {
+                console.error("Error connecting MetaMask:", error);
+                showNotification("Failed to connect MetaMask", "error");
+            }
+        }
+
+        async function connectWalletConnect() {
+            try {
+                // Initialize WalletConnect provider
+                walletConnectProvider = new WalletConnectProvider.default({
+                    rpc: {
+                        1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+                        5: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+                    }
+                });
+                
+                // Enable session (triggers QR Code modal)
+                await walletConnectProvider.enable();
+                
+                // Create Web3 instance
+                web3 = new Web3(walletConnectProvider);
+                
+                // Get accounts
+                const accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+                
+                // Subscribe to accounts change
+                walletConnectProvider.on("accountsChanged", (accounts) => {
+                    account = accounts[0] || null;
+                    updateUI();
+                    updateRoundInfo();
+                });
+                
+                // Subscribe to chainId change
+                walletConnectProvider.on("chainChanged", () => {
+                    window.location.reload();
+                });
+                
+                document.getElementById('connect-modal').style.display = 'none';
+                updateUI();
+                showNotification("WalletConnect connected successfully");
+                
+                // Initialize contract after connection
+                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                updateRoundInfo();
+            } catch (error) {
+                console.error("Error connecting WalletConnect:", error);
+                showNotification("Failed to connect WalletConnect", "error");
+            }
+        }
+
+        async function connectCoinbase() {
+            try {
+                if (window.ethereum && window.ethereum.isCoinbaseWallet) {
                     web3 = new Web3(window.ethereum);
-                    lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                } else if (window.coinbaseWalletExtension) {
+                    web3 = new Web3(window.coinbaseWalletExtension);
+                    const accounts = await window.coinbaseWalletExtension.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                } else {
+                    showNotification("Please install Coinbase Wallet!", "error");
+                    return;
                 }
                 
                 window.ethereum.on('accountsChanged', (accounts) => {
@@ -743,85 +820,13 @@
                     window.location.reload();
                 });
                 
+                document.getElementById('connect-modal').style.display = 'none';
                 updateUI();
-                document.getElementById('wallet-connect-modal').style.display = 'none';
-                showNotification("MetaMask connected successfully");
-            } catch (error) {
-                console.error("Error connecting MetaMask:", error);
-                showNotification("Failed to connect MetaMask", "error");
-            }
-        }
-
-        async function connectWalletConnect() {
-            try {
-                // Initialize WalletConnect provider
-                walletConnectProvider = new WalletConnectProvider.default({
-                    rpc: {
-                        1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", // Ethereum
-                        5: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", // Goerli
-                        // Add other chains as needed
-                    }
-                });
-
-                // Enable session (triggers QR Code modal)
-                await walletConnectProvider.enable();
-
-                // Create Web3 instance
-                web3 = new Web3(walletConnectProvider);
+                showNotification("Coinbase Wallet connected successfully");
+                
+                // Initialize contract after connection
                 lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-
-                // Get accounts
-                const accounts = await web3.eth.getAccounts();
-                account = accounts[0];
-
-                // Subscribe to accounts change
-                walletConnectProvider.on("accountsChanged", (accounts) => {
-                    account = accounts[0] || null;
-                    updateUI();
-                    updateRoundInfo();
-                });
-
-                // Subscribe to chainId change
-                walletConnectProvider.on("chainChanged", () => {
-                    window.location.reload();
-                });
-
-                updateUI();
-                document.getElementById('wallet-connect-modal').style.display = 'none';
-                showNotification("WalletConnect connected successfully");
-            } catch (error) {
-                console.error("Error connecting WalletConnect:", error);
-                showNotification("Failed to connect WalletConnect", "error");
-            }
-        }
-
-        async function connectCoinbase() {
-            try {
-                if (window.ethereum && window.ethereum.isCoinbaseWallet) {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    account = accounts[0];
-                    
-                    if (!web3) {
-                        web3 = new Web3(window.ethereum);
-                        lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                    }
-                    
-                    window.ethereum.on('accountsChanged', (accounts) => {
-                        account = accounts[0] || null;
-                        updateUI();
-                        updateRoundInfo();
-                    });
-                    
-                    window.ethereum.on('chainChanged', () => {
-                        window.location.reload();
-                    });
-                    
-                    updateUI();
-                    document.getElementById('wallet-connect-modal').style.display = 'none';
-                    showNotification("Coinbase Wallet connected successfully");
-                } else {
-                    showNotification("Please install Coinbase Wallet!", "error");
-                }
+                updateRoundInfo();
             } catch (error) {
                 console.error("Error connecting Coinbase Wallet:", error);
                 showNotification("Failed to connect Coinbase Wallet", "error");
@@ -870,10 +875,9 @@
         async function getUserTickets(userAddress) {
             if (!lotteryContract) return 0;
             try {
-                const participantsCount = await lotteryContract.methods.participants.length().call();
+                const participants = await lotteryContract.methods.getParticipants().call();
                 let totalTickets = 0;
-                for (let i = 0; i < participantsCount; i++) {
-                    const participant = await lotteryContract.methods.participants(i).call();
+                for (const participant of participants) {
                     if (participant.wallet.toLowerCase() === userAddress.toLowerCase()) {
                         totalTickets += parseInt(participant.tickets);
                     }
@@ -927,10 +931,12 @@
                 const ethPrice = currentRoundData.currentEthPrice / 1e18;
                 const totalCostETH = ticketAmount / ethPrice;
                 const totalCostWei = web3.utils.toWei(totalCostETH.toString(), 'ether');
+                
                 await lotteryContract.methods.buyTickets(ticketAmount).send({
                     from: account,
                     value: totalCostWei
                 });
+                
                 showNotification("Tickets purchased successfully!");
                 document.getElementById('buy-modal').style.display = 'none';
                 updateRoundInfo();
@@ -942,14 +948,25 @@
 
         function shareApp() {
             const shareUrl = window.location.href;
+            const shareText = "Join the Neon Lottery and win ETH prizes! Buy tickets and earn Neon Points!";
+            
             if (navigator.share) {
                 navigator.share({
                     title: 'Neon Lottery',
-                    text: 'Join the Neon Lottery and win ETH prizes!',
+                    text: shareText,
                     url: shareUrl
                 }).catch(err => {
                     copyToClipboard(shareUrl);
                 });
+            } else if (isWarpcast) {
+                // For Warpcast frames
+                window.parent.postMessage({
+                    type: 'frame-action',
+                    buttonIndex: 3,
+                    url: shareUrl,
+                    text: shareText
+                }, '*');
+                copyToClipboard(shareUrl);
             } else {
                 copyToClipboard(shareUrl);
             }
@@ -968,20 +985,19 @@
         async function showLeaderboard() {
             if (!lotteryContract) return;
             try {
-                const participantsCount = await lotteryContract.methods.participants.length().call();
+                const participants = await lotteryContract.methods.getParticipants().call();
                 const leaderboardBody = document.getElementById('leaderboard-body');
                 leaderboardBody.innerHTML = '';
-                const participants = [];
-                for (let i = 0; i < participantsCount; i++) {
-                    const participant = await lotteryContract.methods.participants(i).call();
-                    participants.push({
-                        address: participant.wallet,
-                        tickets: parseInt(participant.tickets),
-                        points: parseInt(participant.tickets) * 10
-                    });
-                }
-                participants.sort((a, b) => b.tickets - a.tickets);
-                const topParticipants = participants.slice(0, 10);
+                
+                const participantsWithTickets = participants.map(p => ({
+                    address: p.wallet,
+                    tickets: parseInt(p.tickets),
+                    points: parseInt(p.tickets) * 10
+                }));
+                
+                participantsWithTickets.sort((a, b) => b.tickets - a.tickets);
+                const topParticipants = participantsWithTickets.slice(0, 10);
+                
                 if (topParticipants.length === 0) {
                     leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No participants yet</td></tr>';
                 } else {
@@ -1029,6 +1045,7 @@
             }
         }
 
+        // Warpcast frame actions
         if (window.ethereum && window.ethereum.isMiniPay) {
             window.addEventListener('message', async (event) => {
                 if (event.data && event.data.type === 'frame-action') {
