@@ -17,6 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -36,7 +37,7 @@
         }
         body {
             margin: 0;
-            padding: 10px;
+            padding: 20px;
             background: var(--dark-bg);
             color: white;
             font-family: 'Poppins', sans-serif;
@@ -112,7 +113,7 @@
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
             border: 1px solid var(--glass-border);
             max-width: 450px;
-            width: calc(100% - 20px);
+            width: calc(100% - 40px);
             text-align: center;
             margin: 1rem 0;
             position: relative;
@@ -239,6 +240,7 @@
         }
         button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.3);
         }
         button:active {
             transform: translateY(1px);
@@ -261,6 +263,7 @@
             background: linear-gradient(45deg, #555, #333);
             color: #999;
             cursor: not-allowed;
+            box-shadow: none;
         }
         .modal {
             display: none;
@@ -273,14 +276,14 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
-            padding: 10px;
+            padding: 20px;
         }
         .modal-content {
             background: var(--card-bg);
             padding: 1.5rem;
             border-radius: 16px;
             max-width: 400px;
-            width: calc(100% - 20px);
+            width: calc(100% - 40px);
             text-align: center;
             border: 1px solid var(--glass-border);
             position: relative;
@@ -428,6 +431,51 @@
         .notification.error i {
             color: var(--neon-pink);
         }
+        .wallet-connect-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .wallet-connect-content {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            max-width: 400px;
+            width: calc(100% - 40px);
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .wallet-option {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.8rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .wallet-option:hover {
+            background: rgba(0, 243, 255, 0.2);
+            transform: translateY(-2px);
+        }
         @media (max-width: 500px) {
             .container {
                 padding: 1rem;
@@ -569,15 +617,34 @@
             </div>
         </div>
     </div>
+    <div class="wallet-connect-modal" id="wallet-connect-modal">
+        <div class="wallet-connect-content">
+            <span class="close-modal">&times;</span>
+            <h2 style="color: var(--neon-blue); margin-bottom: 1rem;">Connect Wallet</h2>
+            <div class="wallet-option" id="metamask-option">
+                <i class="fab fa-ethereum"></i>
+                <span>MetaMask</span>
+            </div>
+            <div class="wallet-option" id="walletconnect-option">
+                <i class="fas fa-wallet"></i>
+                <span>WalletConnect</span>
+            </div>
+            <div class="wallet-option" id="coinbase-option">
+                <i class="fab fa-bitcoin"></i>
+                <span>Coinbase Wallet</span>
+            </div>
+        </div>
+    </div>
     <script>
-        const CONTRACT_ADDRESS = "0x09b81fe5AC4011D2d4930038DDb4022985879181";
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"ETH_USD_PRICE_FEED","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_FEED_HEARTBEAT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ADDRESS = "0xB2524E429fbB12B2212bbF3Fc28B62Cee1eB6811";
+        const CONTRACT_ABI = [{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
         let web3;
         let lotteryContract;
         let account = null;
         let isWarpcast = false;
         let currentRoundData = null;
+        let walletConnectProvider = null;
 
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
@@ -597,29 +664,6 @@
             }
             
             try {
-                if (window.ethereum) {
-                    web3 = new Web3(window.ethereum);
-                    try {
-                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        account = accounts[0];
-                        updateUI();
-                    } catch (error) {
-                        console.log("User denied account access", error);
-                    }
-                    
-                    window.ethereum.on('accountsChanged', (accounts) => {
-                        account = accounts[0] || null;
-                        updateUI();
-                        updateRoundInfo();
-                    });
-                    
-                    window.ethereum.on('chainChanged', () => {
-                        window.location.reload();
-                    });
-                } else {
-                    console.log("Non-Ethereum browser detected");
-                }
-
                 lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 setInterval(updateRoundInfo, 10000);
                 updateRoundInfo();
@@ -631,17 +675,26 @@
         }
 
         function initEventHandlers() {
-            document.getElementById('connect-btn').addEventListener('click', connectWallet);
+            document.getElementById('connect-btn').addEventListener('click', () => {
+                document.getElementById('wallet-connect-modal').style.display = 'flex';
+            });
+            
+            document.getElementById('metamask-option').addEventListener('click', connectMetaMask);
+            document.getElementById('walletconnect-option').addEventListener('click', connectWalletConnect);
+            document.getElementById('coinbase-option').addEventListener('click', connectCoinbase);
+            
             document.getElementById('buy-btn').addEventListener('click', () => {
                 document.getElementById('buy-modal').style.display = 'flex';
                 updateTicketCost();
             });
+            
             document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
             document.getElementById('increment-ticket').addEventListener('click', () => {
                 const input = document.getElementById('ticket-amount');
                 input.value = parseInt(input.value) + 1;
                 updateTicketCost();
             });
+            
             document.getElementById('decrement-ticket').addEventListener('click', () => {
                 const input = document.getElementById('ticket-amount');
                 if (input.value > 1) {
@@ -649,12 +702,14 @@
                     updateTicketCost();
                 }
             });
+            
             document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
             document.querySelectorAll('.close-modal').forEach(button => {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
                 });
             });
+            
             document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
             document.getElementById('history-btn').addEventListener('click', showHistory);
             document.getElementById('help-btn').addEventListener('click', () => {
@@ -663,19 +718,113 @@
             document.getElementById('share-btn').addEventListener('click', shareApp);
         }
 
-        async function connectWallet() {
+        async function connectMetaMask() {
             try {
                 if (!window.ethereum) {
                     showNotification("Please install MetaMask!", "error");
                     return;
                 }
+                
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = accounts[0];
+                
+                if (!web3) {
+                    web3 = new Web3(window.ethereum);
+                    lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                }
+                
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    account = accounts[0] || null;
+                    updateUI();
+                    updateRoundInfo();
+                });
+                
+                window.ethereum.on('chainChanged', () => {
+                    window.location.reload();
+                });
+                
                 updateUI();
-                showNotification("Wallet connected successfully");
+                document.getElementById('wallet-connect-modal').style.display = 'none';
+                showNotification("MetaMask connected successfully");
             } catch (error) {
-                console.error("Error connecting wallet:", error);
-                showNotification("Failed to connect wallet", "error");
+                console.error("Error connecting MetaMask:", error);
+                showNotification("Failed to connect MetaMask", "error");
+            }
+        }
+
+        async function connectWalletConnect() {
+            try {
+                // Initialize WalletConnect provider
+                walletConnectProvider = new WalletConnectProvider.default({
+                    rpc: {
+                        1: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", // Ethereum
+                        5: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", // Goerli
+                        // Add other chains as needed
+                    }
+                });
+
+                // Enable session (triggers QR Code modal)
+                await walletConnectProvider.enable();
+
+                // Create Web3 instance
+                web3 = new Web3(walletConnectProvider);
+                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+                // Get accounts
+                const accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+
+                // Subscribe to accounts change
+                walletConnectProvider.on("accountsChanged", (accounts) => {
+                    account = accounts[0] || null;
+                    updateUI();
+                    updateRoundInfo();
+                });
+
+                // Subscribe to chainId change
+                walletConnectProvider.on("chainChanged", () => {
+                    window.location.reload();
+                });
+
+                updateUI();
+                document.getElementById('wallet-connect-modal').style.display = 'none';
+                showNotification("WalletConnect connected successfully");
+            } catch (error) {
+                console.error("Error connecting WalletConnect:", error);
+                showNotification("Failed to connect WalletConnect", "error");
+            }
+        }
+
+        async function connectCoinbase() {
+            try {
+                if (window.ethereum && window.ethereum.isCoinbaseWallet) {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                    
+                    if (!web3) {
+                        web3 = new Web3(window.ethereum);
+                        lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                    }
+                    
+                    window.ethereum.on('accountsChanged', (accounts) => {
+                        account = accounts[0] || null;
+                        updateUI();
+                        updateRoundInfo();
+                    });
+                    
+                    window.ethereum.on('chainChanged', () => {
+                        window.location.reload();
+                    });
+                    
+                    updateUI();
+                    document.getElementById('wallet-connect-modal').style.display = 'none';
+                    showNotification("Coinbase Wallet connected successfully");
+                } else {
+                    showNotification("Please install Coinbase Wallet!", "error");
+                }
+            } catch (error) {
+                console.error("Error connecting Coinbase Wallet:", error);
+                showNotification("Failed to connect Coinbase Wallet", "error");
             }
         }
 
