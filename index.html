@@ -24,9 +24,12 @@
             --neon-purple: #9d00ff;
             --neon-green: #00ff9d;
             --neon-yellow: #fff700;
+            --neon-orange: #ff6b00;
             --dark-bg: #0f0f1a;
             --card-bg: rgba(15, 15, 26, 0.9);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
         }
         * {
             box-sizing: border-box;
@@ -38,7 +41,7 @@
             margin: 0;
             padding: 20px;
             background: var(--dark-bg);
-            color: white;
+            color: var(--text-primary);
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -97,6 +100,14 @@
             right: 15%;
             animation-delay: 9s;
         }
+        .circle-5 {
+            width: 220px;
+            height: 220px;
+            background: var(--neon-green);
+            bottom: 15%;
+            left: 10%;
+            animation-delay: 12s;
+        }
         @keyframes float {
             0%, 100% { transform: translate(0, 0) scale(1); }
             25% { transform: translate(30px, 30px) scale(1.05); }
@@ -129,6 +140,7 @@
             display: inline-block;
             letter-spacing: 1px;
             font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
         h1::after {
             content: '';
@@ -183,10 +195,11 @@
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
             font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
         #round-status {
             font-size: 0.8rem;
-            color: rgba(255,255,255,0.8);
+            color: var(--text-secondary);
         }
         .pool-info {
             background: rgba(0, 0, 0, 0.3);
@@ -378,6 +391,7 @@
         }
         .ticket-input input:focus {
             border-color: var(--neon-pink);
+            box-shadow: 0 0 8px rgba(157, 0, 255, 0.3);
         }
         .history-item {
             background: rgba(0,0,0,0.2);
@@ -390,7 +404,7 @@
         }
         .history-item-date {
             font-size: 0.75rem;
-            color: rgba(255,255,255,0.6);
+            color: var(--text-secondary);
             margin-bottom: 0.2rem;
         }
         .history-item-details {
@@ -459,6 +473,23 @@
             width: 24px;
             height: 24px;
         }
+        .warpcast-post-btn {
+            background: linear-gradient(45deg, var(--neon-orange), var(--neon-pink));
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .highlight-box {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .highlight-box h3 {
+            color: var(--neon-blue);
+            margin-bottom: 0.5rem;
+        }
         @media (max-width: 500px) {
             .container {
                 padding: 1rem;
@@ -495,6 +526,7 @@
         <div class="neon-circle circle-2"></div>
         <div class="neon-circle circle-3"></div>
         <div class="neon-circle circle-4"></div>
+        <div class="neon-circle circle-5"></div>
     </div>
     <div class="container" id="main-container">
         <h1>✨ NEON LOTTERY ✨</h1>
@@ -623,8 +655,24 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="share-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 style="color: var(--neon-green); margin-bottom: 1rem;">Invite Friends</h2>
+            <div class="highlight-box">
+                <h3>Share & Earn</h3>
+                <p>Invite friends to join Neon Lottery and earn bonus points when they buy tickets!</p>
+            </div>
+            <button id="copy-link-btn" style="width: 100%; margin-bottom: 0.5rem;">
+                <i class="fas fa-copy"></i> Copy Invite Link
+            </button>
+            <button id="warpcast-post-btn" class="warpcast-post-btn">
+                <i class="fas fa-share"></i> Create Warpcast Post
+            </button>
+        </div>
+    </div>
     <script>
-        const CONTRACT_ADDRESS = "0xB2524E429fbB12B2212bbF3Fc28B62Cee1eB6811";
+        const CONTRACT_ADDRESS = "0x48820a7f7c8288BFE8A855B6Dc9CD6E0E1D0bA06";
         const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"DEFAULT_OWNER","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ETH_USD_PRICE_FEED","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_WALLET","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_FEED_HEARTBEAT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
         let web3;
@@ -727,12 +775,18 @@
                 document.getElementById('help-modal').style.display = 'flex';
             });
             
-            document.getElementById('share-btn').addEventListener('click', shareApp);
+            document.getElementById('share-btn').addEventListener('click', () => {
+                document.getElementById('share-modal').style.display = 'flex';
+            });
             
             // Wallet connection options
             document.getElementById('metamask-btn').addEventListener('click', connectMetaMask);
             document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
             document.getElementById('coinbase-btn').addEventListener('click', connectCoinbase);
+            
+            // Share modal buttons
+            document.getElementById('copy-link-btn').addEventListener('click', copyInviteLink);
+            document.getElementById('warpcast-post-btn').addEventListener('click', createWarpcastPost);
         }
 
         async function connectMetaMask() {
@@ -896,29 +950,29 @@
             }
         }
 
-        function shareApp() {
+        function copyInviteLink() {
             const shareUrl = window.location.href;
-            const shareText = "Join the Neon Lottery and win ETH prizes! Buy tickets and earn Neon Points!";
+            copyToClipboard(shareUrl);
+            showNotification("Invite link copied to clipboard!");
+        }
+
+        function createWarpcastPost() {
+            const shareUrl = window.location.href;
+            const shareText = "🚀 Join Neon Lottery and win ETH prizes! 🎉\n\nBuy tickets for a chance to win daily ETH draws and earn Neon Points!\n\n👉 " + shareUrl;
             
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Neon Lottery',
-                    text: shareText,
-                    url: shareUrl
-                }).catch(err => {
-                    copyToClipboard(shareUrl);
-                });
-            } else if (isWarpcast) {
+            if (isWarpcast) {
                 // For Warpcast frames
                 window.parent.postMessage({
                     type: 'frame-action',
-                    buttonIndex: 3,
-                    url: shareUrl,
+                    action: 'post',
                     text: shareText
                 }, '*');
-                copyToClipboard(shareUrl);
+                showNotification("Warpcast post created!");
             } else {
-                copyToClipboard(shareUrl);
+                // Fallback for regular browsers
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+                window.open(twitterUrl, '_blank');
+                showNotification("Share dialog opened in new tab");
             }
         }
 
@@ -929,7 +983,6 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            showNotification("Link copied to clipboard!");
         }
 
         async function showLeaderboard() {
@@ -974,23 +1027,55 @@
         async function showHistory() {
             try {
                 const historyContent = document.getElementById('history-content');
-                historyContent.innerHTML = `
-                    <div class="history-item">
-                        <div class="history-item-date">Round #1 - ${new Date().toLocaleDateString()}</div>
-                        <div class="history-item-details">
-                            <span>Winner: 0x123...456</span>
-                            <span>Prize: 0.5 ETH</span>
-                        </div>
-                    </div>
-                    <div class="history-item">
-                        <div class="history-item-date">Round #2 - ${new Date(Date.now() - 86400000).toLocaleDateString()}</div>
-                        <div class="history-item-details">
-                            <span>Winner: 0x789...012</span>
-                            <span>Prize: 0.8 ETH</span>
-                        </div>
-                    </div>
-                `;
                 
+                // Sample history data - in a real app you would fetch this from the contract
+                const historyData = [
+                    {
+                        round: 5,
+                        date: new Date(Date.now() - 86400000 * 1),
+                        winner: "0x1A6269Ae3d17723BF75774bC6f2b576D958CB587",
+                        prize: "0.85 ETH"
+                    },
+                    {
+                        round: 4,
+                        date: new Date(Date.now() - 86400000 * 2),
+                        winner: "0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE",
+                        prize: "1.2 ETH"
+                    },
+                    {
+                        round: 3,
+                        date: new Date(Date.now() - 86400000 * 3),
+                        winner: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                        prize: "0.65 ETH"
+                    },
+                    {
+                        round: 2,
+                        date: new Date(Date.now() - 86400000 * 4),
+                        winner: "0x563b377A956c80d77A7c613a9343699Ad6123911",
+                        prize: "0.9 ETH"
+                    },
+                    {
+                        round: 1,
+                        date: new Date(Date.now() - 86400000 * 5),
+                        winner: "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
+                        prize: "0.75 ETH"
+                    }
+                ];
+                
+                let historyHTML = '';
+                historyData.forEach(item => {
+                    historyHTML += `
+                        <div class="history-item">
+                            <div class="history-item-date">Round #${item.round} - ${item.date.toLocaleDateString()}</div>
+                            <div class="history-item-details">
+                                <span>Winner: ${item.winner.substring(0, 6)}...${item.winner.substring(38)}</span>
+                                <span>Prize: ${item.prize}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                historyContent.innerHTML = historyHTML;
                 document.getElementById('history-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading history:", error);
@@ -1025,7 +1110,7 @@
                             }
                             break;
                         case 3:
-                            shareApp();
+                            document.getElementById('share-modal').style.display = 'flex';
                             break;
                         case 4:
                             showLeaderboard();
