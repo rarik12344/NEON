@@ -707,58 +707,69 @@
         </div>
     </div>
     <script>
+        // Constants
         const CONTRACT_ADDRESS = "0x044561E3Cf27b9D401B788Fa402B58B17a6aED9A";
-        const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"cachedEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_WALLET","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPriceUpdate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ORACLE","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_DECIMALS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
+        const DEFAULT_ETH_PRICE = 2000; // Default ETH price in USD if we can't get from contract
+        const SECONDS_PER_DAY = 86400;
+        const UTC_HOUR = 16; // 4 PM UTC
 
+        // State variables
         let web3;
         let lotteryContract;
         let account = null;
         let isWarpcast = false;
         let referralCode = null;
-        let currentRoundEndTime = Math.floor(Date.now() / 1000) + 86400; // Default to 24 hours from now
+        let currentRoundEndTime = calculateNextRoundEndTime();
 
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
+        // Initialize the app when page loads
+        window.addEventListener('load', initApp);
 
         async function initApp() {
             // Check if running in Warpcast
             isWarpcast = window.ethereum && window.ethereum.isMiniPay;
             
-            // Initialize Web3 with fallback provider
+            // Initialize Web3
+            initWeb3();
+            
+            // Initialize contract
+            initContract();
+            
+            // Setup UI
+            setupUI();
+            
+            // Start countdown timer
+            startCountdown();
+            
+            // Initialize event handlers
+            initEventHandlers();
+        }
+
+        function initWeb3() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    account = accounts[0];
-                    updateUI();
-                } catch (error) {
-                    console.log("User denied account access", error);
-                }
-                
-                window.ethereum.on('accountsChanged', (accounts) => {
-                    account = accounts[0] || null;
-                    updateUI();
-                });
-                
-                window.ethereum.on('chainChanged', () => {
-                    window.location.reload();
-                });
+                setupWalletEvents();
             } else {
                 // Fallback provider if no wallet extension
                 web3 = new Web3(new Web3.providers.HttpProvider('https://cloudflare-eth.com'));
             }
+        }
 
-            // Initialize contract
-            lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        function setupWalletEvents() {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                account = accounts[0] || null;
+                updateUI();
+            });
             
+            window.ethereum.on('chainChanged', () => {
+                window.location.reload();
+            });
+        }
+
+        function initContract() {
+            lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        }
+
+        function setupUI() {
             // Generate referral code if user is connected
             if (account) {
                 referralCode = btoa(account).slice(0, 10);
@@ -772,19 +783,13 @@
                 localStorage.setItem('neonLotteryRef', refCode);
             }
             
-            // Start countdown timer
+            // Set default ticket price
+            document.getElementById('ticket-price').textContent = `1.00 USD (~${(1/DEFAULT_ETH_PRICE).toFixed(6)} ETH)`;
+        }
+
+        function startCountdown() {
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            
-            // Try to load contract data
-            try {
-                await updateRoundInfo();
-            } catch (e) {
-                console.log("Couldn't load contract data, using defaults");
-            }
-            
-            // Initialize event handlers
-            initEventHandlers();
         }
 
         function initEventHandlers() {
@@ -850,6 +855,69 @@
             // Share modal buttons
             document.getElementById('copy-link-btn').addEventListener('click', copyInviteLink);
             document.getElementById('warpcast-post-btn').addEventListener('click', createWarpcastPost);
+        }
+
+        function calculateNextRoundEndTime() {
+            const now = new Date();
+            const currentHour = now.getUTCHours();
+            const currentDay = Math.floor(now.getTime() / 1000 / SECONDS_PER_DAY);
+            
+            let roundEndTime;
+            if (currentHour < UTC_HOUR) {
+                // Round ends today at 16:00 UTC
+                roundEndTime = (currentDay * SECONDS_PER_DAY) + (UTC_HOUR * 3600);
+            } else {
+                // Round ends tomorrow at 16:00 UTC
+                roundEndTime = ((currentDay + 1) * SECONDS_PER_DAY) + (UTC_HOUR * 3600);
+            }
+            
+            return roundEndTime;
+        }
+
+        function updateCountdown() {
+            const now = Math.floor(Date.now() / 1000);
+            const distance = currentRoundEndTime - now;
+            
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = "00:00:00";
+                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
+                return;
+            }
+            
+            const hours = Math.floor(distance / 3600);
+            const minutes = Math.floor((distance % 3600) / 60);
+            const seconds = Math.floor(distance % 60);
+            
+            document.getElementById('countdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+            document.getElementById('round-status').textContent = 
+                distance > 0 ? "Round Active - Ends at 16:00 UTC" : "Round Ended - Next at 16:00 UTC";
+        }
+
+        function updateTicketCost() {
+            try {
+                const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
+                if (isNaN(ticketAmount) || ticketAmount < 1) {
+                    document.getElementById('ticket-amount').value = 1;
+                    return updateTicketCost();
+                }
+                
+                if (ticketAmount > 100) {
+                    document.getElementById('ticket-amount').value = 100;
+                    return updateTicketCost();
+                }
+                
+                // Calculate cost based on default ETH price
+                const totalCostETH = ticketAmount / DEFAULT_ETH_PRICE;
+                const roundedCostETH = parseFloat(totalCostETH.toFixed(6));
+                
+                document.getElementById('total-cost').textContent = `${roundedCostETH} ETH (~$${ticketAmount.toFixed(2)})`;
+                document.getElementById('points-earned').textContent = `${ticketAmount * 10} Points`;
+            } catch (error) {
+                console.error("Error calculating ticket cost:", error);
+                showNotification("Failed to calculate ticket cost", "error");
+            }
         }
 
         async function connectMetaMask() {
@@ -923,8 +991,6 @@
             } catch (error) {
                 console.error("Error updating round info:", error);
                 // Fallback to default values if contract call fails
-                document.getElementById('current-pool').textContent = "Loading...";
-                document.getElementById('participants').textContent = "0";
             }
         }
 
@@ -945,58 +1011,6 @@
                 document.getElementById('neon-points').textContent = userTickets * 10;
             } catch (error) {
                 console.error("Error updating user tickets:", error);
-            }
-        }
-
-        function updateCountdown() {
-            const now = Math.floor(Date.now() / 1000);
-            const distance = currentRoundEndTime - now;
-            
-            if (distance < 0) {
-                document.getElementById('countdown').textContent = "00:00:00";
-                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
-                return;
-            }
-            
-            const hours = Math.floor(distance / 3600);
-            const minutes = Math.floor((distance % 3600) / 60);
-            const seconds = Math.floor(distance % 60);
-            
-            document.getElementById('countdown').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-            document.getElementById('round-status').textContent = 
-                distance > 0 ? "Round Active - Ends at 16:00 UTC" : "Round Ended - Next at 16:00 UTC";
-        }
-
-        function updateTicketCost() {
-            try {
-                const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-                if (isNaN(ticketAmount) {
-                    document.getElementById('ticket-amount').value = 1;
-                    return;
-                }
-                
-                if (ticketAmount < 1) {
-                    document.getElementById('ticket-amount').value = 1;
-                    return;
-                }
-                
-                if (ticketAmount > 100) {
-                    document.getElementById('ticket-amount').value = 100;
-                    return;
-                }
-                
-                // Default ETH price if we can't get from contract
-                const ethPrice = 2000; // Default to $2000/ETH if we can't get real price
-                const totalCostETH = ticketAmount / ethPrice;
-                const roundedCostETH = parseFloat(totalCostETH.toFixed(6));
-                
-                document.getElementById('total-cost').textContent = `${roundedCostETH} ETH (~$${ticketAmount.toFixed(2)})`;
-                document.getElementById('points-earned').textContent = `${ticketAmount * 10} Points`;
-            } catch (error) {
-                console.error("Error calculating ticket cost:", error);
-                showNotification("Failed to calculate ticket cost", "error");
             }
         }
 
@@ -1079,6 +1093,17 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
         async function showLeaderboard() {
@@ -1203,9 +1228,6 @@
                 }
             });
         }
-
-        // Initialize the app when the page loads
-        window.addEventListener('load', initApp);
     </script>
 </body>
 </html>
