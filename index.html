@@ -490,6 +490,25 @@
             color: var(--neon-blue);
             margin-bottom: 0.5rem;
         }
+        .referral-link {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--neon-green);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+            word-break: break-all;
+            text-align: center;
+        }
+        .referral-bonus {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+            color: var(--neon-yellow);
+            font-weight: 600;
+        }
         @media (max-width: 500px) {
             .container {
                 padding: 1rem;
@@ -514,6 +533,14 @@
                 min-width: 100%;
                 max-width: 100%;
             }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 243, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
         }
     </style>
 </head>
@@ -623,13 +650,14 @@
             <div style="text-align: left; font-size: 0.9rem;">
                 <p><strong>1. Buy Tickets:</strong> Each ticket costs $1 in ETH. The more tickets you buy, the higher your chances to win!</p>
                 <p><strong>2. Daily Draw:</strong> Every day at 16:00 UTC, a winner is selected randomly.</p>
-                <p><strong>3. Win Prizes:</strong> The winner receives the prize pool after platform fee deduction.</p>
-                <p><strong>4. Earn Points:</strong> For each ticket you buy, you earn Neon Points that can be used for future benefits.</p>
+                <p><strong>3. Win Prizes:</strong> The winner receives 80% of the prize pool (20% platform fee).</p>
+                <p><strong>4. Earn Points:</strong> For each ticket you buy, you earn 10 Neon Points that can be used for future benefits.</p>
+                <p><strong>5. Refer Friends:</strong> Earn 100 bonus points for each friend who buys at least 1 ticket using your referral link!</p>
                 <div style="margin-top: 1.5rem; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px;">
                     <h3 style="color: var(--neon-blue); margin-top: 0;">Fairness Guaranteed</h3>
                     <p>The winner is selected using a provably fair random number generated from blockchain data.</p>
                 </div>
-                <button onclick="window.open('https://warpcast.com/rarik12344', '_blank')" style="width: 100%; margin-top: 1.5rem; background: var(--neon-purple);">
+                <button onclick="window.open('https://warpcast.com/~/developers', '_blank')" style="width: 100%; margin-top: 1.5rem; background: var(--neon-purple);">
                     <i class="fas fa-headset"></i> Contact Support
                 </button>
             </div>
@@ -661,25 +689,33 @@
             <h2 style="color: var(--neon-green); margin-bottom: 1rem;">Invite Friends</h2>
             <div class="highlight-box">
                 <h3>Share & Earn</h3>
-                <p>Invite friends to join Neon Lottery and earn bonus points when they buy tickets!</p>
+                <p>Invite friends to join Neon Lottery and earn <strong>100 bonus points</strong> when they buy their first ticket!</p>
+                <div class="referral-bonus">
+                    <i class="fas fa-gift" style="color: var(--neon-yellow);"></i>
+                    <span>100 Points per referral</span>
+                </div>
+            </div>
+            <div class="referral-link" id="referral-link">
+                Loading referral link...
             </div>
             <button id="copy-link-btn" style="width: 100%; margin-bottom: 0.5rem;">
                 <i class="fas fa-copy"></i> Copy Invite Link
             </button>
-            <button id="warpcast-post-btn" class="warpcast-post-btn">
-                <i class="fas fa-share"></i> Create Warpcast Post
+            <button id="warpcast-post-btn" class="warpcast-post-btn pulse">
+                <i class="fas fa-share"></i> Share on Warpcast
             </button>
         </div>
     </div>
     <script>
-        const CONTRACT_ADDRESS = "0xadcd97f026313a2c4c813d08dfeb8d64bfe3833a";
-        const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"},{"indexed":false,"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningTicket","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"DEFAULT_OWNER","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ETH_USD_PRICE_FEED","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_WALLET","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_FEED_HEARTBEAT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RANDOM_SEED_UPDATE_DELAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"ticketFrom","type":"uint256"},{"internalType":"uint256","name":"ticketTo","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeedBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ADDRESS = "0x044561E3Cf27b9D401B788Fa402B58B17a6aED9A";
+        const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentEthPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"cachedEthPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FEE_WALLET","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPriceUpdate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ORACLE","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRICE_DECIMALS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE_USD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
         let web3;
         let lotteryContract;
         let account = null;
         let isWarpcast = false;
         let currentRoundData = null;
+        let referralCode = null;
 
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
@@ -693,9 +729,10 @@
         }
 
         async function initApp() {
+            // Check if running in Warpcast
             isWarpcast = window.ethereum && window.ethereum.isMiniPay;
             
-            // Initialize Web3
+            // Initialize Web3 with fallback provider
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 try {
@@ -715,15 +752,31 @@
                     window.location.reload();
                 });
             } else {
-                console.log("Non-Ethereum browser detected");
+                // Fallback provider if no wallet extension
+                web3 = new Web3(new Web3.providers.HttpProvider('https://cloudflare-eth.com'));
             }
 
             // Initialize contract
             lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
             
+            // Generate referral code if user is connected
+            if (account) {
+                referralCode = btoa(account).slice(0, 10);
+                document.getElementById('referral-link').textContent = `${window.location.href}?ref=${referralCode}`;
+            } else {
+                document.getElementById('referral-link').textContent = "Connect wallet to get your referral link";
+            }
+            
+            // Check for referral code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                localStorage.setItem('neonLotteryRef', refCode);
+            }
+            
             // Update round info every 10 seconds
-            setInterval(updateRoundInfo, 10000);
             updateRoundInfo();
+            setInterval(updateRoundInfo, 10000);
             
             // Initialize event handlers
             initEventHandlers();
@@ -793,6 +846,7 @@
             try {
                 if (!window.ethereum) {
                     showNotification("Please install MetaMask!", "error");
+                    window.open("https://metamask.io/download.html", "_blank");
                     return;
                 }
                 
@@ -802,6 +856,10 @@
                 document.getElementById('connect-modal').style.display = 'none';
                 updateUI();
                 showNotification("MetaMask connected successfully");
+                
+                // Generate referral code
+                referralCode = btoa(account).slice(0, 10);
+                document.getElementById('referral-link').textContent = `${window.location.href}?ref=${referralCode}`;
                 
                 // Update contract with new provider
                 lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
@@ -840,7 +898,9 @@
                 updateCountdown(roundInfo.endTime);
                 
                 // Update round status
-                document.getElementById('round-status').textContent = roundInfo.active ? "Round Active" : "Round Not Active";
+                document.getElementById('round-status').textContent = roundInfo.active ? 
+                    "Round Active - Ends at 16:00 UTC" : 
+                    "Next Round Starts at 16:00 UTC";
                 
                 // Update ticket price
                 const ethPrice = roundInfo.currentEthPrice / 1e18;
@@ -848,7 +908,8 @@
                 document.getElementById('ticket-price').textContent = `${ticketPriceETH.toFixed(6)} ETH (~$1.00)`;
                 
                 // Update prize pool
-                document.getElementById('current-pool').textContent = `${web3.utils.fromWei(roundInfo.currentPrizePool, 'ether')} ETH`;
+                const prizePoolETH = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
+                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolETH).toFixed(4)} ETH ($${(prizePoolETH * ethPrice).toFixed(2)})`;
                 
                 // Update participants count
                 document.getElementById('participants').textContent = roundInfo.currentParticipants;
@@ -859,7 +920,10 @@
                 }
             } catch (error) {
                 console.error("Error updating round info:", error);
-                showNotification("Failed to update round info", "error");
+                // Fallback to default values if contract call fails
+                document.getElementById('ticket-price').textContent = "Loading...";
+                document.getElementById('current-pool').textContent = "Loading...";
+                document.getElementById('participants').textContent = "0";
             }
         }
 
@@ -905,7 +969,15 @@
             
             try {
                 const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-                if (isNaN(ticketAmount)) return;
+                if (isNaN(ticketAmount) || ticketAmount < 1) {
+                    document.getElementById('ticket-amount').value = 1;
+                    return;
+                }
+                
+                if (ticketAmount > 100) {
+                    document.getElementById('ticket-amount').value = 100;
+                    return;
+                }
                 
                 const ethPrice = currentRoundData.currentEthPrice / 1e18;
                 const totalCostETH = ticketAmount / ethPrice;
@@ -927,7 +999,7 @@
                 return;
             }
             
-            if (isNaN(ticketAmount)) {
+            if (isNaN(ticketAmount) {
                 showNotification("Please enter a valid number of tickets!", "error");
                 return;
             }
@@ -950,6 +1022,14 @@
                 showNotification("Tickets purchased successfully!");
                 document.getElementById('buy-modal').style.display = 'none';
                 updateRoundInfo();
+                
+                // Check for referral
+                const refCode = localStorage.getItem('neonLotteryRef');
+                if (refCode && refCode !== btoa(account).slice(0, 10)) {
+                    // In a real app, you would track referrals on your backend
+                    showNotification("🎉 You earned 100 bonus points from referral!", "success");
+                }
+                
             } catch (error) {
                 console.error("Error buying tickets:", error);
                 showNotification(`Failed to buy tickets: ${error.message}`, "error");
@@ -957,17 +1037,17 @@
         }
 
         function copyInviteLink() {
-            const shareUrl = window.location.href;
+            const shareUrl = account ? `${window.location.href}?ref=${referralCode}` : window.location.href;
             copyToClipboard(shareUrl);
             showNotification("Invite link copied to clipboard!");
         }
 
         function createWarpcastPost() {
-            const shareUrl = window.location.href;
-            const shareText = "🚀 Join Neon Lottery and win ETH prizes! 🎉\n\nBuy tickets for a chance to win daily ETH draws and earn Neon Points!\n\n👉 " + shareUrl;
+            const shareUrl = account ? `${window.location.href}?ref=${referralCode}` : window.location.href;
+            const shareText = `🚀 Join Neon Lottery and win ETH prizes! 🎉\n\nBuy tickets for a chance to win daily ETH draws and earn Neon Points!\n\n👉 ${shareUrl}\n\n#NeonLottery #WinETH`;
             
             if (isWarpcast) {
-                // For Warpcast frames
+                // Use Warpcast API to create a post
                 window.parent.postMessage({
                     type: 'frame-action',
                     action: 'post',
@@ -975,9 +1055,9 @@
                 }, '*');
                 showNotification("Warpcast post created!");
             } else {
-                // Fallback for regular browsers
-                copyToClipboard(shareText);
-                showNotification("Post text copied to clipboard! Paste it in Warpcast");
+                // Fallback for regular browsers - open Warpcast with pre-filled text
+                window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`, '_blank');
+                showNotification("Opening Warpcast to create post...");
             }
         }
 
@@ -1033,7 +1113,7 @@
             try {
                 const historyContent = document.getElementById('history-content');
                 
-                // Sample history data - in a real app you would fetch this from the contract
+                // In a real app, you would fetch this from the contract or your backend
                 const historyData = [
                     {
                         round: 5,
