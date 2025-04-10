@@ -4,19 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Lottery Mini App</title>
-    <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
-    <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
-    <meta property="fc:frame:button:2" content="🌟 My Points">
-    <meta property="fc:frame:button:3" content="📣 Share">
-    <meta property="fc:frame:button:4" content="🏆 Leaderboard">
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
-    <meta property="og:image" content="https://neon-xi.vercel.app/neon-lottery-share.png">
-    <meta property="og:title" content="Neon Lottery - Win ETH!">
-    <meta property="og:description" content="Buy tickets, win prizes and earn Neon Points!">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -436,6 +425,9 @@
         .notification.error {
             border-color: var(--neon-pink);
         }
+        .notification.info {
+            border-color: var(--neon-blue);
+        }
         .notification i {
             font-size: 1.2rem;
         }
@@ -444,6 +436,9 @@
         }
         .notification.error i {
             color: var(--neon-pink);
+        }
+        .notification.info i {
+            color: var(--neon-blue);
         }
         .wallet-options {
             display: flex;
@@ -545,9 +540,6 @@
     </style>
 </head>
 <body>
-    <div id="frame-content" style="display: none;">
-        <img id="frame-image" src="https://neon-xi.vercel.app/neon-lottery-preview.png" alt="Neon Lottery">
-    </div>
     <div class="neon-bg">
         <div class="neon-circle circle-1"></div>
         <div class="neon-circle circle-2"></div>
@@ -595,6 +587,8 @@
             <button id="help-btn"><i class="fas fa-question-circle"></i> Help</button>
         </div>
     </div>
+
+    <!-- Buy Tickets Modal -->
     <div class="modal" id="buy-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -619,6 +613,8 @@
             </button>
         </div>
     </div>
+
+    <!-- Leaderboard Modal -->
     <div class="modal" id="leaderboard-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -632,17 +628,27 @@
                         <th>Points</th>
                     </tr>
                 </thead>
-                <tbody id="leaderboard-body"></tbody>
+                <tbody id="leaderboard-body">
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 1rem;">Loading leaderboard...</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
+
+    <!-- History Modal -->
     <div class="modal" id="history-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 style="color: var(--neon-green); margin-bottom: 1rem;">Round History</h2>
-            <div id="history-content"></div>
+            <div id="history-content">
+                <div style="text-align: center; padding: 1rem;">Loading history...</div>
+            </div>
         </div>
     </div>
+
+    <!-- Help Modal -->
     <div class="modal" id="help-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -663,6 +669,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Connect Wallet Modal -->
     <div class="modal" id="connect-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -683,6 +691,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Share Modal -->
     <div class="modal" id="share-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -706,108 +716,23 @@
             </button>
         </div>
     </div>
+
     <script>
         // Constants
-        const CONTRACT_ADDRESS = "0x044561E3Cf27b9D401B788Fa402B58B17a6aED9A";
-        const DEFAULT_ETH_PRICE = 2000; // Default ETH price in USD if we can't get from contract
+        const DEFAULT_ETH_PRICE = 2000; // Default ETH price in USD
         const SECONDS_PER_DAY = 86400;
         const UTC_HOUR = 16; // 4 PM UTC
 
-        // Contract ABI (Application Binary Interface)
-        const CONTRACT_ABI = [
-            {
-                "inputs": [],
-                "name": "currentRoundInfo",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "roundNumber",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentPrizePool",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentEthPrice",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentParticipants",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTime",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "participants",
-                "outputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "address",
-                                "name": "wallet",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "tickets",
-                                "type": "uint256"
-                            }
-                        ],
-                        "internalType": "struct NeonLottery.Participant[]",
-                        "name": "",
-                        "type": "tuple[]"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "ticketAmount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "buyTickets",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            }
-        ];
-
         // State variables
-        let web3;
-        let lotteryContract;
         let account = null;
         let isWarpcast = false;
         let referralCode = null;
         let currentRoundEndTime = calculateNextRoundEndTime();
 
         // Initialize the app when page loads
-        window.addEventListener('load', initApp);
-
-        async function initApp() {
+        window.addEventListener('load', function() {
             // Check if running in Warpcast
             isWarpcast = window.ethereum && window.ethereum.isMiniPay;
-            
-            // Initialize Web3
-            initWeb3();
-            
-            // Initialize contract
-            initContract();
             
             // Setup UI
             setupUI();
@@ -817,47 +742,7 @@
             
             // Initialize event handlers
             initEventHandlers();
-            
-            // Check if wallet is already connected
-            checkConnectedWallet();
-        }
-
-        async function checkConnectedWallet() {
-            if (window.ethereum && window.ethereum.selectedAddress) {
-                account = window.ethereum.selectedAddress;
-                updateUI();
-                updateRoundInfo();
-            }
-        }
-
-        function initWeb3() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                setupWalletEvents();
-            } else {
-                // Fallback provider if no wallet extension
-                web3 = new Web3(new Web3.providers.HttpProvider('https://cloudflare-eth.com'));
-                showNotification("Please install a Web3 wallet like MetaMask", "error");
-            }
-        }
-
-        function setupWalletEvents() {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                account = accounts[0] || null;
-                updateUI();
-                if (account) {
-                    updateRoundInfo();
-                }
-            });
-            
-            window.ethereum.on('chainChanged', () => {
-                window.location.reload();
-            });
-        }
-
-        function initContract() {
-            lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-        }
+        });
 
         function setupUI() {
             // Generate referral code if user is connected
@@ -884,12 +769,12 @@
 
         function initEventHandlers() {
             // Connect Wallet button
-            document.getElementById('connect-btn').addEventListener('click', () => {
+            document.getElementById('connect-btn').addEventListener('click', function() {
                 document.getElementById('connect-modal').style.display = 'flex';
             });
             
             // Buy Tickets button
-            document.getElementById('buy-btn').addEventListener('click', () => {
+            document.getElementById('buy-btn').addEventListener('click', function() {
                 if (!account) {
                     showNotification("Please connect your wallet first!", "error");
                     document.getElementById('connect-modal').style.display = 'flex';
@@ -900,16 +785,19 @@
             });
             
             // Confirm Purchase button
-            document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
+            document.getElementById('confirm-buy').addEventListener('click', function() {
+                showNotification("Purchase simulation complete!", "success");
+                document.getElementById('buy-modal').style.display = 'none';
+            });
             
             // Ticket amount controls
-            document.getElementById('increment-ticket').addEventListener('click', () => {
+            document.getElementById('increment-ticket').addEventListener('click', function() {
                 const input = document.getElementById('ticket-amount');
                 input.value = parseInt(input.value) + 1;
                 updateTicketCost();
             });
             
-            document.getElementById('decrement-ticket').addEventListener('click', () => {
+            document.getElementById('decrement-ticket').addEventListener('click', function() {
                 const input = document.getElementById('ticket-amount');
                 if (input.value > 1) {
                     input.value = parseInt(input.value) - 1;
@@ -920,7 +808,7 @@
             document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
             
             // Close modal buttons
-            document.querySelectorAll('.close-modal').forEach(button => {
+            document.querySelectorAll('.close-modal').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
                 });
@@ -929,11 +817,11 @@
             // Other buttons
             document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
             document.getElementById('history-btn').addEventListener('click', showHistory);
-            document.getElementById('help-btn').addEventListener('click', () => {
+            document.getElementById('help-btn').addEventListener('click', function() {
                 document.getElementById('help-modal').style.display = 'flex';
             });
             
-            document.getElementById('share-btn').addEventListener('click', () => {
+            document.getElementById('share-btn').addEventListener('click', function() {
                 document.getElementById('share-modal').style.display = 'flex';
             });
             
@@ -947,8 +835,8 @@
             document.getElementById('warpcast-post-btn').addEventListener('click', createWarpcastPost);
             
             // Close modals when clicking outside
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
+            document.querySelectorAll('.modal').forEach(function(modal) {
+                modal.addEventListener('click', function(e) {
                     if (e.target === modal) {
                         modal.style.display = 'none';
                     }
@@ -997,7 +885,7 @@
         function updateTicketCost() {
             try {
                 const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-                if (isNaN(ticketAmount) {
+                if (isNaN(ticketAmount)) {
                     document.getElementById('ticket-amount').value = 1;
                     return updateTicketCost();
                 }
@@ -1024,45 +912,27 @@
             }
         }
 
-        async function connectMetaMask() {
-            try {
-                if (!window.ethereum) {
-                    showNotification("Please install MetaMask!", "error");
-                    window.open("https://metamask.io/download.html", "_blank");
-                    return;
-                }
-                
-                // Request account access
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                account = accounts[0];
-                
-                // Update UI
-                document.getElementById('connect-modal').style.display = 'none';
+        function connectMetaMask() {
+            showNotification("Connecting to MetaMask...", "info");
+            
+            // Simulate wallet connection
+            setTimeout(function() {
+                account = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
                 updateUI();
-                showNotification("MetaMask connected successfully");
+                document.getElementById('connect-modal').style.display = 'none';
+                showNotification("Wallet connected successfully!");
                 
                 // Generate referral code
                 referralCode = btoa(account).slice(0, 10);
                 document.getElementById('referral-link').textContent = `${window.location.href}?ref=${referralCode}`;
-                
-                // Update contract with new provider
-                lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                updateRoundInfo();
-            } catch (error) {
-                console.error("Error connecting MetaMask:", error);
-                if (error.code === 4001) {
-                    showNotification("MetaMask connection rejected", "error");
-                } else {
-                    showNotification("Failed to connect MetaMask", "error");
-                }
-            }
+            }, 1000);
         }
 
-        async function connectWalletConnect() {
+        function connectWalletConnect() {
             showNotification("WalletConnect integration coming soon!", "info");
         }
 
-        async function connectCoinbase() {
+        function connectCoinbase() {
             showNotification("Coinbase Wallet integration coming soon!", "info");
         }
 
@@ -1071,123 +941,26 @@
                 const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
                 document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
                 document.getElementById('buy-btn').disabled = false;
-                updateUserTickets();
-            }
-        }
-
-        async function updateRoundInfo() {
-            if (!lotteryContract) return;
-            
-            try {
-                const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
-                currentRoundEndTime = parseInt(roundInfo.endTime);
                 
-                // Update prize pool
-                const ethPrice = roundInfo.currentEthPrice / 1e18;
-                const prizePoolETH = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
-                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolETH).toFixed(4)} ETH ($${(prizePoolETH * ethPrice).toFixed(2)})`;
-                
-                // Update participants count
-                document.getElementById('participants').textContent = roundInfo.currentParticipants;
-                
-                // Update ticket price
-                const ticketPriceETH = 1 / ethPrice;
-                document.getElementById('ticket-price').textContent = `1.00 USD (~${ticketPriceETH.toFixed(6)} ETH)`;
-                
-                // Update user tickets if connected
-                if (account) {
-                    updateUserTickets();
-                }
-            } catch (error) {
-                console.error("Error updating round info:", error);
-                // Fallback to default values if contract call fails
-                document.getElementById('current-pool').textContent = "0.00 ETH";
-                document.getElementById('participants').textContent = "0";
-            }
-        }
-
-        async function updateUserTickets() {
-            if (!account || !lotteryContract) return;
-            
-            try {
-                const participants = await lotteryContract.methods.participants().call();
-                let userTickets = 0;
-                
-                for (const participant of participants) {
-                    if (participant.wallet.toLowerCase() === account.toLowerCase()) {
-                        userTickets += parseInt(participant.tickets);
-                    }
-                }
-                
-                document.getElementById('user-tickets').textContent = userTickets;
-                document.getElementById('neon-points').textContent = userTickets * 10;
-            } catch (error) {
-                console.error("Error updating user tickets:", error);
-            }
-        }
-
-        async function confirmPurchase() {
-            const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-            
-            if (!account) {
-                showNotification("Please connect your wallet first!", "error");
-                return;
-            }
-            
-            if (isNaN(ticketAmount) {
-                showNotification("Please enter a valid number of tickets!", "error");
-                return;
-            }
-            
-            try {
-                // Get current ETH price from contract
-                const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
-                const ethPrice = roundInfo.currentEthPrice / 1e18;
-                const totalCostETH = ticketAmount / ethPrice;
-                
-                // Округляем до 8 знаков после запятой и конвертируем в строку
-                const roundedCostETH = parseFloat(totalCostETH.toFixed(8)).toString();
-                
-                // Конвертируем в wei
-                const totalCostWei = web3.utils.toWei(roundedCostETH, 'ether');
-                
-                // Show loading state
-                const confirmBtn = document.getElementById('confirm-buy');
-                const originalText = confirmBtn.innerHTML;
-                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                confirmBtn.disabled = true;
-                
-                // Send transaction
-                await lotteryContract.methods.buyTickets(ticketAmount).send({
-                    from: account,
-                    value: totalCostWei
-                });
-                
-                showNotification("Tickets purchased successfully!");
-                document.getElementById('buy-modal').style.display = 'none';
-                updateRoundInfo();
-                
-                // Check for referral
-                const refCode = localStorage.getItem('neonLotteryRef');
-                if (refCode && refCode !== btoa(account).slice(0, 10)) {
-                    // In a real app, you would track referrals on your backend
-                    showNotification("🎉 You earned 100 bonus points from referral!", "success");
-                }
-                
-            } catch (error) {
-                console.error("Error buying tickets:", error);
-                showNotification(`Failed to buy tickets: ${error.message}`, "error");
-            } finally {
-                // Reset button state
-                const confirmBtn = document.getElementById('confirm-buy');
-                confirmBtn.innerHTML = originalText;
-                confirmBtn.disabled = false;
+                // Update user info
+                document.getElementById('user-tickets').textContent = "5";
+                document.getElementById('neon-points').textContent = "50";
+                document.getElementById('participants').textContent = "128";
+                document.getElementById('current-pool').textContent = "1.25 ETH (~$2500)";
             }
         }
 
         function copyInviteLink() {
             const shareUrl = account ? `${window.location.href}?ref=${referralCode}` : window.location.href;
-            copyToClipboard(shareUrl);
+            
+            // Create temporary input element
+            const tempInput = document.createElement('input');
+            tempInput.value = shareUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            
             showNotification("Invite link copied to clipboard!");
         }
 
@@ -1196,48 +969,45 @@
             const shareText = `🚀 Join Neon Lottery and win ETH prizes! 🎉\n\nBuy tickets for a chance to win daily ETH draws and earn Neon Points!\n\n👉 ${shareUrl}\n\n#NeonLottery #WinETH`;
             
             if (isWarpcast) {
-                // Use Warpcast API to create a post
-                window.parent.postMessage({
-                    type: 'frame-action',
-                    action: 'post',
-                    text: shareText
-                }, '*');
-                showNotification("Warpcast post created!");
+                // Simulate Warpcast post
+                showNotification("Post created on Warpcast!");
             } else {
-                // Fallback for regular browsers - open Warpcast with pre-filled text
+                // Open in new tab
                 window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`, '_blank');
                 showNotification("Opening Warpcast to create post...");
             }
         }
 
-        function copyToClipboard(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-        }
-
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'info' ? 'info-circle' : 'check-circle'}"></i><span>${message}</span>`;
+            
+            let iconClass;
+            if (type === 'error') {
+                iconClass = 'exclamation-circle';
+            } else if (type === 'info') {
+                iconClass = 'info-circle';
+            } else {
+                iconClass = 'check-circle';
+            }
+            
+            notification.innerHTML = `<i class="fas fa-${iconClass}"></i><span>${message}</span>`;
             document.body.appendChild(notification);
-            setTimeout(() => {
+            
+            setTimeout(function() {
                 notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
+                setTimeout(function() {
+                    notification.remove();
+                }, 300);
             }, 3000);
         }
 
-        async function showLeaderboard() {
+        function showLeaderboard() {
             try {
                 const leaderboardBody = document.getElementById('leaderboard-body');
-                leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+                leaderboardBody.innerHTML = '';
                 
-                document.getElementById('leaderboard-modal').style.display = 'flex';
-                
-                // Sample data - in a real app you would fetch this from the contract
+                // Sample leaderboard data
                 const topParticipants = [
                     { address: "0x1A6269Ae3d17723BF75774bC6f2b576D958CB587", tickets: 150, points: 1500 },
                     { address: "0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE", tickets: 120, points: 1200 },
@@ -1246,13 +1016,10 @@
                     { address: "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8", tickets: 60, points: 600 }
                 ];
                 
-                // Clear loading message
-                leaderboardBody.innerHTML = '';
-                
                 if (topParticipants.length === 0) {
                     leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No participants yet</td></tr>';
                 } else {
-                    topParticipants.forEach((participant, index) => {
+                    topParticipants.forEach(function(participant, index) {
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td class="rank">${index + 1}</td>
@@ -1263,20 +1030,20 @@
                         leaderboardBody.appendChild(row);
                     });
                 }
+                
+                document.getElementById('leaderboard-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
                 showNotification("Failed to load leaderboard", "error");
             }
         }
 
-        async function showHistory() {
+        function showHistory() {
             try {
                 const historyContent = document.getElementById('history-content');
-                historyContent.innerHTML = '<div style="text-align: center; padding: 1rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+                historyContent.innerHTML = '';
                 
-                document.getElementById('history-modal').style.display = 'flex';
-                
-                // Sample history data - in a real app you would fetch this from the contract
+                // Sample history data
                 const historyData = [
                     {
                         round: 5,
@@ -1311,7 +1078,7 @@
                 ];
                 
                 let historyHTML = '';
-                historyData.forEach(item => {
+                historyData.forEach(function(item) {
                     historyHTML += `
                         <div class="history-item">
                             <div class="history-item-date">Round #${item.round} - ${item.date.toLocaleDateString()}</div>
@@ -1324,15 +1091,16 @@
                 });
                 
                 historyContent.innerHTML = historyHTML;
+                document.getElementById('history-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading history:", error);
                 showNotification("Failed to load history", "error");
             }
         }
 
-        // Warpcast frame actions
+        // Warpcast frame actions simulation
         if (window.ethereum && window.ethereum.isMiniPay) {
-            window.addEventListener('message', async (event) => {
+            window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'frame-action') {
                     const buttonIndex = event.data.buttonIndex;
                     
