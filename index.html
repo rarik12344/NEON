@@ -713,6 +713,81 @@
         const SECONDS_PER_DAY = 86400;
         const UTC_HOUR = 16; // 4 PM UTC
 
+        // Contract ABI (Application Binary Interface)
+        const CONTRACT_ABI = [
+            {
+                "inputs": [],
+                "name": "currentRoundInfo",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "roundNumber",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentPrizePool",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentEthPrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentParticipants",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "endTime",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "participants",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "wallet",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "tickets",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct NeonLottery.Participant[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "ticketAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "buyTickets",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            }
+        ];
+
         // State variables
         let web3;
         let lotteryContract;
@@ -742,6 +817,17 @@
             
             // Initialize event handlers
             initEventHandlers();
+            
+            // Check if wallet is already connected
+            checkConnectedWallet();
+        }
+
+        async function checkConnectedWallet() {
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                account = window.ethereum.selectedAddress;
+                updateUI();
+                updateRoundInfo();
+            }
         }
 
         function initWeb3() {
@@ -751,6 +837,7 @@
             } else {
                 // Fallback provider if no wallet extension
                 web3 = new Web3(new Web3.providers.HttpProvider('https://cloudflare-eth.com'));
+                showNotification("Please install a Web3 wallet like MetaMask", "error");
             }
         }
 
@@ -758,6 +845,9 @@
             window.ethereum.on('accountsChanged', (accounts) => {
                 account = accounts[0] || null;
                 updateUI();
+                if (account) {
+                    updateRoundInfo();
+                }
             });
             
             window.ethereum.on('chainChanged', () => {
@@ -855,6 +945,15 @@
             // Share modal buttons
             document.getElementById('copy-link-btn').addEventListener('click', copyInviteLink);
             document.getElementById('warpcast-post-btn').addEventListener('click', createWarpcastPost);
+            
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
         }
 
         function calculateNextRoundEndTime() {
@@ -898,7 +997,12 @@
         function updateTicketCost() {
             try {
                 const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-                if (isNaN(ticketAmount) || ticketAmount < 1) {
+                if (isNaN(ticketAmount) {
+                    document.getElementById('ticket-amount').value = 1;
+                    return updateTicketCost();
+                }
+                
+                if (ticketAmount < 1) {
                     document.getElementById('ticket-amount').value = 1;
                     return updateTicketCost();
                 }
@@ -928,9 +1032,11 @@
                     return;
                 }
                 
+                // Request account access
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = accounts[0];
                 
+                // Update UI
                 document.getElementById('connect-modal').style.display = 'none';
                 updateUI();
                 showNotification("MetaMask connected successfully");
@@ -944,16 +1050,20 @@
                 updateRoundInfo();
             } catch (error) {
                 console.error("Error connecting MetaMask:", error);
-                showNotification("Failed to connect MetaMask", "error");
+                if (error.code === 4001) {
+                    showNotification("MetaMask connection rejected", "error");
+                } else {
+                    showNotification("Failed to connect MetaMask", "error");
+                }
             }
         }
 
         async function connectWalletConnect() {
-            showNotification("WalletConnect integration coming soon!", "error");
+            showNotification("WalletConnect integration coming soon!", "info");
         }
 
         async function connectCoinbase() {
-            showNotification("Coinbase Wallet integration coming soon!", "error");
+            showNotification("Coinbase Wallet integration coming soon!", "info");
         }
 
         function updateUI() {
@@ -991,6 +1101,8 @@
             } catch (error) {
                 console.error("Error updating round info:", error);
                 // Fallback to default values if contract call fails
+                document.getElementById('current-pool').textContent = "0.00 ETH";
+                document.getElementById('participants').textContent = "0";
             }
         }
 
@@ -1022,7 +1134,7 @@
                 return;
             }
             
-            if (isNaN(ticketAmount)) {
+            if (isNaN(ticketAmount) {
                 showNotification("Please enter a valid number of tickets!", "error");
                 return;
             }
@@ -1039,6 +1151,13 @@
                 // Конвертируем в wei
                 const totalCostWei = web3.utils.toWei(roundedCostETH, 'ether');
                 
+                // Show loading state
+                const confirmBtn = document.getElementById('confirm-buy');
+                const originalText = confirmBtn.innerHTML;
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                confirmBtn.disabled = true;
+                
+                // Send transaction
                 await lotteryContract.methods.buyTickets(ticketAmount).send({
                     from: account,
                     value: totalCostWei
@@ -1058,6 +1177,11 @@
             } catch (error) {
                 console.error("Error buying tickets:", error);
                 showNotification(`Failed to buy tickets: ${error.message}`, "error");
+            } finally {
+                // Reset button state
+                const confirmBtn = document.getElementById('confirm-buy');
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
             }
         }
 
@@ -1098,7 +1222,7 @@
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i><span>${message}</span>`;
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'info' ? 'info-circle' : 'check-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(notification);
             setTimeout(() => {
                 notification.style.opacity = '0';
@@ -1109,7 +1233,9 @@
         async function showLeaderboard() {
             try {
                 const leaderboardBody = document.getElementById('leaderboard-body');
-                leaderboardBody.innerHTML = '';
+                leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+                
+                document.getElementById('leaderboard-modal').style.display = 'flex';
                 
                 // Sample data - in a real app you would fetch this from the contract
                 const topParticipants = [
@@ -1119,6 +1245,9 @@
                     { address: "0x563b377A956c80d77A7c613a9343699Ad6123911", tickets: 75, points: 750 },
                     { address: "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8", tickets: 60, points: 600 }
                 ];
+                
+                // Clear loading message
+                leaderboardBody.innerHTML = '';
                 
                 if (topParticipants.length === 0) {
                     leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No participants yet</td></tr>';
@@ -1134,8 +1263,6 @@
                         leaderboardBody.appendChild(row);
                     });
                 }
-                
-                document.getElementById('leaderboard-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
                 showNotification("Failed to load leaderboard", "error");
@@ -1145,6 +1272,9 @@
         async function showHistory() {
             try {
                 const historyContent = document.getElementById('history-content');
+                historyContent.innerHTML = '<div style="text-align: center; padding: 1rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+                
+                document.getElementById('history-modal').style.display = 'flex';
                 
                 // Sample history data - in a real app you would fetch this from the contract
                 const historyData = [
@@ -1194,7 +1324,6 @@
                 });
                 
                 historyContent.innerHTML = historyHTML;
-                document.getElementById('history-modal').style.display = 'flex';
             } catch (error) {
                 console.error("Error loading history:", error);
                 showNotification("Failed to load history", "error");
@@ -1216,6 +1345,7 @@
                                 showNotification(`You have ${document.getElementById('neon-points').textContent} Neon Points`);
                             } else {
                                 showNotification("Please connect your wallet first", "error");
+                                document.getElementById('connect-modal').style.display = 'flex';
                             }
                             break;
                         case 3:
