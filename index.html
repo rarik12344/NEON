@@ -822,21 +822,169 @@
 
     <script>
         // Contract details (Base network)
-        const CONTRACT_ADDRESS = "0xa6fBCCDB7d4B2ADB8b6012E93BF3B2757aC8B157";
+        const CONTRACT_ADDRESS = "0x8ce1694dbce4d6445231e7f46b28599a4b4c4b91";
         const CONTRACT_ABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "_tickets",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "buyTickets",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "claimRefund",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "emergencyWithdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_additionalSeconds",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "extendRound",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "forceEndRound",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "forceStartRound",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_newWallet",
+                        "type": "address"
+                    }
+                ],
+                "name": "setFeeWallet",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_newPrice",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setTicketPriceETH",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
             {
                 "inputs": [],
                 "name": "currentRoundInfo",
                 "outputs": [
-                    {"internalType": "uint256","name": "startTime","type": "uint256"},
-                    {"internalType": "uint256","name": "endTime","type": "uint256"},
-                    {"internalType": "uint256","name": "currentPrizePool","type": "uint256"},
-                    {"internalType": "uint256","name": "currentParticipants","type": "uint256"},
-                    {"internalType": "uint256","name": "currentTickets","type": "uint256"},
-                    {"internalType": "uint256","name": "currentEthPrice","type": "uint256"},
-                    {"internalType": "bool","name": "active","type": "bool"},
-                    {"internalType": "uint256","name": "ethPerTicket","type": "uint256"},
-                    {"internalType": "uint256","name": "timeRemaining","type": "uint256"}
+                    {
+                        "internalType": "uint256",
+                        "name": "startTime",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "endTime",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentPrizePool",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentParticipants",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentTickets",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "currentTicketPrice",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "active",
+                        "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "ethPerTicket",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timeRemaining",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTicketCostETH",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getUserTickets",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
                 ],
                 "stateMutability": "view",
                 "type": "function"
@@ -847,37 +995,32 @@
                 "outputs": [
                     {
                         "components": [
-                            {"internalType": "address","name": "wallet","type": "address"},
-                            {"internalType": "uint32","name": "tickets","type": "uint32"},
-                            {"internalType": "uint64","name": "ticketFrom","type": "uint64"},
-                            {"internalType": "uint64","name": "ticketTo","type": "uint64"}
+                            {
+                                "internalType": "address",
+                                "name": "wallet",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "tickets",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint64",
+                                "name": "ticketFrom",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint64",
+                                "name": "ticketTo",
+                                "type": "uint64"
+                            }
                         ],
                         "internalType": "struct NeonLottery.Participant[]",
                         "name": "",
                         "type": "tuple[]"
                     }
                 ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [{"internalType": "uint32","name": "_tickets","type": "uint32"}],
-                "name": "buyTickets",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getEthPrice",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [{"internalType": "uint256","name": "_tickets","type": "uint256"}],
-                "name": "getTicketCostETH",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
                 "stateMutability": "view",
                 "type": "function"
             }
@@ -1437,16 +1580,8 @@
             if (!account || !lotteryContract) return;
             
             try {
-                lotteryContract.methods.participants().call()
-                    .then(function(participants) {
-                        let userTickets = 0;
-                        
-                        for (const participant of participants) {
-                            if (participant.wallet.toLowerCase() === account.toLowerCase()) {
-                                userTickets += parseInt(participant.tickets);
-                            }
-                        }
-                        
+                lotteryContract.methods.getUserTickets(account).call()
+                    .then(function(userTickets) {
                         if (document.getElementById('user-tickets')) {
                             document.getElementById('user-tickets').textContent = userTickets;
                             document.getElementById('neon-points').textContent = userTickets * POINTS_PER_TICKET;
@@ -1602,7 +1737,7 @@
                         if (participants.length === 0) {
                             leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 0.8rem;">No participants yet</td></tr>';
                         } else {
-                            participants.slice(0, 10).forEach((participant, index) => {
+                            participants.slice(0, 10).forEach((participant, index) {
                                 const row = document.createElement('tr');
                                 row.innerHTML = `
                                     <td class="rank">${index + 1}</td>
