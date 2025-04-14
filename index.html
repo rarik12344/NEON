@@ -1046,6 +1046,7 @@
         let walletConnectProvider = null;
         let referralCode = null;
         let currentRoundEndTime = calculateNextRoundEndTime();
+        let originalButtonText = '';
 
         // Initialize the app when page loads
         window.addEventListener('load', function() {
@@ -1611,7 +1612,7 @@
             try {
                 // Show loading state
                 const confirmBtn = document.getElementById('confirm-buy');
-                const originalText = confirmBtn.innerHTML;
+                originalButtonText = confirmBtn.innerHTML;
                 confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 confirmBtn.disabled = true;
                 
@@ -1648,8 +1649,10 @@
             } finally {
                 // Reset button state
                 const confirmBtn = document.getElementById('confirm-buy');
-                confirmBtn.innerHTML = originalText;
-                confirmBtn.disabled = false;
+                if (confirmBtn) {
+                    confirmBtn.innerHTML = originalButtonText;
+                    confirmBtn.disabled = false;
+                }
             }
         }
 
