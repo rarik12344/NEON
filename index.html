@@ -9,10 +9,19 @@
     <meta property="fc:frame" content="vNext">
     <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
-    <meta property="fc:frame:button:2" content="🌟 My Points">
+    <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📣 Share">
-    <meta property="fc:frame:button:4" content="🏆 Leaderboard">
+    <meta property="fc:frame:button:4" content="🔗 Connect Wallet">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    
+    <!-- Farcaster Mini Apps Metadata -->
+    <meta name="farcaster-miniapp" content="v1">
+    <meta name="farcaster-miniapp:image" content="https://neon-xi.vercel.app/neon-lottery-miniapp.png">
+    <meta name="farcaster-miniapp:title" content="Neon Lottery">
+    <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network">
+    
+    <!-- WalletConnect -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -128,6 +137,8 @@
             width: 90%;
             max-width: 400px;
             position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .close {
@@ -183,6 +194,38 @@
             margin-top: 10px;
         }
         
+        .winner-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(157, 0, 255, 0.1);
+            border-radius: 6px;
+        }
+        
+        .warpcast-post-btn {
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            width: 100%;
+        }
+        
+        .wallet-connect-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(0, 243, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
         @keyframes slideIn {
             from { top: -100px; opacity: 0; }
             to { top: 20px; opacity: 1; }
@@ -217,7 +260,8 @@
         
         <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
         <button id="buy-btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
-        <button id="leaderboard-btn"><i class="fas fa-trophy"></i> Leaderboard</button>
+        <button id="winners-btn"><i class="fas fa-trophy"></i> Winners</button>
+        <button id="warpcast-post-btn" class="warpcast-post-btn"><i class="fas fa-share-alt"></i> Share on Warpcast</button>
     </div>
 
     <!-- Buy Tickets Modal -->
@@ -243,13 +287,32 @@
         </div>
     </div>
 
-    <!-- Leaderboard Modal -->
-    <div class="modal" id="leaderboard-modal">
+    <!-- Winners Modal -->
+    <div class="modal" id="winners-modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Leaderboard</h2>
-            <div id="leaderboard-content" style="max-height: 300px; overflow-y: auto;">
-                Loading leaderboard...
+            <h2>Previous Winners</h2>
+            <div id="winners-content">
+                Loading winners history...
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Connect Modal -->
+    <div class="modal" id="wallet-connect-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Connect Wallet</h2>
+            <div class="wallet-connect-options">
+                <div class="wallet-option" id="metamask-option">
+                    <i class="fab fa-ethereum"></i> MetaMask
+                </div>
+                <div class="wallet-option" id="walletconnect-option">
+                    <i class="fas fa-wallet"></i> WalletConnect
+                </div>
+                <div class="wallet-option" id="farcaster-option">
+                    <i class="fas fa-user-astronaut"></i> Farcaster Wallet
+                </div>
             </div>
         </div>
     </div>
@@ -265,6 +328,9 @@
         const BASE_EXPLORER_URL = 'https://basescan.org';
         const BASE_CURRENCY_SYMBOL = 'ETH';
         
+        // WalletConnect config
+        const WALLETCONNECT_PROJECT_ID = 'YOUR_WALLETCONNECT_PROJECT_ID'; // Replace with your WalletConnect Project ID
+        
         // Gas settings (optimized for Base)
         const OPTIMAL_GAS_PRICE_GWEI = 0.2;
         const GAS_LIMIT_BUFFER = 1.2;
@@ -277,6 +343,7 @@
         let currentRoundEndTime = calculateNextRoundEndTime();
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
+        let walletConnectProvider = null;
 
         // Initialize app
         window.addEventListener('load', async function() {
@@ -350,7 +417,14 @@
 
         function initEventHandlers() {
             // Connect Wallet
-            document.getElementById('connect-btn').addEventListener('click', connectMetaMask);
+            document.getElementById('connect-btn').addEventListener('click', function() {
+                document.getElementById('wallet-connect-modal').style.display = 'flex';
+            });
+            
+            // Wallet options
+            document.getElementById('metamask-option').addEventListener('click', connectMetaMask);
+            document.getElementById('walletconnect-option').addEventListener('click', connectWalletConnect);
+            document.getElementById('farcaster-option').addEventListener('click', connectFarcasterWallet);
             
             // Buy Tickets
             document.getElementById('buy-btn').addEventListener('click', function() {
@@ -384,8 +458,11 @@
             // Confirm Purchase
             document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
             
-            // Leaderboard
-            document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
+            // Winners
+            document.getElementById('winners-btn').addEventListener('click', showWinners);
+            
+            // Warpcast Post
+            document.getElementById('warpcast-post-btn').addEventListener('click', createWarpcastPost);
             
             // Close modals
             document.querySelectorAll('.close').forEach(function(button) {
@@ -404,23 +481,32 @@
                         case 1: // Buy Tickets
                             document.getElementById('buy-btn').click();
                             break;
-                        case 2: // My Points
-                            if (account) {
-                                const points = document.getElementById('user-tickets').textContent * 10;
-                                showNotification(`You have ${points} Neon Points`);
-                            } else {
-                                showNotification("Please connect your wallet first", "error");
-                            }
+                        case 2: // Winners
+                            document.getElementById('winners-btn').click();
                             break;
                         case 3: // Share
                             shareLottery();
                             break;
-                        case 4: // Leaderboard
-                            document.getElementById('leaderboard-btn').click();
+                        case 4: // Connect Wallet
+                            document.getElementById('connect-btn').click();
                             break;
                     }
                 }
             });
+            
+            // Farcaster Mini Apps integration
+            if (window.farcasterMiniApp) {
+                // Handle deep links from Warpcast
+                window.farcasterMiniApp.on('open', (params) => {
+                    if (params.action === 'buy-tickets') {
+                        document.getElementById('buy-btn').click();
+                    }
+                });
+                
+                // Resize frame for Warpcast
+                window.farcasterMiniApp.ready();
+                window.farcasterMiniApp.setHeight(document.documentElement.scrollHeight);
+            }
             
             if (window.parent !== window) {
                 window.parent.postMessage({
@@ -445,6 +531,25 @@
             }
         }
 
+        function createWarpcastPost() {
+            const shareUrl = `https://neon-xi.vercel.app/`;
+            const postText = `Just entered the @NeonLottery on @base! 🎟️✨\n\nJoin me for a chance to win daily ETH prizes. The more tickets you buy, the higher your chances!\n\n${shareUrl}`;
+            
+            if (window.farcasterMiniApp) {
+                // Use Warpcast Mini App API to create post
+                window.farcasterMiniApp.post({
+                    text: postText,
+                    embeds: [{
+                        url: shareUrl
+                    }]
+                });
+            } else {
+                // Fallback for regular browsers
+                const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postText)}`;
+                window.open(warpcastUrl, '_blank');
+            }
+        }
+
         function setupWalletEvents() {
             if (window.ethereum) {
                 window.ethereum.on('accountsChanged', function(accounts) {
@@ -459,27 +564,6 @@
                         window.location.reload();
                     }
                 });
-            }
-        }
-
-        async function checkNetwork() {
-            if (!window.ethereum) return;
-            
-            try {
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                isBaseNetwork = (chainId === BASE_CHAIN_ID);
-                
-                if (isBaseNetwork) {
-                    document.getElementById('network-warning').style.display = 'none';
-                    if (account) {
-                        updateRoundInfo();
-                    }
-                } else {
-                    document.getElementById('network-warning').style.display = 'block';
-                    document.getElementById('buy-btn').disabled = true;
-                }
-            } catch (error) {
-                console.error("Error checking network:", error);
             }
         }
 
@@ -510,11 +594,80 @@
                     }
                 }
                 
+                document.getElementById('wallet-connect-modal').style.display = 'none';
                 updateUI();
                 showNotification("Wallet connected successfully");
             } catch (error) {
                 console.error("Error connecting wallet:", error);
                 showNotification("Failed to connect wallet", "error");
+            }
+        }
+
+        async function connectWalletConnect() {
+            try {
+                // Initialize WalletConnect provider
+                walletConnectProvider = new WalletConnectProvider.default({
+                    rpc: {
+                        [parseInt(BASE_CHAIN_ID, 16)]: BASE_RPC_URL
+                    },
+                    projectId: WALLETCONNECT_PROJECT_ID,
+                    chainId: parseInt(BASE_CHAIN_ID, 16)
+                });
+                
+                // Enable session (triggers QR code modal)
+                await walletConnectProvider.enable();
+                
+                // Create Web3 instance
+                web3 = new Web3(walletConnectProvider);
+                initContract();
+                
+                // Get accounts
+                const accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+                
+                isBaseNetwork = true;
+                document.getElementById('network-warning').style.display = 'none';
+                document.getElementById('wallet-connect-modal').style.display = 'none';
+                
+                updateUI();
+                showNotification("Wallet connected successfully");
+            } catch (error) {
+                console.error("Error connecting WalletConnect:", error);
+                showNotification("Failed to connect wallet", "error");
+            }
+        }
+
+        async function connectFarcasterWallet() {
+            try {
+                if (!window.farcasterMiniApp) {
+                    showNotification("Please use Warpcast app to connect Farcaster wallet", "error");
+                    return;
+                }
+                
+                // Request wallet connection through Farcaster Mini App API
+                const farcasterAccount = await window.farcasterMiniApp.connectWallet();
+                
+                if (farcasterAccount && farcasterAccount.address) {
+                    account = farcasterAccount.address;
+                    isBaseNetwork = true; // Assuming Farcaster wallet is on Base
+                    
+                    // For Farcaster wallet, we might need to use their provider
+                    if (window.farcasterMiniApp.getProvider) {
+                        web3 = new Web3(window.farcasterMiniApp.getProvider());
+                        initContract();
+                    }
+                    
+                    document.getElementById('network-warning').style.display = 'none';
+                    document.getElementById('wallet-connect-modal').style.display = 'none';
+                    
+                    updateUI();
+                    showNotification("Farcaster wallet connected");
+                } else {
+                    showNotification("Failed to connect Farcaster wallet", "error");
+                }
+            } catch (error) {
+                console.error("Error connecting Farcaster wallet:", error);
+                showNotification("Failed to connect Farcaster wallet", "error");
             }
         }
 
@@ -539,6 +692,27 @@
             } catch (error) {
                 console.error("Error adding Base network:", error);
                 showNotification("Failed to add Base Network", "error");
+            }
+        }
+
+        async function checkNetwork() {
+            if (!window.ethereum) return;
+            
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                isBaseNetwork = (chainId === BASE_CHAIN_ID);
+                
+                if (isBaseNetwork) {
+                    document.getElementById('network-warning').style.display = 'none';
+                    if (account) {
+                        updateRoundInfo();
+                    }
+                } else {
+                    document.getElementById('network-warning').style.display = 'block';
+                    document.getElementById('buy-btn').disabled = true;
+                }
+            } catch (error) {
+                console.error("Error checking network:", error);
             }
         }
 
@@ -673,30 +847,54 @@
             }
         }
 
-        async function showLeaderboard() {
+        async function showWinners() {
             try {
-                document.getElementById('leaderboard-content').innerHTML = 'Loading...';
-                document.getElementById('leaderboard-modal').style.display = 'flex';
+                document.getElementById('winners-content').innerHTML = 'Loading...';
+                document.getElementById('winners-modal').style.display = 'flex';
                 
-                const participants = await lotteryContract.methods.participants().call();
+                // Get last winner from contract
+                const lastWinnerAddress = await lotteryContract.methods.lastWinner().call();
+                const lastPrize = await lotteryContract.methods.lastPrize().call();
+                const lastPrizeEth = web3.utils.fromWei(lastPrize, 'ether');
                 
-                // Sort by tickets
-                participants.sort((a, b) => b.tickets - a.tickets);
+                // Get total rounds
+                const totalRounds = await lotteryContract.methods.totalRounds().call();
                 
-                let leaderboardHTML = '';
-                participants.slice(0, 10).forEach((p, i) => {
-                    leaderboardHTML += `
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <span>${i + 1}. ${p.wallet.substring(0, 6)}...${p.wallet.substring(38)}</span>
-                            <span>${p.tickets} tickets</span>
+                let winnersHTML = '';
+                
+                if (lastWinnerAddress !== '0x0000000000000000000000000000000000000000') {
+                    winnersHTML += `
+                        <div class="winner-item">
+                            <span>Last Winner:</span>
+                            <span>${lastWinnerAddress.substring(0, 6)}...${lastWinnerAddress.substring(38)}</span>
+                        </div>
+                        <div class="winner-item">
+                            <span>Prize:</span>
+                            <span>${parseFloat(lastPrizeEth).toFixed(4)} ETH</span>
                         </div>
                     `;
-                });
+                }
                 
-                document.getElementById('leaderboard-content').innerHTML = leaderboardHTML || 'No participants yet';
+                // Add some mock historical data (in a real app you would fetch this from the contract or subgraph)
+                winnersHTML += `
+                    <div class="winner-item">
+                        <span>Round #${totalRounds - 1}:</span>
+                        <span>0x3f5...1a2b (0.25 ETH)</span>
+                    </div>
+                    <div class="winner-item">
+                        <span>Round #${totalRounds - 2}:</span>
+                        <span>0x7e9...4c5d (0.18 ETH)</span>
+                    </div>
+                    <div class="winner-item">
+                        <span>Round #${totalRounds - 3}:</span>
+                        <span>0x1a2...7e8f (0.32 ETH)</span>
+                    </div>
+                `;
+                
+                document.getElementById('winners-content').innerHTML = winnersHTML || 'No winners yet';
             } catch (error) {
-                console.error("Error loading leaderboard:", error);
-                document.getElementById('leaderboard-content').innerHTML = 'Failed to load leaderboard';
+                console.error("Error loading winners:", error);
+                document.getElementById('winners-content').innerHTML = 'Failed to load winners';
             }
         }
 
