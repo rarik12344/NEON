@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Lottery | Base Network Only</title>
     
+    <!-- Farcaster Frame Metadata -->
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
+    <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
+    <meta property="fc:frame:button:2" content="🌟 My Points">
+    <meta property="fc:frame:button:3" content="📣 Share">
+    <meta property="fc:frame:button:4" content="🏆 Leaderboard">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -119,8 +128,6 @@
             width: 90%;
             max-width: 400px;
             position: relative;
-            max-height: 80vh;
-            overflow-y: auto;
         }
         
         .close {
@@ -176,13 +183,6 @@
             margin-top: 10px;
         }
         
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
         @keyframes slideIn {
             from { top: -100px; opacity: 0; }
             to { top: 20px; opacity: 1; }
@@ -198,7 +198,7 @@
         </div>
         
         <div class="timer" id="countdown">00:00:00</div>
-        <div id="round-status">Round Active - Ends at <span id="round-end-time">16:00</span> UTC</div>
+        <div id="round-status">Round Active - Ends at 16:00 UTC</div>
         
         <div class="info-item">
             <span>Ticket Price:</span>
@@ -217,9 +217,7 @@
         
         <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
         <button id="buy-btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
-        <button id="history-btn"><i class="fas fa-history"></i> My History</button>
-        <button id="winners-btn"><i class="fas fa-trophy"></i> Winners</button>
-        <button id="share-btn"><i class="fas fa-share"></i> Share</button>
+        <button id="leaderboard-btn"><i class="fas fa-trophy"></i> Leaderboard</button>
     </div>
 
     <!-- Buy Tickets Modal -->
@@ -245,24 +243,13 @@
         </div>
     </div>
 
-    <!-- History Modal -->
-    <div class="modal" id="history-modal">
+    <!-- Leaderboard Modal -->
+    <div class="modal" id="leaderboard-modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Purchase History</h2>
-            <div id="history-content" style="max-height: 300px; overflow-y: auto;">
-                Loading history...
-            </div>
-        </div>
-    </div>
-
-    <!-- Winners Modal -->
-    <div class="modal" id="winners-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Recent Winners</h2>
-            <div id="winners-content" style="max-height: 300px; overflow-y: auto;">
-                Loading winners...
+            <h2>Leaderboard</h2>
+            <div id="leaderboard-content" style="max-height: 300px; overflow-y: auto;">
+                Loading leaderboard...
             </div>
         </div>
     </div>
@@ -270,7 +257,7 @@
     <script>
         // Contract details
         const CONTRACT_ADDRESS = "0x8ce1694dbce4d6445231e7f46b28599a4b4c4b91";
-        const CONTRACT_ABI = [/* ... (ABI контракта остается без изменений) ... */];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"FeeWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PendingRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RefundClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"TicketPriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_GAS_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRefund","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentTicketPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getPendingRefund","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingRefunds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPriceETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
         
         // Network config
         const BASE_CHAIN_ID = '0x2105';
@@ -287,20 +274,18 @@
         let web3;
         let lotteryContract;
         let account = null;
-        let currentRoundEndTime = 0;
+        let currentRoundEndTime = calculateNextRoundEndTime();
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
-        let purchaseHistory = [];
-        let winnersHistory = [];
 
         // Initialize app
         window.addEventListener('load', async function() {
             await initWeb3();
             initContract();
-            await initRoundInfo();
             startCountdown();
             initEventHandlers();
             await checkConnectedWallet();
+            initFrameHandlers();
             await updateEthPrice();
         });
 
@@ -317,28 +302,14 @@
             lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
         }
 
-        async function initRoundInfo() {
+        async function updateEthPrice() {
             try {
-                const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
-                currentRoundEndTime = parseInt(roundInfo.endTime);
-                updateRoundEndTimeDisplay();
-                
-                // Update pool info
-                const prizePoolEth = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
-                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                const data = await response.json();
+                ethPriceUSD = data.ethereum.usd;
             } catch (error) {
-                console.error("Error initializing round info:", error);
-                // Fallback to default end time if contract call fails
-                currentRoundEndTime = calculateNextRoundEndTime();
-                updateRoundEndTimeDisplay();
+                console.error("Failed to fetch ETH price, using default:", error);
             }
-        }
-
-        function updateRoundEndTimeDisplay() {
-            const endTime = new Date(currentRoundEndTime * 1000);
-            const hours = endTime.getUTCHours().toString().padStart(2, '0');
-            const minutes = endTime.getUTCMinutes().toString().padStart(2, '0');
-            document.getElementById('round-end-time').textContent = `${hours}:${minutes}`;
         }
 
         function calculateNextRoundEndTime() {
@@ -366,7 +337,6 @@
                 document.getElementById('countdown').textContent = "00:00:00";
                 document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
                 currentRoundEndTime = calculateNextRoundEndTime();
-                updateRoundEndTimeDisplay();
                 return;
             }
             
@@ -414,14 +384,8 @@
             // Confirm Purchase
             document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
             
-            // History
-            document.getElementById('history-btn').addEventListener('click', showHistory);
-            
-            // Winners
-            document.getElementById('winners-btn').addEventListener('click', showWinners);
-            
-            // Share
-            document.getElementById('share-btn').addEventListener('click', shareOnWarpcast);
+            // Leaderboard
+            document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
             
             // Close modals
             document.querySelectorAll('.close').forEach(function(button) {
@@ -431,14 +395,54 @@
             });
         }
 
-        function shareOnWarpcast() {
-            const shareText = `Join Neon Lottery on Base Network! 🎉\n\nBuy tickets for a chance to win daily ETH prizes.\n\n@neonlottery #BaseNetwork #ETH\n\n${window.location.href}`;
+        function initFrameHandlers() {
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'frame-action') {
+                    const buttonIndex = event.data.buttonIndex;
+                    
+                    switch(buttonIndex) {
+                        case 1: // Buy Tickets
+                            document.getElementById('buy-btn').click();
+                            break;
+                        case 2: // My Points
+                            if (account) {
+                                const points = document.getElementById('user-tickets').textContent * 10;
+                                showNotification(`You have ${points} Neon Points`);
+                            } else {
+                                showNotification("Please connect your wallet first", "error");
+                            }
+                            break;
+                        case 3: // Share
+                            shareLottery();
+                            break;
+                        case 4: // Leaderboard
+                            document.getElementById('leaderboard-btn').click();
+                            break;
+                    }
+                }
+            });
             
-            // Create Warpcast share URL
-            const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'frame-resize',
+                    height: document.documentElement.scrollHeight
+                }, '*');
+            }
+        }
+
+        function shareLottery() {
+            const shareUrl = `https://neon-xi.vercel.app/`;
+            const shareText = `Join Neon Lottery on Base Network and win ETH prizes! 🎉\nBuy tickets for a chance to win daily ETH draws\n${shareUrl}`;
             
-            // Open in new tab
-            window.open(warpcastUrl, '_blank');
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Neon Lottery',
+                    text: shareText,
+                    url: shareUrl
+                });
+            } else {
+                prompt("Copy this link to share:", shareUrl);
+            }
         }
 
         function setupWalletEvents() {
@@ -469,8 +473,6 @@
                     document.getElementById('network-warning').style.display = 'none';
                     if (account) {
                         updateRoundInfo();
-                        loadPurchaseHistory();
-                        loadWinnersHistory();
                     }
                 } else {
                     document.getElementById('network-warning').style.display = 'block';
@@ -629,24 +631,6 @@
                     gasPrice: gasPriceWei
                 });
                 
-                // Add to purchase history
-                const txHash = tx.transactionHash;
-                const txLink = `${BASE_EXPLORER_URL}/tx/${txHash}`;
-                const timestamp = new Date().toLocaleString();
-                const ticketsBought = ticketAmount;
-                const ethSpent = web3.utils.fromWei(costWei, 'ether');
-                
-                purchaseHistory.unshift({
-                    txHash,
-                    txLink,
-                    timestamp,
-                    ticketsBought,
-                    ethSpent
-                });
-                
-                // Save to localStorage
-                localStorage.setItem('purchaseHistory', JSON.stringify(purchaseHistory));
-                
                 // Show actual fee
                 const gasUsedEth = web3.utils.fromWei(
                     (tx.gasUsed * tx.effectiveGasPrice).toString(),
@@ -676,7 +660,6 @@
             try {
                 const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
-                updateRoundEndTimeDisplay();
                 
                 // Update pool info
                 const prizePoolEth = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
@@ -690,89 +673,30 @@
             }
         }
 
-        function loadPurchaseHistory() {
-            const savedHistory = localStorage.getItem('purchaseHistory');
-            if (savedHistory) {
-                purchaseHistory = JSON.parse(savedHistory);
-            }
-        }
-
-        function showHistory() {
-            if (!account) {
-                showNotification("Please connect your wallet first", "error");
-                return;
-            }
-            
-            document.getElementById('history-content').innerHTML = 'Loading...';
-            document.getElementById('history-modal').style.display = 'flex';
-            
-            if (purchaseHistory.length === 0) {
-                document.getElementById('history-content').innerHTML = 'No purchase history yet';
-                return;
-            }
-            
-            let historyHTML = '';
-            purchaseHistory.forEach((item, index) => {
-                historyHTML += `
-                    <div class="history-item">
-                        <div>
-                            <div><strong>${item.timestamp}</strong></div>
-                            <div>${item.ticketsBought} tickets for ${item.ethSpent} ETH</div>
-                            <div><a href="${item.txLink}" target="_blank" style="color: var(--neon-blue);">View transaction</a></div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            document.getElementById('history-content').innerHTML = historyHTML;
-        }
-
-        async function loadWinnersHistory() {
+        async function showLeaderboard() {
             try {
-                // This is a mock - in a real app you would fetch from contract
-                winnersHistory = [
-                    { winner: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", prize: "0.5 ETH", round: 1 },
-                    { winner: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", prize: "0.3 ETH", round: 2 },
-                    { winner: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", prize: "0.7 ETH", round: 3 }
-                ];
-            } catch (error) {
-                console.error("Error loading winners:", error);
-            }
-        }
-
-        function showWinners() {
-            document.getElementById('winners-content').innerHTML = 'Loading...';
-            document.getElementById('winners-modal').style.display = 'flex';
-            
-            if (winnersHistory.length === 0) {
-                document.getElementById('winners-content').innerHTML = 'No winners yet';
-                return;
-            }
-            
-            let winnersHTML = '';
-            winnersHistory.forEach((winner, index) => {
-                const shortAddress = `${winner.winner.substring(0, 6)}...${winner.winner.substring(38)}`;
-                winnersHTML += `
-                    <div class="history-item">
-                        <div>
-                            <div><strong>Round ${winner.round}</strong></div>
-                            <div>Winner: ${shortAddress}</div>
-                            <div>Prize: ${winner.prize}</div>
+                document.getElementById('leaderboard-content').innerHTML = 'Loading...';
+                document.getElementById('leaderboard-modal').style.display = 'flex';
+                
+                const participants = await lotteryContract.methods.participants().call();
+                
+                // Sort by tickets
+                participants.sort((a, b) => b.tickets - a.tickets);
+                
+                let leaderboardHTML = '';
+                participants.slice(0, 10).forEach((p, i) => {
+                    leaderboardHTML += `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <span>${i + 1}. ${p.wallet.substring(0, 6)}...${p.wallet.substring(38)}</span>
+                            <span>${p.tickets} tickets</span>
                         </div>
-                    </div>
-                `;
-            });
-            
-            document.getElementById('winners-content').innerHTML = winnersHTML;
-        }
-
-        async function updateEthPrice() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-                const data = await response.json();
-                ethPriceUSD = data.ethereum.usd;
+                    `;
+                });
+                
+                document.getElementById('leaderboard-content').innerHTML = leaderboardHTML || 'No participants yet';
             } catch (error) {
-                console.error("Failed to fetch ETH price, using default:", error);
+                console.error("Error loading leaderboard:", error);
+                document.getElementById('leaderboard-content').innerHTML = 'Failed to load leaderboard';
             }
         }
 
