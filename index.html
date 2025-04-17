@@ -1,81 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Lottery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Lottery | Farcaster Mini App</title>
+    
+    <!-- Farcaster Frame Metadata -->
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
+    <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
+    <meta property="fc:frame:button:2" content="🌟 My Points">
+    <meta property="fc:frame:button:3" content="📣 Share">
+    <meta property="fc:frame:button:4" content="🏆 Leaderboard">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    
+    <!-- OpenGraph Metadata -->
+    <meta property="og:image" content="https://neon-xi.vercel.app/neon-lottery-share.png">
+    <meta property="og:title" content="Neon Lottery - Win ETH!">
+    <meta property="og:description" content="Buy tickets, win prizes and earn Neon Points!">
+    
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Web3 Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    
     <style>
         :root {
             --neon-blue: #00f3ff;
             --neon-pink: #ff00ff;
+            --neon-purple: #9d00ff;
+            --neon-green: #00ff9d;
+            --neon-yellow: #fff700;
             --dark-bg: #0f0f1a;
             --card-bg: rgba(15, 15, 26, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 10px;
             background: var(--dark-bg);
             color: var(--text-primary);
-            margin: 0;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            overflow: auto;
+            position: relative;
+            touch-action: manipulation;
+        }
+        
+        .neon-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .neon-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.25;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .circle-1 { background: var(--neon-blue); width: 200px; height: 200px; top: 10%; left: 5%; }
+        .circle-2 { background: var(--neon-pink); width: 250px; height: 250px; bottom: 10%; right: 5%; animation-delay: 3s; }
+        .circle-3 { background: var(--neon-purple); width: 180px; height: 180px; top: 50%; left: 20%; animation-delay: 6s; }
+        .circle-4 { background: var(--neon-yellow); width: 150px; height: 150px; top: 20%; right: 15%; animation-delay: 9s; }
+        .circle-5 { background: var(--neon-green); width: 220px; height: 220px; bottom: 15%; left: 10%; animation-delay: 12s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(30px, 30px); }
+            50% { transform: translate(-20px, 50px); }
+            75% { transform: translate(30px, -20px); }
         }
         
         .container {
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 12px;
-            padding: 20px;
-            width: 100%;
-            max-width: 450px;
+            padding: 1rem;
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            border: 1px solid var(--glass-border);
+            max-width: 450px;
+            width: calc(100% - 20px);
             text-align: center;
+            margin: 0.5rem auto;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
         
         h1 {
-            color: var(--neon-blue);
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
+            margin: 0 0 0.8rem;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .points-display {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--neon-yellow);
+            border-radius: 8px;
+            padding: 0.7rem;
+            margin: 0.4rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .timer {
-            font-size: 2rem;
-            margin: 20px 0;
-            color: var(--neon-pink);
+            font-size: 1.5rem;
             font-weight: bold;
+            margin: 0.2rem 0;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .pool-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin: 0.8rem 0;
+            border-left: 3px solid var(--neon-blue);
+            text-align: left;
         }
         
         .info-item {
+            margin: 0.6rem 0;
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin: 0.8rem 0;
         }
         
         button {
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
             border: none;
-            color: white;
-            padding: 12px 20px;
+            padding: 0.7rem 0.8rem;
             border-radius: 8px;
-            font-weight: bold;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
-            margin: 10px 5px;
-            width: calc(50% - 10px);
-            font-size: 0.9rem;
+            min-width: 120px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex: 1 1 calc(50% - 5px);
+            max-width: calc(50% - 5px);
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
         }
         
         button:disabled {
             background: #555;
             cursor: not-allowed;
+            transform: none !important;
         }
         
         .modal {
@@ -85,99 +201,167 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            padding: 10px;
         }
         
         .modal-content {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 1.2rem;
             border-radius: 12px;
-            width: 90%;
             max-width: 400px;
+            width: calc(100% - 20px);
+            text-align: center;
             position: relative;
+            animation: modalFadeIn 0.3s ease-out;
         }
         
-        .close {
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close-modal {
             position: absolute;
             top: 10px;
             right: 10px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             cursor: pointer;
+            color: var(--neon-pink);
         }
         
-        .wallet-btn {
+        .ticket-input {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            cursor: pointer;
+            gap: 6px;
+            margin: 0.6rem 0;
+        }
+        
+        .ticket-input input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--neon-blue);
+            color: white;
+            text-align: center;
+            width: 45px;
+            padding: 0.3rem;
+            border-radius: 5px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
+            border: 1px solid var(--neon-blue);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease-out;
+            max-width: 90%;
+        }
+        
+        .notification.error {
+            border-color: var(--neon-pink);
+        }
+        
+        @keyframes slideIn {
+            from { top: -50px; opacity: 0; }
+            to { top: 15px; opacity: 1; }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 0.8rem;
+            }
+            
+            button {
+                padding: 0.6rem;
+                min-width: calc(50% - 5px);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="neon-bg">
+        <div class="neon-circle circle-1"></div>
+        <div class="neon-circle circle-2"></div>
+        <div class="neon-circle circle-3"></div>
+        <div class="neon-circle circle-4"></div>
+        <div class="neon-circle circle-5"></div>
+    </div>
+    
+    <div class="container" id="main-container">
         <h1>✨ NEON LOTTERY ✨</h1>
         
-        <div class="timer" id="countdown">00:00:00</div>
-        <div id="round-status">Round Active - Ends at 16:00 UTC</div>
-        
-        <div class="info-item">
-            <span>Ticket Price:</span>
-            <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
-        </div>
-        
-        <div class="info-item">
-            <span>Current Pool:</span>
-            <span id="current-pool">0.00 ETH</span>
-        </div>
-        
-        <div class="info-item">
-            <span>Your Tickets:</span>
-            <span id="user-tickets">0</span>
-        </div>
-        
-        <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
-        <button id="buy-btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
-        <button id="leaderboard-btn"><i class="fas fa-trophy"></i> Leaderboard</button>
-        <button id="help-btn"><i class="fas fa-question-circle"></i> Help</button>
-    </div>
-
-    <!-- Connect Wallet Modal -->
-    <div class="modal" id="connect-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Connect Wallet</h2>
-            <div class="wallet-btn" id="metamask-btn">
-                <i class="fab fa-metamask"></i> MetaMask
+        <div class="points-display">
+            <div>
+                <i class="fas fa-coins"></i>
+                <span>Your Points:</span>
             </div>
-            <div class="wallet-btn" id="walletconnect-btn">
-                <i class="fas fa-wallet"></i> WalletConnect
+            <div id="neon-points">0</div>
+        </div>
+        
+        <div>
+            <div class="timer" id="countdown">00:00:00</div>
+            <div id="round-status">Round Active - Ends at 16:00 UTC</div>
+        </div>
+        
+        <div class="pool-info">
+            <div class="info-item">
+                <span>Ticket Price:</span>
+                <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
             </div>
+            <div class="info-item">
+                <span>Current Pool:</span>
+                <span id="current-pool">0.00 ETH</span>
+            </div>
+            <div class="info-item">
+                <span>Participants:</span>
+                <span id="participants">0</span>
+            </div>
+            <div class="info-item">
+                <span>Your Tickets:</span>
+                <span id="user-tickets">0</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
+            <button id="buy-btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
+            <button id="leaderboard-btn"><i class="fas fa-trophy"></i> Leaderboard</button>
+            <button id="help-btn"><i class="fas fa-question-circle"></i> Help</button>
         </div>
     </div>
 
     <!-- Buy Tickets Modal -->
     <div class="modal" id="buy-modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close-modal">&times;</span>
             <h2>Buy Tickets</h2>
-            <div style="margin: 20px 0;">
+            <div class="ticket-input">
                 <button id="decrement-ticket">-</button>
-                <input type="number" id="ticket-amount" value="1" min="1" max="100" style="width: 60px; text-align: center; padding: 10px;">
+                <input type="number" id="ticket-amount" value="1" min="1" max="100">
                 <button id="increment-ticket">+</button>
             </div>
-            <div class="info-item">
-                <span>Total Cost:</span>
-                <span id="total-cost">0 ETH</span>
+            <div style="margin: 1rem 0;">
+                <div class="info-item">
+                    <span>Total Cost:</span>
+                    <span id="total-cost">0 ETH</span>
+                </div>
+                <div class="info-item">
+                    <span>You'll Earn:</span>
+                    <span id="points-earned">0 Points</span>
+                </div>
             </div>
-            <button id="confirm-buy" style="width: 100%; margin-top: 20px;">
+            <button id="confirm-buy" style="width: 100%;">
                 <i class="fas fa-shopping-cart"></i> Confirm Purchase
             </button>
         </div>
@@ -186,7 +370,7 @@
     <!-- Leaderboard Modal -->
     <div class="modal" id="leaderboard-modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close-modal">&times;</span>
             <h2>Leaderboard</h2>
             <div id="leaderboard-content" style="max-height: 300px; overflow-y: auto;">
                 Loading leaderboard...
@@ -197,175 +381,394 @@
     <!-- Help Modal -->
     <div class="modal" id="help-modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close-modal">&times;</span>
             <h2>How It Works</h2>
-            <p>1. Buy tickets for a chance to win ETH prizes</p>
-            <p>2. Daily draws at 16:00 UTC</p>
-            <p>3. Winner gets 80% of the prize pool</p>
-            <p>4. Earn points for each ticket purchased</p>
+            <div style="text-align: left;">
+                <p><strong>1. Buy Tickets:</strong> Each ticket gives you a chance to win the prize pool.</p>
+                <p><strong>2. Daily Draw:</strong> Winner is selected every day at 16:00 UTC.</p>
+                <p><strong>3. Win ETH:</strong> 80% of the pool goes to the winner, 20% is platform fee.</p>
+                <p><strong>4. Earn Points:</strong> Get 10 points per ticket for future rewards.</p>
+            </div>
         </div>
     </div>
 
     <script>
-        // Simplified implementation
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM elements
-            const countdownEl = document.getElementById('countdown');
-            const connectBtn = document.getElementById('connect-btn');
-            const buyBtn = document.getElementById('buy-btn');
-            const leaderboardBtn = document.getElementById('leaderboard-btn');
-            const helpBtn = document.getElementById('help-btn');
-            const connectModal = document.getElementById('connect-modal');
-            const buyModal = document.getElementById('buy-modal');
-            const leaderboardModal = document.getElementById('leaderboard-modal');
-            const helpModal = document.getElementById('help-modal');
-            const closeButtons = document.querySelectorAll('.close');
-            const metamaskBtn = document.getElementById('metamask-btn');
-            const walletConnectBtn = document.getElementById('walletconnect-btn');
-            const ticketAmountInput = document.getElementById('ticket-amount');
-            const decrementBtn = document.getElementById('decrement-ticket');
-            const incrementBtn = document.getElementById('increment-ticket');
-            const totalCostEl = document.getElementById('total-cost');
-            const confirmBuyBtn = document.getElementById('confirm-buy');
-            
-            // State
-            let account = null;
-            let web3 = null;
-            let currentRoundEndTime = calculateNextRoundEndTime();
-            
-            // Initialize
-            initEventListeners();
+        // Contract details
+        const CONTRACT_ADDRESS = "0x8ce1694dbce4d6445231e7f46b28599a4b4c4b91";
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"FeeWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PendingRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RefundClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"TicketPriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_GAS_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRefund","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentTicketPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getPendingRefund","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingRefunds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPriceETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
+        
+        // Base Network
+        const BASE_CHAIN_ID = '0x2105';
+        const BASE_RPC_URL = 'https://mainnet.base.org';
+        
+        // Constants
+        const POINTS_PER_TICKET = 10;
+        const UTC_HOUR = 16; // 4 PM UTC
+        
+        // State
+        let web3;
+        let lotteryContract;
+        let account = null;
+        let currentRoundEndTime = calculateNextRoundEndTime();
+        
+        // Initialize
+        window.addEventListener('load', function() {
+            initWeb3();
+            initContract();
             startCountdown();
+            initEventHandlers();
+            checkConnectedWallet();
+            initFrameHandlers();
+        });
+
+        function initWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                setupWalletEvents();
+            } else {
+                web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
+            }
+        }
+
+        function initContract() {
+            lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        }
+
+        function calculateNextRoundEndTime() {
+            const now = new Date();
+            const endTime = new Date(now);
+            endTime.setUTCHours(UTC_HOUR, 0, 0, 0);
             
-            // Functions
-            function calculateNextRoundEndTime() {
-                const now = new Date();
-                const endTime = new Date(now);
-                
-                // Set to today 16:00 UTC
-                endTime.setUTCHours(16, 0, 0, 0);
-                
-                // If current time is past 16:00 UTC, set to tomorrow
-                if (now.getTime() > endTime.getTime()) {
-                    endTime.setUTCDate(endTime.getUTCDate() + 1);
+            if (now.getTime() > endTime.getTime()) {
+                endTime.setUTCDate(endTime.getUTCDate() + 1);
+            }
+            
+            return Math.floor(endTime.getTime() / 1000);
+        }
+
+        function startCountdown() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            const now = Math.floor(Date.now() / 1000);
+            const distance = currentRoundEndTime - now;
+            
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = "00:00:00";
+                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
+                currentRoundEndTime = calculateNextRoundEndTime();
+                return;
+            }
+            
+            const hours = Math.floor(distance / 3600);
+            const minutes = Math.floor((distance % 3600) / 60);
+            const seconds = Math.floor(distance % 60);
+            
+            document.getElementById('countdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function initEventHandlers() {
+            // Connect Wallet
+            document.getElementById('connect-btn').addEventListener('click', function() {
+                if (window.ethereum) {
+                    connectMetaMask();
+                } else {
+                    showNotification("Please install MetaMask!", "error");
                 }
-                
-                return Math.floor(endTime.getTime() / 1000);
-            }
+            });
             
-            function startCountdown() {
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            }
-            
-            function updateCountdown() {
-                const now = Math.floor(Date.now() / 1000);
-                const distance = currentRoundEndTime - now;
-                
-                if (distance < 0) {
-                    countdownEl.textContent = "00:00:00";
-                    document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
-                    currentRoundEndTime = calculateNextRoundEndTime();
+            // Buy Tickets
+            document.getElementById('buy-btn').addEventListener('click', function() {
+                if (!account) {
+                    showNotification("Please connect your wallet first!", "error");
                     return;
                 }
-                
-                const hours = Math.floor(distance / 3600);
-                const minutes = Math.floor((distance % 3600) / 60);
-                const seconds = Math.floor(distance % 60);
-                
-                countdownEl.textContent = 
-                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
+                document.getElementById('buy-modal').style.display = 'flex';
+                updateTicketCost();
+            });
             
-            function initEventListeners() {
-                // Button clicks
-                connectBtn.addEventListener('click', () => connectModal.style.display = 'flex');
-                buyBtn.addEventListener('click', () => {
-                    if (!account) {
-                        alert('Please connect your wallet first');
-                        connectModal.style.display = 'flex';
-                        return;
-                    }
-                    buyModal.style.display = 'flex';
-                });
-                leaderboardBtn.addEventListener('click', () => leaderboardModal.style.display = 'flex');
-                helpBtn.addEventListener('click', () => helpModal.style.display = 'flex');
-                
-                // Close modals
-                closeButtons.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        this.closest('.modal').style.display = 'none';
-                    });
-                });
-                
-                // Ticket amount controls
-                decrementBtn.addEventListener('click', () => {
-                    const value = parseInt(ticketAmountInput.value);
-                    if (value > 1) ticketAmountInput.value = value - 1;
-                    updateTicketCost();
-                });
-                
-                incrementBtn.addEventListener('click', () => {
-                    const value = parseInt(ticketAmountInput.value);
-                    if (value < 100) ticketAmountInput.value = value + 1;
-                    updateTicketCost();
-                });
-                
-                ticketAmountInput.addEventListener('input', updateTicketCost);
-                
-                // Wallet connection
-                metamaskBtn.addEventListener('click', connectMetaMask);
-                walletConnectBtn.addEventListener('click', connectWalletConnect);
-                
-                // Confirm purchase
-                confirmBuyBtn.addEventListener('click', () => {
-                    alert('Purchase functionality would be implemented here');
-                    buyModal.style.display = 'none';
-                });
-            }
+            // Ticket controls
+            document.getElementById('decrement-ticket').addEventListener('click', function() {
+                const input = document.getElementById('ticket-amount');
+                if (input.value > 1) input.value = parseInt(input.value) - 1;
+                updateTicketCost();
+            });
             
-            function updateTicketCost() {
-                const tickets = parseInt(ticketAmountInput.value) || 1;
-                const cost = tickets * 0.0005; // Example ETH price
-                totalCostEl.textContent = `${cost.toFixed(4)} ETH (~$${tickets.toFixed(2)})`;
-            }
+            document.getElementById('increment-ticket').addEventListener('click', function() {
+                const input = document.getElementById('ticket-amount');
+                if (input.value < 100) input.value = parseInt(input.value) + 1;
+                updateTicketCost();
+            });
             
-            async function connectMetaMask() {
-                try {
-                    if (!window.ethereum) {
-                        alert('MetaMask is not installed. Please install it first.');
-                        return;
-                    }
+            document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
+            
+            // Confirm Purchase
+            document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
+            
+            // Other buttons
+            document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
+            document.getElementById('help-btn').addEventListener('click', function() {
+                document.getElementById('help-modal').style.display = 'flex';
+            });
+            
+            // Close modals
+            document.querySelectorAll('.close-modal').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+        }
+
+        function initFrameHandlers() {
+            // Handle frame actions from Warpcast
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'frame-action') {
+                    const buttonIndex = event.data.buttonIndex;
                     
-                    web3 = new Web3(window.ethereum);
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    
-                    account = accounts[0];
+                    switch(buttonIndex) {
+                        case 1: // Buy Tickets
+                            document.getElementById('buy-btn').click();
+                            break;
+                        case 2: // My Points
+                            if (account) {
+                                const points = document.getElementById('neon-points').textContent;
+                                showNotification(`You have ${points} Neon Points`);
+                            } else {
+                                showNotification("Please connect your wallet first", "error");
+                            }
+                            break;
+                        case 3: // Share
+                            shareLottery();
+                            break;
+                        case 4: // Leaderboard
+                            document.getElementById('leaderboard-btn').click();
+                            break;
+                    }
+                }
+            });
+            
+            // Notify parent frame about resize
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'frame-resize',
+                    height: document.documentElement.scrollHeight
+                }, '*');
+            }
+        }
+
+        function shareLottery() {
+            const shareUrl = `https://neon-xi.vercel.app/`;
+            const shareText = `Join Neon Lottery and win ETH prizes! 🎉\nBuy tickets for a chance to win daily ETH draws\n${shareUrl}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Neon Lottery',
+                    text: shareText,
+                    url: shareUrl
+                });
+            } else {
+                prompt("Copy this link to share:", shareUrl);
+            }
+        }
+
+        function setupWalletEvents() {
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', function(accounts) {
+                    account = accounts[0] || null;
                     updateUI();
-                    connectModal.style.display = 'none';
-                    
-                    alert(`Connected: ${account.substring(0, 6)}...${account.substring(38)}`);
-                } catch (error) {
-                    console.error('Error connecting MetaMask:', error);
-                    alert('Failed to connect MetaMask');
+                    if (account) updateRoundInfo();
+                });
+                
+                window.ethereum.on('chainChanged', function(chainId) {
+                    if (chainId !== BASE_CHAIN_ID) {
+                        showNotification("Please switch to Base network", "error");
+                    } else {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        async function connectMetaMask() {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                account = accounts[0];
+                
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (chainId !== BASE_CHAIN_ID) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: BASE_CHAIN_ID }],
+                        });
+                    } catch (error) {
+                        if (error.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: BASE_CHAIN_ID,
+                                    chainName: 'Base Mainnet',
+                                    nativeCurrency: {
+                                        name: 'Ether',
+                                        symbol: 'ETH',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: [BASE_RPC_URL],
+                                    blockExplorerUrls: ['https://basescan.org']
+                                }],
+                            });
+                        }
+                    }
                 }
+                
+                updateUI();
+                showNotification("Wallet connected successfully");
+                updateRoundInfo();
+            } catch (error) {
+                console.error("Error connecting wallet:", error);
+                showNotification("Failed to connect wallet", "error");
+            }
+        }
+
+        function checkConnectedWallet() {
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                account = window.ethereum.selectedAddress;
+                updateUI();
+                updateRoundInfo();
+            }
+        }
+
+        function updateUI() {
+            if (account) {
+                const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
+                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
+                document.getElementById('buy-btn').disabled = false;
+            } else {
+                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+                document.getElementById('buy-btn').disabled = true;
+            }
+        }
+
+        function updateTicketCost() {
+            const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
+            
+            if (lotteryContract) {
+                lotteryContract.methods.getTicketCostETH(ticketAmount).call()
+                    .then(function(costWei) {
+                        const costEth = web3.utils.fromWei(costWei, 'ether');
+                        document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ETH`;
+                        document.getElementById('points-earned').textContent = `${ticketAmount * POINTS_PER_TICKET} Points`;
+                    })
+                    .catch(function(error) {
+                        console.error("Error getting ticket cost:", error);
+                        const defaultCost = ticketAmount * 0.0005;
+                        document.getElementById('total-cost').textContent = `${defaultCost.toFixed(6)} ETH`;
+                        document.getElementById('points-earned').textContent = `${ticketAmount * POINTS_PER_TICKET} Points`;
+                    });
+            }
+        }
+
+        async function confirmPurchase() {
+            const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
+            const confirmBtn = document.getElementById('confirm-buy');
+            const originalText = confirmBtn.innerHTML;
+            
+            if (!ticketAmount || ticketAmount < 1) {
+                showNotification("Please enter a valid number of tickets", "error");
+                return;
             }
             
-            async function connectWalletConnect() {
-                alert('WalletConnect integration would be implemented here');
+            try {
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                confirmBtn.disabled = true;
+                
+                const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
+                
+                await lotteryContract.methods.buyTickets(ticketAmount).send({
+                    from: account,
+                    value: costWei
+                });
+                
+                showNotification("Tickets purchased successfully!");
+                document.getElementById('buy-modal').style.display = 'none';
+                updateRoundInfo();
+            } catch (error) {
+                console.error("Error buying tickets:", error);
+                let errorMsg = "Failed to buy tickets";
+                if (error.message.includes("rejected")) errorMsg = "Transaction rejected";
+                if (error.message.includes("insufficient funds")) errorMsg = "Insufficient funds";
+                showNotification(errorMsg, "error");
+            } finally {
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
             }
+        }
+
+        async function updateRoundInfo() {
+            if (!lotteryContract) return;
             
-            function updateUI() {
+            try {
+                const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
+                currentRoundEndTime = parseInt(roundInfo.endTime);
+                
+                // Update pool info
+                const prizePoolEth = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
+                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ETH`;
+                document.getElementById('participants').textContent = roundInfo.currentParticipants;
+                document.getElementById('ticket-price').textContent = `1.00 USD (~${web3.utils.fromWei(roundInfo.ethPerTicket, 'ether')} ETH)`;
+                
+                // Update user info if connected
                 if (account) {
-                    connectBtn.innerHTML = `<i class="fas fa-wallet"></i> ${account.substring(0, 6)}...${account.substring(38)}`;
-                    buyBtn.disabled = false;
-                    document.getElementById('user-tickets').textContent = "5"; // Example data
-                } else {
-                    connectBtn.innerHTML = '<i class="fas fa-wallet"></i> Connect Wallet';
-                    buyBtn.disabled = true;
+                    const userTickets = await lotteryContract.methods.getUserTickets(account).call();
+                    document.getElementById('user-tickets').textContent = userTickets;
+                    document.getElementById('neon-points').textContent = userTickets * POINTS_PER_TICKET;
                 }
+            } catch (error) {
+                console.error("Error updating round info:", error);
             }
-        });
+        }
+
+        async function showLeaderboard() {
+            try {
+                document.getElementById('leaderboard-content').innerHTML = 'Loading...';
+                document.getElementById('leaderboard-modal').style.display = 'flex';
+                
+                const participants = await lotteryContract.methods.participants().call();
+                
+                // Sort by tickets
+                participants.sort((a, b) => b.tickets - a.tickets);
+                
+                let leaderboardHTML = '';
+                participants.slice(0, 10).forEach((p, i) => {
+                    leaderboardHTML += `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <span>${i + 1}. ${p.wallet.substring(0, 6)}...${p.wallet.substring(38)}</span>
+                            <span>${p.tickets} tickets</span>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('leaderboard-content').innerHTML = leaderboardHTML || 'No participants yet';
+            } catch (error) {
+                console.error("Error loading leaderboard:", error);
+                document.getElementById('leaderboard-content').innerHTML = 'Failed to load leaderboard';
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>
