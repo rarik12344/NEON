@@ -2155,6 +2155,8 @@
 
         async function confirmPurchase() {
             const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
+            const confirmBtn = document.getElementById('confirm-buy');
+            const originalText = confirmBtn.innerHTML;
             
             if (!account) {
                 showNotification("Please connect your wallet first!", "error");
@@ -2168,8 +2170,6 @@
             
             try {
                 // Show loading state
-                const confirmBtn = document.getElementById('confirm-buy');
-                const originalText = confirmBtn.innerHTML;
                 confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 confirmBtn.disabled = true;
                 
@@ -2205,7 +2205,6 @@
                 showNotification(errorMsg, "error");
             } finally {
                 // Reset button state
-                const confirmBtn = document.getElementById('confirm-buy');
                 confirmBtn.innerHTML = originalText;
                 confirmBtn.disabled = false;
             }
