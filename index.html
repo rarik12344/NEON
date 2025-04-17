@@ -7,20 +7,18 @@
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/CqC2PKr/neon-lottery.png">
+    <meta property="fc:frame:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📣 Share">
     <meta property="fc:frame:button:4" content="🔗 Connect Wallet">
-    <meta property="fc:frame:post_url" content="https://neon-lottery.vercel.app/api/frame">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
+    <meta name="farcaster-miniapp:image" content="https://neon-xi.vercel.app/neon-lottery-preview.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network">
-    
-    <!-- Farcaster Mini Apps SDK -->
-    <script src="https://unpkg.com/@farcaster/miniapp-sdk@latest"></script>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -28,6 +26,8 @@
     
     <!-- Web3 Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <!-- Farcaster Mini Apps SDK -->
+    <script src="https://unpkg.com/@farcaster/miniapp-sdk@latest"></script>
     
     <style>
         :root {
@@ -91,10 +91,14 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px 5px;
-            width: calc(50% - 10px);
+            margin: 10px 0;
+            width: 100%;
             font-size: 0.9rem;
             transition: all 0.2s;
+        }
+        
+        button.share-btn {
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
         }
         
         button:hover {
@@ -202,11 +206,6 @@
             border-radius: 6px;
         }
         
-        .warpcast-post-btn {
-            background: linear-gradient(45deg, #8a2be2, #4b0082);
-            width: 100%;
-        }
-        
         @keyframes slideIn {
             from { top: -100px; opacity: 0; }
             to { top: 20px; opacity: 1; }
@@ -242,7 +241,7 @@
         <button id="connect-btn"><i class="fas fa-wallet"></i> Connect Wallet</button>
         <button id="buy-btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
         <button id="winners-btn"><i class="fas fa-trophy"></i> Winners</button>
-        <button id="warpcast-post-btn" class="warpcast-post-btn"><i class="fas fa-share-alt"></i> Share on Warpcast</button>
+        <button id="warpcast-post-btn" class="share-btn"><i class="fas fa-share-alt"></i> Share on Warpcast</button>
     </div>
 
     <!-- Buy Tickets Modal -->
@@ -282,7 +281,7 @@
     <script>
         // Contract details
         const CONTRACT_ADDRESS = "0x8ce1694dbce4d6445231e7f46b28599a4b4c4b91";
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"FeeWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PendingRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RefundClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"TicketPriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_GAS_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":],"name":"claimRefund","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentTicketPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getPendingRefund","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingRefunds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPriceETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs:],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"FeeWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PendingRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RefundClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"TicketPriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_GAS_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":],"name":"claimRefund","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentTicketPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs:],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs:],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getPendingRefund","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingRefunds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPriceETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs:],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs:],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
         
         // Network config
         const BASE_CHAIN_ID = '0x2105';
@@ -318,6 +317,9 @@
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 setupWalletEvents();
+            } else if (window.farcasterMiniApp?.getProvider) {
+                // Use Farcaster Mini App provider if available
+                web3 = new Web3(window.farcasterMiniApp.getProvider());
             } else {
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
             }
@@ -375,7 +377,7 @@
 
         function initEventHandlers() {
             // Connect Wallet
-            document.getElementById('connect-btn').addEventListener('click', connectMetaMask);
+            document.getElementById('connect-btn').addEventListener('click', connectWallet);
             
             // Buy Tickets
             document.getElementById('buy-btn').addEventListener('click', function() {
@@ -474,133 +476,47 @@
             }
         }
 
-        // API endpoint handler for frame posts
-        async function handleFramePost() {
-            if (window.location.pathname === '/api/frame') {
-                const urlParams = new URLSearchParams(window.location.search);
-                const buttonIndex = urlParams.get('buttonIndex');
-                
-                let response = {
-                    type: 'frame',
-                    image: 'https://i.ibb.co/CqC2PKr/neon-lottery.png',
-                    buttons: [
-                        { text: '🎫 Buy Tickets' },
-                        { text: '🏆 Winners' },
-                        { text: '📣 Share' },
-                        { text: '🔗 Connect Wallet' }
-                    ],
-                    postUrl: 'https://neon-lottery.vercel.app/api/frame'
-                };
-                
-                // Customize response based on button pressed
-                switch(buttonIndex) {
-                    case '1':
-                        response.image = 'https://i.ibb.co/CqC2PKr/neon-lottery-buy.png';
-                        break;
-                    case '2':
-                        response.image = 'https://i.ibb.co/CqC2PKr/neon-lottery-winners.png';
-                        break;
-                }
-                
-                return new Response(JSON.stringify(response), {
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            }
-        }
-
-        // Initialize frame post handler
-        if (typeof window === 'undefined') {
-            addEventListener('fetch', event => {
-                event.respondWith(handleFramePost());
-            });
-        }
-
-        function shareLottery() {
-            const shareUrl = window.location.href;
-            const shareText = `Join Neon Lottery on Base Network and win ETH prizes! 🎉\nBuy tickets for a chance to win daily ETH draws\n${shareUrl}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Neon Lottery',
-                    text: shareText,
-                    url: shareUrl
-                });
-            } else if (window.farcasterMiniApp) {
-                // Use Warpcast's native share
-                window.farcasterMiniApp.share({
-                    text: shareText,
-                    url: shareUrl
-                });
-            } else {
-                prompt("Copy this link to share:", shareUrl);
-            }
-        }
-
-        function createWarpcastPost() {
-            const shareUrl = window.location.href;
-            const postText = `Just entered the @NeonLottery on @base! 🎟️✨\n\nJoin me for a chance to win daily ETH prizes. The more tickets you buy, the higher your chances!\n\n${shareUrl}`;
-            
-            if (window.farcasterMiniApp) {
-                // Use Warpcast Mini App API to create post
-                window.farcasterMiniApp.post({
-                    text: postText,
-                    embeds: [{
-                        url: shareUrl
-                    }]
-                });
-            } else {
-                // Fallback for regular browsers
-                const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postText)}`;
-                window.open(warpcastUrl, '_blank');
-            }
-        }
-
-        function setupWalletEvents() {
-            if (window.ethereum) {
-                window.ethereum.on('accountsChanged', function(accounts) {
-                    account = accounts[0] || null;
-                    updateUI();
-                    if (account) checkNetwork();
-                });
-                
-                window.ethereum.on('chainChanged', function(chainId) {
-                    checkNetwork();
-                    if (chainId === BASE_CHAIN_ID) {
-                        window.location.reload();
-                    }
-                });
-            }
-        }
-
-        async function connectMetaMask() {
+        async function connectWallet() {
             try {
-                if (!window.ethereum) {
-                    showNotification("Please install MetaMask!", "error");
-                    return;
+                if (window.farcasterMiniApp) {
+                    // Connect via Farcaster Mini App
+                    const farcasterAccount = await window.farcasterMiniApp.connectWallet();
+                    if (farcasterAccount && farcasterAccount.address) {
+                        account = farcasterAccount.address;
+                        isBaseNetwork = true; // Assuming Farcaster wallet is on Base
+                        updateUI();
+                        showNotification("Farcaster wallet connected");
+                        return;
+                    }
                 }
                 
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                account = accounts[0];
-                
-                await checkNetwork();
-                
-                if (!isBaseNetwork) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: BASE_CHAIN_ID }],
-                        });
-                    } catch (error) {
-                        if (error.code === 4902) {
-                            await addBaseNetwork();
-                        } else {
-                            showNotification("Failed to switch to Base Network", "error");
+                if (window.ethereum) {
+                    // Connect via MetaMask
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                    
+                    await checkNetwork();
+                    
+                    if (!isBaseNetwork) {
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: BASE_CHAIN_ID }],
+                            });
+                        } catch (error) {
+                            if (error.code === 4902) {
+                                await addBaseNetwork();
+                            } else {
+                                showNotification("Failed to switch to Base Network", "error");
+                            }
                         }
                     }
+                    
+                    updateUI();
+                    showNotification("Wallet connected successfully");
+                } else {
+                    showNotification("Please install MetaMask or use Warpcast app", "error");
                 }
-                
-                updateUI();
-                showNotification("Wallet connected successfully");
             } catch (error) {
                 console.error("Error connecting wallet:", error);
                 showNotification("Failed to connect wallet", "error");
@@ -657,6 +573,18 @@
                 account = window.ethereum.selectedAddress;
                 await checkNetwork();
                 updateUI();
+            } else if (window.farcasterMiniApp?.getProvider) {
+                // Check if already connected via Farcaster Mini App
+                try {
+                    const accounts = await web3.eth.getAccounts();
+                    if (accounts.length > 0) {
+                        account = accounts[0];
+                        isBaseNetwork = true;
+                        updateUI();
+                    }
+                } catch (error) {
+                    console.error("Error checking Farcaster wallet:", error);
+                }
             }
         }
 
@@ -831,6 +759,63 @@
             } catch (error) {
                 console.error("Error loading winners:", error);
                 document.getElementById('winners-content').innerHTML = 'Failed to load winners';
+            }
+        }
+
+        function createWarpcastPost() {
+            const shareUrl = window.location.href;
+            const postText = `Just entered the @NeonLottery on @base! 🎟️✨\n\nJoin me for a chance to win daily ETH prizes. The more tickets you buy, the higher your chances!\n\n${shareUrl}`;
+            
+            if (window.farcasterMiniApp) {
+                // Use Warpcast Mini App API to create post
+                window.farcasterMiniApp.post({
+                    text: postText,
+                    embeds: [{
+                        url: shareUrl
+                    }]
+                });
+            } else {
+                // Fallback for regular browsers
+                const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postText)}`;
+                window.open(warpcastUrl, '_blank');
+            }
+        }
+
+        function shareLottery() {
+            const shareUrl = window.location.href;
+            const shareText = `Join Neon Lottery on Base Network and win ETH prizes! 🎉\nBuy tickets for a chance to win daily ETH draws\n${shareUrl}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Neon Lottery',
+                    text: shareText,
+                    url: shareUrl
+                });
+            } else if (window.farcasterMiniApp) {
+                // Use Warpcast's native share
+                window.farcasterMiniApp.share({
+                    text: shareText,
+                    url: shareUrl
+                });
+            } else {
+                prompt("Copy this link to share:", shareUrl);
+            }
+        }
+
+        function setupWalletEvents() {
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', function(accounts) {
+                    account = accounts[0] || null;
+                    updateUI();
+                    if (account) checkNetwork();
+                });
+                
+                window.ethereum.on('chainChanged', function(chainId) {
+                    checkNetwork();
+                    if (chainId === BASE_CHAIN_ID) {
+                        window.location.reload();
+                    }
+                });
             }
         }
 
