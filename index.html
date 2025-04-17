@@ -1644,8 +1644,9 @@
                 web3 = new Web3(window.ethereum);
                 setupWalletEvents();
             } else {
-                showNotification("Please install MetaMask or connect with WalletConnect", "error");
-                console.error("Web3 not found");
+                // Fallback to public RPC if no wallet extension
+                web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
+                console.log("Web3 wallet not found, using public RPC");
             }
         }
 
@@ -1711,6 +1712,9 @@
             if (window.ethereum && window.ethereum.selectedAddress) {
                 account = window.ethereum.selectedAddress;
                 updateUI();
+                updateRoundInfo();
+            } else {
+                // Update round info even without wallet
                 updateRoundInfo();
             }
         }
