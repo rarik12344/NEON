@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Lottery | Base Network Only</title>
+    <title>Neon Lottery | Daily ETH Lottery on Base</title>
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
     <meta property="fc:frame:image" content="https://i.ibb.co/CqC2PKr/neon-lottery-preview.png">
-    <meta property="fc:frame:button:1" content="🎫 Buy Tickets" style="background: #00f3ff;">
-    <meta property="fc:frame:button:2" content="🏆 Winners" style="background: #ff00ff;">
-    <meta property="fc:frame:button:3" content="📣 Share" style="background: #9d00ff;">
-    <meta property="fc:frame:button:4" content="🔗 Connect" style="background: #ff9900;">
+    <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
+    <meta property="fc:frame:button:2" content="🏆 Winners">
+    <meta property="fc:frame:button:3" content="📢 Share">
+    <meta property="fc:frame:button:4" content="🔗 Connect">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
@@ -33,10 +33,11 @@
             --neon-blue: #00f3ff;
             --neon-pink: #ff00ff;
             --neon-purple: #9d00ff;
-            --neon-orange: #ff9900;
+            --neon-green: #00ff88;
             --dark-bg: #0f0f1a;
             --card-bg: rgba(15, 15, 26, 0.9);
             --text-primary: #ffffff;
+            --text-secondary: #cccccc;
         }
         
         body {
@@ -49,16 +50,23 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
         }
         
         .container {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 24px;
             width: 100%;
             max-width: 450px;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            box-shadow: 
+                0 0 20px rgba(0, 243, 255, 0.2),
+                0 0 40px rgba(255, 0, 255, 0.1);
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         
         h1 {
@@ -66,74 +74,98 @@
             margin-bottom: 20px;
             font-size: 1.8rem;
             text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            letter-spacing: 1px;
         }
         
         .timer {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin: 20px 0;
             color: var(--neon-pink);
             font-weight: bold;
             text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            font-family: 'Poppins', monospace;
+        }
+        
+        .round-status {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
         }
         
         .info-item {
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .info-item span:first-child {
+            color: var(--text-secondary);
         }
         
         .btn {
             background: var(--neon-blue);
             border: none;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
+            color: black;
+            padding: 14px 20px;
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px 0;
+            margin: 12px 0;
             width: 100%;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .btn-pink {
             background: var(--neon-pink);
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
         }
         
         .btn-purple {
             background: var(--neon-purple);
-            box-shadow: 0 0 10px rgba(157, 0, 255, 0.3);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
         }
         
-        .btn-orange {
-            background: var(--neon-orange);
-            box-shadow: 0 0 10px rgba(255, 153, 0, 0.3);
+        .btn-green {
+            background: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            color: black;
         }
         
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px currentColor;
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px currentColor;
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
         }
         
         .btn:disabled {
-            background: #555;
+            background: #444;
+            color: #777;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none;
         }
         
         .network-warning {
-            background: #ff5555;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
+            background: rgba(255, 85, 85, 0.2);
+            color: #ff5555;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 12px 0;
             display: none;
+            border: 1px solid #ff5555;
         }
         
         .modal {
@@ -143,43 +175,57 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
             z-index: 100;
+            backdrop-filter: blur(5px);
         }
         
         .modal-content {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 24px;
+            border-radius: 16px;
             width: 90%;
             max-width: 400px;
             position: relative;
             max-height: 80vh;
             overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .close {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--neon-pink);
+            transition: transform 0.2s;
+        }
+        
+        .close:hover {
+            transform: rotate(90deg);
         }
         
         .ticket-input {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
+            gap: 15px;
+            margin: 25px 0;
         }
         
         .ticket-input button {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             padding: 0;
             display: flex;
             align-items: center;
@@ -187,20 +233,27 @@
             background: var(--neon-purple);
             border: none;
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .ticket-input button:hover {
+            transform: scale(1.1);
         }
         
         .ticket-input input {
             background: rgba(0,0,0,0.3);
-            border: 1px solid var(--neon-blue);
+            border: 2px solid var(--neon-blue);
             color: white;
-            width: 60px;
+            width: 70px;
             text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1.2rem;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
         }
         
         .notification {
@@ -209,27 +262,66 @@
             left: 50%;
             transform: translateX(-50%);
             background: var(--card-bg);
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 24px;
+            border-radius: 10px;
             z-index: 1000;
             animation: slideIn 0.3s ease-out;
             border: 1px solid var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+        }
+        
+        .notification.error {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
         }
         
         .gas-info {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--neon-blue);
             margin-top: 10px;
+            text-align: center;
         }
         
         .winner-item {
             display: flex;
             justify-content: space-between;
-            margin: 8px 0;
-            padding: 8px;
+            margin: 10px 0;
+            padding: 10px;
             background: rgba(157, 0, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(157, 0, 255, 0.2);
+        }
+        
+        .wallet-connected {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wallet-connected::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(0, 243, 255, 0),
+                rgba(0, 243, 255, 0),
+                rgba(0, 243, 255, 0.3),
+                rgba(0, 243, 255, 0)
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(30deg) translate(-30%, -30%); }
+            100% { transform: rotate(30deg) translate(30%, 30%); }
         }
         
         @keyframes slideIn {
@@ -237,9 +329,25 @@
             to { top: 20px; opacity: 1; }
         }
         
-        .wallet-connected {
-            border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 18px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .timer {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -248,50 +356,65 @@
         <h1>✨ NEON LOTTERY ✨</h1>
         
         <div class="network-warning" id="network-warning">
-            Please switch to Base Network to participate
+            <i class="fas fa-exclamation-triangle"></i> Please switch to Base Network to participate
         </div>
         
         <div class="timer" id="countdown">00:00:00</div>
-        <div id="round-status">Round Active - Ends at 16:00 UTC</div>
+        <div class="round-status" id="round-status">Round Active - Ends at 16:00 UTC</div>
         
         <div class="info-item">
-            <span>Ticket Price:</span>
+            <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
             <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
         </div>
         
         <div class="info-item">
-            <span>Current Pool:</span>
+            <span><i class="fas fa-coins"></i> Current Pool:</span>
             <span id="current-pool">0.00 ETH</span>
         </div>
         
         <div class="info-item">
-            <span>Your Tickets:</span>
+            <span><i class="fas fa-user"></i> Your Tickets:</span>
             <span id="user-tickets">0</span>
         </div>
         
-        <button id="connect-btn" class="btn btn-orange"><i class="fas fa-wallet"></i> Connect Wallet</button>
-        <button id="buy-btn" class="btn" disabled><i class="fas fa-ticket-alt"></i> Buy Tickets</button>
-        <button id="winners-btn" class="btn btn-pink"><i class="fas fa-trophy"></i> View Winners</button>
-        <button id="share-btn" class="btn btn-purple"><i class="fas fa-share-alt"></i> Share with Friends</button>
+        <button id="connect-btn" class="btn btn-green">
+            <i class="fas fa-wallet"></i> Connect Wallet
+        </button>
+        
+        <button id="buy-btn" class="btn" disabled>
+            <i class="fas fa-ticket-alt"></i> Buy Tickets
+        </button>
+        
+        <button id="winners-btn" class="btn btn-pink">
+            <i class="fas fa-trophy"></i> View Winners
+        </button>
+        
+        <button id="share-btn" class="btn btn-purple">
+            <i class="fas fa-share-alt"></i> Share & Earn
+        </button>
     </div>
 
     <!-- Buy Tickets Modal -->
     <div class="modal" id="buy-modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Buy Tickets</h2>
+            <h2><i class="fas fa-ticket-alt"></i> Buy Tickets</h2>
+            
             <div class="ticket-input">
                 <button id="decrement-ticket">-</button>
                 <input type="number" id="ticket-amount" value="1" min="1" max="100">
                 <button id="increment-ticket">+</button>
             </div>
+            
             <div class="info-item">
                 <span>Total Cost:</span>
                 <span id="total-cost">0 ETH</span>
             </div>
+            
             <div class="gas-info">
-                * Estimated fee: <span id="gas-fee-estimate">~$0.10-$0.50</span>
+                <i class="fas fa-gas-pump"></i> Estimated fee: <span id="gas-fee-estimate">~$0.10-$0.50</span>
             </div>
+            
             <button id="confirm-buy" class="btn">
                 <i class="fas fa-shopping-cart"></i> Confirm Purchase
             </button>
@@ -302,7 +425,7 @@
     <div class="modal" id="winners-modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Previous Winners</h2>
+            <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
             <div id="winners-content">
                 Loading winners history...
             </div>
@@ -342,16 +465,23 @@
             await checkConnectedWallet();
             initFrameHandlers();
             await updateEthPrice();
+            updateRoundInfo();
         });
 
         async function initWeb3() {
             // Check if we're in Warpcast Mini App environment
             if (window.farcasterMiniApp && window.farcasterMiniApp.getProvider) {
-                web3 = new Web3(window.farcasterMiniApp.getProvider());
-                account = await window.farcasterMiniApp.connectWallet().then(w => w.address);
-                isBaseNetwork = true;
-                updateUI();
-                updateRoundInfo();
+                try {
+                    web3 = new Web3(window.farcasterMiniApp.getProvider());
+                    const wallet = await window.farcasterMiniApp.connectWallet();
+                    account = wallet.address;
+                    isBaseNetwork = true;
+                    updateUI();
+                    updateRoundInfo();
+                    showNotification("Farcaster wallet connected");
+                } catch (error) {
+                    console.error("Error connecting Farcaster wallet:", error);
+                }
             } 
             // Fallback to MetaMask
             else if (window.ethereum) {
@@ -371,6 +501,8 @@
                 const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
                 const data = await response.json();
                 ethPriceUSD = data.ethereum.usd;
+                document.getElementById('ticket-price').textContent = 
+                    `${(1/ethPriceUSD).toFixed(6)} ETH (~1.00 USD)`;
             } catch (error) {
                 console.error("Failed to fetch ETH price, using default:", error);
             }
@@ -410,6 +542,16 @@
             
             document.getElementById('countdown').textContent = 
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+            // Update status text color based on time remaining
+            const roundStatus = document.getElementById('round-status');
+            if (distance < 3600) { // Less than 1 hour
+                roundStatus.style.color = "var(--neon-pink)";
+                roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
+            } else {
+                roundStatus.style.color = "var(--text-secondary)";
+                roundStatus.style.textShadow = "none";
+            }
         }
 
         function initEventHandlers() {
@@ -460,6 +602,15 @@
                     this.closest('.modal').style.display = 'none';
                 });
             });
+            
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(function(modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
         }
 
         function initFrameHandlers() {
@@ -494,24 +645,54 @@
             }
         }
 
-        function shareLottery() {
+        async function shareLottery() {
             const shareUrl = `https://neon-xi.vercel.app/`;
-            const shareText = `Join Neon Lottery on Base Network and win ETH prizes! 🎉\nBuy tickets for a chance to win daily ETH draws\n${shareUrl}`;
+            const poolAmount = document.getElementById('current-pool').textContent;
             
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Neon Lottery',
-                    text: shareText,
-                    url: shareUrl
-                });
-            } else if (window.farcasterMiniApp) {
-                window.farcasterMiniApp.post({
-                    text: shareText,
-                    embeds: [{ url: shareUrl }]
-                });
+            // Get user referral code if available
+            let referralCode = "";
+            if (account) {
+                referralCode = `?ref=${account.substring(2, 8)}`;
+            }
+            
+            const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
+                             `💰 Current Prize Pool: ${poolAmount}\n` +
+                             `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
+                             `Buy tickets for a chance to win daily ETH prizes!\n` +
+                             `${shareUrl}${referralCode}\n\n` +
+                             `#NeonLottery #BaseNetwork #ETH`;
+            
+            // Different behavior for Warpcast vs regular browser
+            if (window.farcasterMiniApp) {
+                try {
+                    await window.farcasterMiniApp.post({
+                        text: shareText,
+                        embeds: [{ url: shareUrl }]
+                    });
+                    showNotification("Post created on Warpcast!");
+                } catch (error) {
+                    console.error("Error creating Warpcast post:", error);
+                    showNotification("Failed to create post", "error");
+                }
             } else {
-                const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
-                window.open(warpcastUrl, '_blank');
+                try {
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: 'Neon Lottery',
+                            text: shareText,
+                            url: shareUrl
+                        });
+                    } else {
+                        // Fallback for desktop browsers
+                        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
+                        window.open(warpcastUrl, '_blank');
+                    }
+                } catch (error) {
+                    console.error("Error sharing:", error);
+                    // Fallback to copy link
+                    navigator.clipboard.writeText(shareUrl);
+                    showNotification("Link copied to clipboard!");
+                }
             }
         }
 
@@ -623,11 +804,13 @@
         function updateUI() {
             if (account) {
                 const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
-                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
+                document.getElementById('connect-btn').innerHTML = 
+                    `<i class="fas fa-check-circle"></i> ${shortAddress}`;
                 document.getElementById('connect-btn').classList.add('wallet-connected');
                 document.getElementById('buy-btn').disabled = !isBaseNetwork;
             } else {
-                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+                document.getElementById('connect-btn').innerHTML = 
+                    `<i class="fas fa-wallet"></i> Connect Wallet`;
                 document.getElementById('connect-btn').classList.remove('wallet-connected');
                 document.getElementById('buy-btn').disabled = true;
             }
@@ -710,7 +893,10 @@
                 );
                 const gasUsedUSD = (gasUsedEth * ethPriceUSD).toFixed(2);
                 
-                showNotification(`Tickets purchased successfully! Fee: $${gasUsedUSD}`);
+                showNotification(
+                    `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
+                    `Fee: $${gasUsedUSD}`
+                );
                 document.getElementById('buy-modal').style.display = 'none';
                 updateRoundInfo();
             } catch (error) {
@@ -747,7 +933,8 @@
 
         async function showWinners() {
             try {
-                document.getElementById('winners-content').innerHTML = 'Loading...';
+                document.getElementById('winners-content').innerHTML = 
+                    '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
                 document.getElementById('winners-modal').style.display = 'flex';
                 
                 // Get last winner from contract
@@ -763,13 +950,14 @@
                 if (lastWinnerAddress !== '0x0000000000000000000000000000000000000000') {
                     winnersHTML += `
                         <div class="winner-item">
-                            <span>Last Winner:</span>
+                            <span><i class="fas fa-crown"></i> Last Winner:</span>
                             <span>${lastWinnerAddress.substring(0, 6)}...${lastWinnerAddress.substring(38)}</span>
                         </div>
                         <div class="winner-item">
-                            <span>Prize:</span>
+                            <span><i class="fas fa-coins"></i> Prize:</span>
                             <span>${parseFloat(lastPrizeEth).toFixed(4)} ETH</span>
                         </div>
+                        <div style="margin: 20px 0; border-top: 1px dashed rgba(255,255,255,0.1);"></div>
                     `;
                 }
                 
@@ -789,26 +977,29 @@
                     </div>
                 `;
                 
-                document.getElementById('winners-content').innerHTML = winnersHTML || 'No winners yet';
+                document.getElementById('winners-content').innerHTML = winnersHTML || 
+                    '<div style="text-align: center; padding: 20px;">No winners yet</div>';
             } catch (error) {
                 console.error("Error loading winners:", error);
-                document.getElementById('winners-content').innerHTML = 'Failed to load winners';
+                document.getElementById('winners-content').innerHTML = 
+                    '<div style="text-align: center; padding: 20px; color: var(--neon-pink)">' +
+                    '<i class="fas fa-exclamation-triangle"></i> Failed to load winners</div>';
             }
         }
 
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = 'notification';
-            if (type === 'error') {
-                notification.style.borderColor = 'var(--neon-pink)';
-            }
-            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> 
+                ${message}
+            `;
             document.body.appendChild(notification);
             
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            }, type === 'error' ? 5000 : 3000);
         }
     </script>
 </body>
