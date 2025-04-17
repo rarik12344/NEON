@@ -190,7 +190,6 @@
     </style>
 </head>
 <body>
-    <!-- Остальная HTML-структура остается без изменений -->
     <div class="container">
         <h1>✨ NEON LOTTERY ✨</h1>
         
@@ -256,30 +255,30 @@
     </div>
 
     <script>
-        // Конфигурация контракта
+        // Contract details
         const CONTRACT_ADDRESS = "0x8ce1694dbce4d6445231e7f46b28599a4b4c4b91";
-        const CONTRACT_ABI = [/* ... (ABI контракта остается без изменений) ... */];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EmergencyWithdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"newWallet","type":"address"}],"name":"FeeWalletUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PendingRefund","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"seed","type":"bytes32"}],"name":"RandomSeedUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RefundClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newEndTime","type":"uint256"}],"name":"RoundExtended","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"TicketPriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ethCost","type":"uint256"}],"name":"TicketPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"roundNumber","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"FEE_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_GAS_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_TICKETS_PER_TX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TICKETS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRIZE_POOL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"SECONDS_PER_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"UTC_HOUR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRefund","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"currentPrizePool","type":"uint256"},{"internalType":"uint256","name":"currentParticipants","type":"uint256"},{"internalType":"uint256","name":"currentTickets","type":"uint256"},{"internalType":"uint256","name":"currentTicketPrice","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"uint256","name":"ethPerTicket","type":"uint256"},{"internalType":"uint256","name":"timeRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_additionalSeconds","type":"uint256"}],"name":"extendRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"forceEndRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"forceStartRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getPendingRefund","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tickets","type":"uint256"}],"name":"getTicketCostETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isRoundActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastPrize","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"participants","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingRefunds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomSeed","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"roundStartTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPriceETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalParticipants","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPrizesDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRounds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}];
         
-        // Настройки Base Network
+        // Network config
         const BASE_CHAIN_ID = '0x2105';
         const BASE_RPC_URL = 'https://mainnet.base.org';
         const BASE_EXPLORER_URL = 'https://basescan.org';
         const BASE_CURRENCY_SYMBOL = 'ETH';
         
-        // Оптимальные настройки газа для Base
-        const OPTIMAL_GAS_PRICE_GWEI = 0.2; // 0.2 gwei (оптимально для Base)
-        const GAS_LIMIT_BUFFER = 1.15; // 15% буфер
-        const DEFAULT_GAS_LIMIT = 200000; // Стандартный лимит газа
+        // Gas settings (optimized for Base)
+        const OPTIMAL_GAS_PRICE_GWEI = 0.2;
+        const GAS_LIMIT_BUFFER = 1.2;
+        const DEFAULT_GAS_LIMIT = 200000;
         
-        // Состояние приложения
+        // App state
         let web3;
         let lotteryContract;
         let account = null;
         let currentRoundEndTime = calculateNextRoundEndTime();
         let isBaseNetwork = false;
-        let ethPriceUSD = 3000; // Начальное значение, обновится позже
+        let ethPriceUSD = 3000;
 
-        // Инициализация при загрузке
+        // Initialize app
         window.addEventListener('load', async function() {
             await initWeb3();
             initContract();
@@ -313,7 +312,286 @@
             }
         }
 
-        // ... (остальные вспомогательные функции остаются без изменений) ...
+        function calculateNextRoundEndTime() {
+            const now = new Date();
+            const endTime = new Date(now);
+            endTime.setUTCHours(16, 0, 0, 0);
+            
+            if (now.getTime() > endTime.getTime()) {
+                endTime.setUTCDate(endTime.getUTCDate() + 1);
+            }
+            
+            return Math.floor(endTime.getTime() / 1000);
+        }
+
+        function startCountdown() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            const now = Math.floor(Date.now() / 1000);
+            const distance = currentRoundEndTime - now;
+            
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = "00:00:00";
+                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
+                currentRoundEndTime = calculateNextRoundEndTime();
+                return;
+            }
+            
+            const hours = Math.floor(distance / 3600);
+            const minutes = Math.floor((distance % 3600) / 60);
+            const seconds = Math.floor(distance % 60);
+            
+            document.getElementById('countdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function initEventHandlers() {
+            // Connect Wallet
+            document.getElementById('connect-btn').addEventListener('click', connectMetaMask);
+            
+            // Buy Tickets
+            document.getElementById('buy-btn').addEventListener('click', function() {
+                if (!account) {
+                    showNotification("Please connect your wallet first", "error");
+                    return;
+                }
+                if (!isBaseNetwork) {
+                    showNotification("Please switch to Base Network", "error");
+                    return;
+                }
+                document.getElementById('buy-modal').style.display = 'flex';
+                updateTicketCost();
+            });
+            
+            // Ticket amount controls
+            document.getElementById('decrement-ticket').addEventListener('click', function() {
+                const input = document.getElementById('ticket-amount');
+                if (input.value > 1) input.value = parseInt(input.value) - 1;
+                updateTicketCost();
+            });
+            
+            document.getElementById('increment-ticket').addEventListener('click', function() {
+                const input = document.getElementById('ticket-amount');
+                if (input.value < 100) input.value = parseInt(input.value) + 1;
+                updateTicketCost();
+            });
+            
+            document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
+            
+            // Confirm Purchase
+            document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
+            
+            // Leaderboard
+            document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
+            
+            // Close modals
+            document.querySelectorAll('.close').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+        }
+
+        function initFrameHandlers() {
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'frame-action') {
+                    const buttonIndex = event.data.buttonIndex;
+                    
+                    switch(buttonIndex) {
+                        case 1: // Buy Tickets
+                            document.getElementById('buy-btn').click();
+                            break;
+                        case 2: // My Points
+                            if (account) {
+                                const points = document.getElementById('user-tickets').textContent * 10;
+                                showNotification(`You have ${points} Neon Points`);
+                            } else {
+                                showNotification("Please connect your wallet first", "error");
+                            }
+                            break;
+                        case 3: // Share
+                            shareLottery();
+                            break;
+                        case 4: // Leaderboard
+                            document.getElementById('leaderboard-btn').click();
+                            break;
+                    }
+                }
+            });
+            
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'frame-resize',
+                    height: document.documentElement.scrollHeight
+                }, '*');
+            }
+        }
+
+        function shareLottery() {
+            const shareUrl = `https://neon-xi.vercel.app/`;
+            const shareText = `Join Neon Lottery on Base Network and win ETH prizes! 🎉\nBuy tickets for a chance to win daily ETH draws\n${shareUrl}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Neon Lottery',
+                    text: shareText,
+                    url: shareUrl
+                });
+            } else {
+                prompt("Copy this link to share:", shareUrl);
+            }
+        }
+
+        function setupWalletEvents() {
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', function(accounts) {
+                    account = accounts[0] || null;
+                    updateUI();
+                    if (account) checkNetwork();
+                });
+                
+                window.ethereum.on('chainChanged', function(chainId) {
+                    checkNetwork();
+                    if (chainId === BASE_CHAIN_ID) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        async function checkNetwork() {
+            if (!window.ethereum) return;
+            
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                isBaseNetwork = (chainId === BASE_CHAIN_ID);
+                
+                if (isBaseNetwork) {
+                    document.getElementById('network-warning').style.display = 'none';
+                    if (account) {
+                        updateRoundInfo();
+                    }
+                } else {
+                    document.getElementById('network-warning').style.display = 'block';
+                    document.getElementById('buy-btn').disabled = true;
+                }
+            } catch (error) {
+                console.error("Error checking network:", error);
+            }
+        }
+
+        async function connectMetaMask() {
+            try {
+                if (!window.ethereum) {
+                    showNotification("Please install MetaMask!", "error");
+                    return;
+                }
+                
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                account = accounts[0];
+                
+                await checkNetwork();
+                
+                if (!isBaseNetwork) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: BASE_CHAIN_ID }],
+                        });
+                    } catch (error) {
+                        if (error.code === 4902) {
+                            await addBaseNetwork();
+                        } else {
+                            showNotification("Failed to switch to Base Network", "error");
+                        }
+                    }
+                }
+                
+                updateUI();
+                showNotification("Wallet connected successfully");
+            } catch (error) {
+                console.error("Error connecting wallet:", error);
+                showNotification("Failed to connect wallet", "error");
+            }
+        }
+
+        async function addBaseNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: BASE_CHAIN_ID,
+                        chainName: 'Base Mainnet',
+                        nativeCurrency: {
+                            name: 'Ether',
+                            symbol: BASE_CURRENCY_SYMBOL,
+                            decimals: 18
+                        },
+                        rpcUrls: [BASE_RPC_URL],
+                        blockExplorerUrls: [BASE_EXPLORER_URL]
+                    }],
+                });
+                isBaseNetwork = true;
+                document.getElementById('network-warning').style.display = 'none';
+            } catch (error) {
+                console.error("Error adding Base network:", error);
+                showNotification("Failed to add Base Network", "error");
+            }
+        }
+
+        async function checkConnectedWallet() {
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                account = window.ethereum.selectedAddress;
+                await checkNetwork();
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            if (account) {
+                const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
+                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
+                document.getElementById('buy-btn').disabled = !isBaseNetwork;
+            } else {
+                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+                document.getElementById('buy-btn').disabled = true;
+            }
+        }
+
+        async function updateTicketCost() {
+            const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
+            
+            if (lotteryContract && account && isBaseNetwork) {
+                try {
+                    const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
+                    const costEth = web3.utils.fromWei(costWei, 'ether');
+                    document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
+                    
+                    // Estimate gas fee
+                    const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
+                        from: account,
+                        value: costWei
+                    });
+                    
+                    const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
+                    const gasCostEth = web3.utils.fromWei(
+                        (gasEstimate * GAS_LIMIT_BUFFER * gasPriceWei).toString(),
+                        'ether'
+                    );
+                    const gasCostUSD = (gasCostEth * ethPriceUSD).toFixed(2);
+                    
+                    document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
+                } catch (error) {
+                    console.error("Error getting ticket cost:", error);
+                    const defaultCost = ticketAmount * 0.0005;
+                    document.getElementById('total-cost').textContent = `${defaultCost.toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
+                    document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+                }
+            }
+        }
 
         async function confirmPurchase() {
             if (!isBaseNetwork) {
@@ -329,15 +607,15 @@
                 confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 confirmBtn.disabled = true;
                 
-                // Получаем стоимость билетов
+                // Get ticket cost
                 const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
                 
-                // Оптимальные настройки газа
+                // Set optimal gas price
                 const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
                 let gasLimit = DEFAULT_GAS_LIMIT;
                 
                 try {
-                    // Пытаемся оценить газ
+                    // Try to estimate gas
                     const estimatedGas = await lotteryContract.methods.buyTickets(ticketAmount)
                         .estimateGas({ from: account, value: costWei });
                     gasLimit = Math.floor(estimatedGas * GAS_LIMIT_BUFFER);
@@ -345,7 +623,7 @@
                     console.log("Using default gas limit", error);
                 }
                 
-                // Выполняем транзакцию с оптимальными настройками
+                // Execute transaction
                 const tx = await lotteryContract.methods.buyTickets(ticketAmount).send({
                     from: account,
                     value: costWei,
@@ -353,7 +631,7 @@
                     gasPrice: gasPriceWei
                 });
                 
-                // Показываем фактическую комиссию
+                // Show actual fee
                 const gasUsedEth = web3.utils.fromWei(
                     (tx.gasUsed * tx.effectiveGasPrice).toString(),
                     'ether'
@@ -376,7 +654,66 @@
             }
         }
 
-        // ... (остальной JavaScript код остается без изменений) ...
+        async function updateRoundInfo() {
+            if (!lotteryContract || !account || !isBaseNetwork) return;
+            
+            try {
+                const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
+                currentRoundEndTime = parseInt(roundInfo.endTime);
+                
+                // Update pool info
+                const prizePoolEth = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
+                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
+                
+                // Update user info
+                const userTickets = await lotteryContract.methods.getUserTickets(account).call();
+                document.getElementById('user-tickets').textContent = userTickets;
+            } catch (error) {
+                console.error("Error updating round info:", error);
+            }
+        }
+
+        async function showLeaderboard() {
+            try {
+                document.getElementById('leaderboard-content').innerHTML = 'Loading...';
+                document.getElementById('leaderboard-modal').style.display = 'flex';
+                
+                const participants = await lotteryContract.methods.participants().call();
+                
+                // Sort by tickets
+                participants.sort((a, b) => b.tickets - a.tickets);
+                
+                let leaderboardHTML = '';
+                participants.slice(0, 10).forEach((p, i) => {
+                    leaderboardHTML += `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <span>${i + 1}. ${p.wallet.substring(0, 6)}...${p.wallet.substring(38)}</span>
+                            <span>${p.tickets} tickets</span>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('leaderboard-content').innerHTML = leaderboardHTML || 'No participants yet';
+            } catch (error) {
+                console.error("Error loading leaderboard:", error);
+                document.getElementById('leaderboard-content').innerHTML = 'Failed to load leaderboard';
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            if (type === 'error') {
+                notification.style.borderColor = 'var(--neon-pink)';
+            }
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>
