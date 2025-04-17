@@ -647,7 +647,7 @@
         
         <div class="points-display">
             <div class="points-label">
-                <i class="fas fa-coins" style="color: var(--neon-yellow);"></i>
+                <i class="fas fa-coins"></i>
                 <span>Your Points:</span>
             </div>
             <div class="points-value" id="neon-points">0</div>
@@ -796,7 +796,7 @@
                 <h3>Share & Earn</h3>
                 <p style="font-size: 0.85rem;">Invite friends to join Neon Lottery and earn <strong>100 bonus points</strong> when they buy their first ticket!</p>
                 <div class="referral-bonus">
-                    <i class="fas fa-gift" style="color: var(--neon-yellow);"></i>
+                    <i class="fas fa-gift"></i>
                     <span>100 Points per referral</span>
                 </div>
             </div>
@@ -1726,12 +1726,12 @@
 
         function initEventHandlers() {
             // Connect Wallet button
-            document.getElementById('connect-btn')?.addEventListener('click', function() {
+            document.getElementById('connect-btn').addEventListener('click', function() {
                 document.getElementById('connect-modal').style.display = 'flex';
             });
             
             // Buy Tickets button
-            document.getElementById('buy-btn')?.addEventListener('click', function() {
+            document.getElementById('buy-btn').addEventListener('click', function() {
                 if (!account) {
                     showNotification("Please connect your wallet first!", "error");
                     document.getElementById('connect-modal').style.display = 'flex';
@@ -1742,7 +1742,7 @@
             });
             
             // Frame Buy Tickets button
-            document.getElementById('frame-buy-btn')?.addEventListener('click', function(e) {
+            document.getElementById('frame-buy-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 if (!account) {
                     showNotification("Please connect your wallet first!", "error");
@@ -1754,16 +1754,16 @@
             });
             
             // Confirm Purchase button
-            document.getElementById('confirm-buy')?.addEventListener('click', confirmPurchase);
+            document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
             
             // Ticket amount controls
-            document.getElementById('increment-ticket')?.addEventListener('click', function() {
+            document.getElementById('increment-ticket').addEventListener('click', function() {
                 const input = document.getElementById('ticket-amount');
                 input.value = parseInt(input.value) + 1;
                 updateTicketCost();
             });
             
-            document.getElementById('decrement-ticket')?.addEventListener('click', function() {
+            document.getElementById('decrement-ticket').addEventListener('click', function() {
                 const input = document.getElementById('ticket-amount');
                 if (input.value > 1) {
                     input.value = parseInt(input.value) - 1;
@@ -1771,7 +1771,7 @@
                 }
             });
             
-            document.getElementById('ticket-amount')?.addEventListener('input', updateTicketCost);
+            document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
             
             // Close modal buttons
             document.querySelectorAll('.close-modal').forEach(function(button) {
@@ -1781,28 +1781,28 @@
             });
             
             // Other buttons
-            document.getElementById('leaderboard-btn')?.addEventListener('click', showLeaderboard);
-            document.getElementById('frame-leaderboard-btn')?.addEventListener('click', function(e) {
+            document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
+            document.getElementById('frame-leaderboard-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 showLeaderboard();
             });
             
-            document.getElementById('history-btn')?.addEventListener('click', showHistory);
-            document.getElementById('help-btn')?.addEventListener('click', function() {
+            document.getElementById('history-btn').addEventListener('click', showHistory);
+            document.getElementById('help-btn').addEventListener('click', function() {
                 document.getElementById('help-modal').style.display = 'flex';
             });
             
-            document.getElementById('share-btn')?.addEventListener('click', function() {
+            document.getElementById('share-btn').addEventListener('click', function() {
                 document.getElementById('share-modal').style.display = 'flex';
             });
             
             // Wallet connection options
-            document.getElementById('metamask-btn')?.addEventListener('click', connectMetaMask);
-            document.getElementById('walletconnect-btn')?.addEventListener('click', connectWalletConnect);
+            document.getElementById('metamask-btn').addEventListener('click', connectMetaMask);
+            document.getElementById('walletconnect-btn').addEventListener('click', connectWalletConnect);
             
             // Share modal buttons
-            document.getElementById('copy-link-btn')?.addEventListener('click', copyInviteLink);
-            document.getElementById('warpcast-post-btn')?.addEventListener('click', createWarpcastPost);
+            document.getElementById('copy-link-btn').addEventListener('click', copyInviteLink);
+            document.getElementById('warpcast-post-btn').addEventListener('click', createWarpcastPost);
             
             // Close modals when clicking outside
             document.querySelectorAll('.modal').forEach(function(modal) {
@@ -2081,20 +2081,14 @@
         function updateUI() {
             if (account) {
                 const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
-                if (document.getElementById('connect-btn')) {
-                    document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
-                    document.getElementById('buy-btn').disabled = false;
-                }
+                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> ${shortAddress}`;
+                document.getElementById('buy-btn').disabled = false;
                 updateUserTickets();
             } else {
-                if (document.getElementById('connect-btn')) {
-                    document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
-                    document.getElementById('buy-btn').disabled = true;
-                }
-                if (document.getElementById('neon-points')) {
-                    document.getElementById('neon-points').textContent = "0";
-                    document.getElementById('user-tickets').textContent = "0";
-                }
+                document.getElementById('connect-btn').innerHTML = `<i class="fas fa-wallet"></i> Connect Wallet`;
+                document.getElementById('buy-btn').disabled = true;
+                document.getElementById('neon-points').textContent = "0";
+                document.getElementById('user-tickets').textContent = "0";
             }
         }
 
@@ -2128,10 +2122,8 @@
                     .catch(function(error) {
                         console.error("Error updating round info:", error);
                         // Fallback to default values if contract call fails
-                        if (document.getElementById('current-pool')) {
-                            document.getElementById('current-pool').textContent = "0.00 ETH";
-                            document.getElementById('participants').textContent = "0";
-                        }
+                        document.getElementById('current-pool').textContent = "0.00 ETH";
+                        document.getElementById('participants').textContent = "0";
                     });
             } catch (error) {
                 console.error("Error updating round info:", error);
@@ -2144,10 +2136,8 @@
             try {
                 lotteryContract.methods.getUserTickets(account).call()
                     .then(function(userTickets) {
-                        if (document.getElementById('user-tickets')) {
-                            document.getElementById('user-tickets').textContent = userTickets;
-                            document.getElementById('neon-points').textContent = userTickets * POINTS_PER_TICKET;
-                        }
+                        document.getElementById('user-tickets').textContent = userTickets;
+                        document.getElementById('neon-points').textContent = userTickets * POINTS_PER_TICKET;
                     })
                     .catch(function(error) {
                         console.error("Error updating user tickets:", error);
@@ -2277,13 +2267,9 @@
         async function showLeaderboard() {
             try {
                 const leaderboardBody = document.getElementById('leaderboard-body');
-                if (leaderboardBody) {
-                    leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
-                }
+                leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
                 
-                if (document.getElementById('leaderboard-modal')) {
-                    document.getElementById('leaderboard-modal').style.display = 'flex';
-                }
+                document.getElementById('leaderboard-modal').style.display = 'flex';
                 
                 if (lotteryContract) {
                     const participants = await lotteryContract.methods.participants().call();
@@ -2292,25 +2278,23 @@
                     participants.sort((a, b) => parseInt(b.tickets) - parseInt(a.tickets));
                     
                     // Clear loading message
-                    if (leaderboardBody) {
-                        leaderboardBody.innerHTML = '';
-                        
-                        if (participants.length === 0) {
-                            leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 0.8rem;">No participants yet</td></tr>';
-                        } else {
-                            participants.slice(0, 10).forEach((participant, index) {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td class="rank">${index + 1}</td>
-                                    <td class="user-address">${participant.wallet.substring(0, 6)}...${participant.wallet.substring(38)}</td>
-                                    <td>${participant.tickets}</td>
-                                    <td>${participant.tickets * POINTS_PER_TICKET}</td>
-                                `;
-                                leaderboardBody.appendChild(row);
-                            });
-                        }
+                    leaderboardBody.innerHTML = '';
+                    
+                    if (participants.length === 0) {
+                        leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 0.8rem;">No participants yet</td></tr>';
+                    } else {
+                        participants.slice(0, 10).forEach((participant, index) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="rank">${index + 1}</td>
+                                <td class="user-address">${participant.wallet.substring(0, 6)}...${participant.wallet.substring(38)}</td>
+                                <td>${participant.tickets}</td>
+                                <td>${participant.tickets * POINTS_PER_TICKET}</td>
+                            `;
+                            leaderboardBody.appendChild(row);
+                        });
                     }
-                } else if (leaderboardBody) {
+                } else {
                     leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 0.8rem;">Failed to load leaderboard</td></tr>';
                 }
             } catch (error) {
@@ -2322,18 +2306,12 @@
         async function showHistory() {
             try {
                 const historyContent = document.getElementById('history-content');
-                if (historyContent) {
-                    historyContent.innerHTML = '<div style="text-align: center; padding: 0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-                }
+                historyContent.innerHTML = '<div style="text-align: center; padding: 0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
                 
-                if (document.getElementById('history-modal')) {
-                    document.getElementById('history-modal').style.display = 'flex';
-                }
+                document.getElementById('history-modal').style.display = 'flex';
                 
                 // In a real app, you would fetch this from the contract or a subgraph
-                if (historyContent) {
-                    historyContent.innerHTML = '<div style="text-align: center; padding: 0.8rem;">History feature coming soon!</div>';
-                }
+                historyContent.innerHTML = '<div style="text-align: center; padding: 0.8rem;">History feature coming soon!</div>';
                 
             } catch (error) {
                 console.error("Error loading history:", error);
