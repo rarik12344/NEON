@@ -177,15 +177,15 @@
             animation: slideIn 0.3s ease-out;
         }
         
-        @keyframes slideIn {
-            from { top: -100px; opacity: 0; }
-            to { top: 20px; opacity: 1; }
-        }
-        
-        .fee-info {
+        .gas-info {
             font-size: 0.8rem;
             color: var(--neon-blue);
             margin-top: 10px;
+        }
+        
+        @keyframes slideIn {
+            from { top: -100px; opacity: 0; }
+            to { top: 20px; opacity: 1; }
         }
     </style>
 </head>
@@ -234,8 +234,8 @@
                 <span>Total Cost:</span>
                 <span id="total-cost">0 ETH</span>
             </div>
-            <div class="fee-info">
-                * Includes small transaction fee (~$0.10-$0.50)
+            <div class="gas-info">
+                * Estimated fee: <span id="gas-fee-estimate">~$0.10-$0.50</span>
             </div>
             <button id="confirm-buy" style="width: 100%; margin-top: 20px;">
                 <i class="fas fa-shopping-cart"></i> Confirm Purchase
@@ -265,24 +265,30 @@
         const BASE_EXPLORER_URL = 'https://basescan.org';
         const BASE_CURRENCY_SYMBOL = 'ETH';
         
+        // Gas settings
+        const MAX_GAS_PRICE_GWEI = 0.1; // 0.1 gwei (very low for Base network)
+        const GAS_LIMIT_BUFFER = 1.1; // 10% buffer
+        
         // App State
         let web3;
         let lotteryContract;
         let account = null;
         let currentRoundEndTime = calculateNextRoundEndTime();
         let isBaseNetwork = false;
+        let ethPriceUSD = 3000; // Default ETH price, will be updated
 
         // Initialize app
-        window.addEventListener('load', function() {
-            initWeb3();
+        window.addEventListener('load', async function() {
+            await initWeb3();
             initContract();
             startCountdown();
             initEventHandlers();
-            checkConnectedWallet();
+            await checkConnectedWallet();
             initFrameHandlers();
+            await updateEthPrice();
         });
 
-        function initWeb3() {
+        async function initWeb3() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 setupWalletEvents();
@@ -293,6 +299,16 @@
 
         function initContract() {
             lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        }
+
+        async function updateEthPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                const data = await response.json();
+                ethPriceUSD = data.ethereum.usd;
+            } catch (error) {
+                console.error("Failed to fetch ETH price, using default:", error);
+            }
         }
 
         function calculateNextRoundEndTime() {
@@ -527,10 +543,10 @@
             }
         }
 
-        function checkConnectedWallet() {
+        async function checkConnectedWallet() {
             if (window.ethereum && window.ethereum.selectedAddress) {
                 account = window.ethereum.selectedAddress;
-                checkNetwork();
+                await checkNetwork();
                 updateUI();
             }
         }
@@ -551,13 +567,30 @@
             
             if (lotteryContract && account && isBaseNetwork) {
                 try {
+                    // Get ticket cost from contract
                     const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
                     const costEth = web3.utils.fromWei(costWei, 'ether');
                     document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
+                    
+                    // Estimate gas fee
+                    const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
+                        from: account,
+                        value: costWei
+                    });
+                    
+                    const gasPriceWei = web3.utils.toWei(MAX_GAS_PRICE_GWEI.toString(), 'gwei');
+                    const gasCostEth = web3.utils.fromWei(
+                        (gasEstimate * GAS_LIMIT_BUFFER * gasPriceWei).toString(),
+                        'ether'
+                    );
+                    const gasCostUSD = (gasCostEth * ethPriceUSD).toFixed(2);
+                    
+                    document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
                 } catch (error) {
                     console.error("Error getting ticket cost:", error);
                     const defaultCost = ticketAmount * 0.0005;
                     document.getElementById('total-cost').textContent = `${defaultCost.toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
+                    document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
                 }
             }
         }
@@ -576,32 +609,34 @@
                 confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 confirmBtn.disabled = true;
                 
-                // Estimate gas first
+                // Get ticket cost from contract
                 const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
+                
+                // Estimate gas with buffer
                 const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
                     from: account,
                     value: costWei
                 });
                 
-                // Add 20% buffer to gas estimate
-                const gasWithBuffer = Math.floor(gasEstimate * 1.2);
-                
-                // Get current gas price and cap it if necessary
-                let gasPrice = await web3.eth.getGasPrice();
-                const maxGasPrice = web3.utils.toWei('50', 'gwei'); // Max 50 gwei
-                if (web3.utils.toBN(gasPrice).gt(web3.utils.toBN(maxGasPrice))) {
-                    gasPrice = maxGasPrice;
-                }
+                // Set very low gas price (Base network has very low fees)
+                const gasPriceWei = web3.utils.toWei(MAX_GAS_PRICE_GWEI.toString(), 'gwei');
                 
                 // Execute transaction with optimized gas settings
-                await lotteryContract.methods.buyTickets(ticketAmount).send({
+                const tx = await lotteryContract.methods.buyTickets(ticketAmount).send({
                     from: account,
                     value: costWei,
-                    gas: gasWithBuffer,
-                    gasPrice: gasPrice
+                    gas: Math.floor(gasEstimate * GAS_LIMIT_BUFFER),
+                    gasPrice: gasPriceWei
                 });
                 
-                showNotification("Tickets purchased successfully!");
+                // Calculate actual gas used in USD
+                const gasUsedEth = web3.utils.fromWei(
+                    (tx.gasUsed * tx.effectiveGasPrice).toString(),
+                    'ether'
+                );
+                const gasUsedUSD = (gasUsedEth * ethPriceUSD).toFixed(2);
+                
+                showNotification(`Tickets purchased successfully! Fee: $${gasUsedUSD}`);
                 document.getElementById('buy-modal').style.display = 'none';
                 updateRoundInfo();
             } catch (error) {
@@ -609,7 +644,7 @@
                 let errorMsg = "Failed to buy tickets";
                 if (error.message.includes("rejected")) errorMsg = "Transaction rejected";
                 if (error.message.includes("insufficient funds")) errorMsg = "Insufficient funds";
-                if (error.message.includes("gas")) errorMsg = "Transaction failed (gas issue)";
+                if (error.message.includes("gas")) errorMsg = "Adjust gas settings and try again";
                 showNotification(errorMsg, "error");
             } finally {
                 confirmBtn.innerHTML = originalText;
