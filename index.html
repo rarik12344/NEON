@@ -319,6 +319,26 @@
             animation: shine 3s infinite;
         }
         
+        /* NEW: Стиль для MiniApp badge */
+        .miniapp-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--neon-pink);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+            display: none;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
         @keyframes shine {
             0% { transform: rotate(30deg) translate(-30%, -30%); }
             100% { transform: rotate(30deg) translate(30%, 30%); }
@@ -352,6 +372,9 @@
     </style>
 </head>
 <body>
+    <!-- NEW: Добавляем индикатор MiniApp -->
+    <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
+    
     <div class="container">
         <h1>✨ NEON LOTTERY ✨</h1>
         
@@ -455,38 +478,45 @@
         let currentRoundEndTime = calculateNextRoundEndTime();
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
+        
+        // NEW: Флаг для определения MiniApp
+        const isMiniApp = window.farcasterMiniApp !== undefined;
 
         // Initialize app
         window.addEventListener('load', async function() {
-            await initWeb3();
+            if (isMiniApp) {
+                document.getElementById('miniapp-badge').style.display = 'block';
+                await initMiniAppMode();
+            } else {
+                await initWebMode();
+            }
             initContract();
             startCountdown();
             initEventHandlers();
-            await checkConnectedWallet();
-            initFrameHandlers();
             await updateEthPrice();
             updateRoundInfo();
         });
 
-        async function initWeb3() {
-            // Check if we're in Warpcast Mini App environment
-            if (window.farcasterMiniApp && window.farcasterMiniApp.getProvider) {
-                try {
-                    web3 = new Web3(window.farcasterMiniApp.getProvider());
-                    const wallet = await window.farcasterMiniApp.connectWallet();
-                    account = wallet.address;
-                    isBaseNetwork = true;
-                    updateUI();
-                    updateRoundInfo();
-                    showNotification("Farcaster wallet connected");
-                } catch (error) {
-                    console.error("Error connecting Farcaster wallet:", error);
-                }
-            } 
-            // Fallback to MetaMask
-            else if (window.ethereum) {
+        // NEW: Режим MiniApp
+        async function initMiniAppMode() {
+            try {
+                web3 = new Web3(window.farcasterMiniApp.getProvider());
+                const wallet = await window.farcasterMiniApp.connectWallet();
+                account = wallet.address;
+                isBaseNetwork = true; // Предполагаем, что Warpcast использует Base
+                updateUI();
+                showNotification("Warpcast wallet connected!");
+            } catch (error) {
+                console.error("MiniApp init error:", error);
+            }
+        }
+
+        // NEW: Режим веб-сайта
+        async function initWebMode() {
+            if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 setupWalletEvents();
+                await checkConnectedWallet();
             } else {
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
             }
@@ -494,6 +524,39 @@
 
         function initContract() {
             lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        }
+
+        // NEW: Универсальная функция подключения кошелька
+        async function connectWallet() {
+            if (isMiniApp) {
+                try {
+                    const wallet = await window.farcasterMiniApp.connectWallet();
+                    account = wallet.address;
+                    updateUI();
+                    showNotification("Warpcast wallet connected!");
+                } catch (error) {
+                    showNotification("Connection failed", "error");
+                }
+            } else {
+                await connectMetaMask();
+            }
+        }
+
+        // NEW: Упрощенная покупка для MiniApp
+        async function confirmPurchaseMiniApp(ticketAmount, costWei) {
+            try {
+                const txHash = await window.farcasterMiniApp.sendTransaction({
+                    to: CONTRACT_ADDRESS,
+                    value: costWei,
+                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI()
+                });
+                showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
+                return true;
+            } catch (error) {
+                console.error("MiniApp transaction error:", error);
+                showNotification("Transaction failed", "error");
+                return false;
+            }
         }
 
         async function updateEthPrice() {
@@ -556,7 +619,7 @@
 
         function initEventHandlers() {
             // Connect Wallet
-            document.getElementById('connect-btn').addEventListener('click', connectMetaMask);
+            document.getElementById('connect-btn').addEventListener('click', connectWallet);
             
             // Buy Tickets
             document.getElementById('buy-btn').addEventListener('click', function() {
@@ -564,7 +627,7 @@
                     showNotification("Please connect your wallet first", "error");
                     return;
                 }
-                if (!isBaseNetwork) {
+                if (!isBaseNetwork && !isMiniApp) {
                     showNotification("Please switch to Base Network", "error");
                     return;
                 }
@@ -807,7 +870,7 @@
                 document.getElementById('connect-btn').innerHTML = 
                     `<i class="fas fa-check-circle"></i> ${shortAddress}`;
                 document.getElementById('connect-btn').classList.add('wallet-connected');
-                document.getElementById('buy-btn').disabled = !isBaseNetwork;
+                document.getElementById('buy-btn').disabled = !isBaseNetwork && !isMiniApp;
             } else {
                 document.getElementById('connect-btn').innerHTML = 
                     `<i class="fas fa-wallet"></i> Connect Wallet`;
@@ -819,26 +882,30 @@
         async function updateTicketCost() {
             const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
             
-            if (lotteryContract && account && isBaseNetwork) {
+            if (lotteryContract && account && (isBaseNetwork || isMiniApp)) {
                 try {
                     const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
                     const costEth = web3.utils.fromWei(costWei, 'ether');
                     document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
                     
-                    // Estimate gas fee
-                    const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
-                        from: account,
-                        value: costWei
-                    });
-                    
-                    const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
-                    const gasCostEth = web3.utils.fromWei(
-                        (gasEstimate * GAS_LIMIT_BUFFER * gasPriceWei).toString(),
-                        'ether'
-                    );
-                    const gasCostUSD = (gasCostEth * ethPriceUSD).toFixed(2);
-                    
-                    document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
+                    if (!isMiniApp) {
+                        // Estimate gas fee only for web mode
+                        const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
+                            from: account,
+                            value: costWei
+                        });
+                        
+                        const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
+                        const gasCostEth = web3.utils.fromWei(
+                            (gasEstimate * GAS_LIMIT_BUFFER * gasPriceWei).toString(),
+                            'ether'
+                        );
+                        const gasCostUSD = (gasCostEth * ethPriceUSD).toFixed(2);
+                        
+                        document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
+                    } else {
+                        document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+                    }
                 } catch (error) {
                     console.error("Error getting ticket cost:", error);
                     const defaultCost = ticketAmount * 0.0005;
@@ -849,7 +916,7 @@
         }
 
         async function confirmPurchase() {
-            if (!isBaseNetwork) {
+            if (!isBaseNetwork && !isMiniApp) {
                 showNotification("Please switch to Base Network", "error");
                 return;
             }
@@ -865,40 +932,46 @@
                 // Get ticket cost
                 const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
                 
-                // Set optimal gas price
-                const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
-                let gasLimit = DEFAULT_GAS_LIMIT;
-                
-                try {
-                    // Try to estimate gas
-                    const estimatedGas = await lotteryContract.methods.buyTickets(ticketAmount)
-                        .estimateGas({ from: account, value: costWei });
-                    gasLimit = Math.floor(estimatedGas * GAS_LIMIT_BUFFER);
-                } catch (error) {
-                    console.log("Using default gas limit", error);
+                if (isMiniApp) {
+                    // Simplified flow for MiniApp
+                    const success = await confirmPurchaseMiniApp(ticketAmount, costWei);
+                    if (success) {
+                        document.getElementById('buy-modal').style.display = 'none';
+                        updateRoundInfo();
+                    }
+                } else {
+                    // Full flow for web with MetaMask
+                    const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
+                    let gasLimit = DEFAULT_GAS_LIMIT;
+                    
+                    try {
+                        const estimatedGas = await lotteryContract.methods.buyTickets(ticketAmount)
+                            .estimateGas({ from: account, value: costWei });
+                        gasLimit = Math.floor(estimatedGas * GAS_LIMIT_BUFFER);
+                    } catch (error) {
+                        console.log("Using default gas limit", error);
+                    }
+                    
+                    const tx = await lotteryContract.methods.buyTickets(ticketAmount).send({
+                        from: account,
+                        value: costWei,
+                        gas: gasLimit,
+                        gasPrice: gasPriceWei
+                    });
+                    
+                    const gasUsedEth = web3.utils.fromWei(
+                        (tx.gasUsed * tx.effectiveGasPrice).toString(),
+                        'ether'
+                    );
+                    const gasUsedUSD = (gasUsedEth * ethPriceUSD).toFixed(2);
+                    
+                    showNotification(
+                        `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
+                        `Fee: $${gasUsedUSD}`
+                    );
+                    document.getElementById('buy-modal').style.display = 'none';
+                    updateRoundInfo();
                 }
-                
-                // Execute transaction
-                const tx = await lotteryContract.methods.buyTickets(ticketAmount).send({
-                    from: account,
-                    value: costWei,
-                    gas: gasLimit,
-                    gasPrice: gasPriceWei
-                });
-                
-                // Show actual fee
-                const gasUsedEth = web3.utils.fromWei(
-                    (tx.gasUsed * tx.effectiveGasPrice).toString(),
-                    'ether'
-                );
-                const gasUsedUSD = (gasUsedEth * ethPriceUSD).toFixed(2);
-                
-                showNotification(
-                    `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
-                    `Fee: $${gasUsedUSD}`
-                );
-                document.getElementById('buy-modal').style.display = 'none';
-                updateRoundInfo();
             } catch (error) {
                 console.error("Error buying tickets:", error);
                 let errorMsg = "Failed to buy tickets";
@@ -913,7 +986,7 @@
         }
 
         async function updateRoundInfo() {
-            if (!lotteryContract || !account || !isBaseNetwork) return;
+            if (!lotteryContract || !account || (!isBaseNetwork && !isMiniApp)) return;
             
             try {
                 const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
