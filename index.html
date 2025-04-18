@@ -7,7 +7,7 @@
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/CqC2PKr/neon-lottery-preview.png">
+    <meta property="fc:frame:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📢 Share">
@@ -16,7 +16,7 @@
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
-    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/CqC2PKr/neon-lottery-preview.png">
+    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
@@ -319,7 +319,6 @@
             animation: shine 3s infinite;
         }
         
-        /* NEW: Стиль для MiniApp badge */
         .miniapp-badge {
             position: fixed;
             top: 10px;
@@ -349,7 +348,6 @@
             to { top: 20px; opacity: 1; }
         }
         
-        /* Responsive adjustments */
         @media (max-width: 480px) {
             .container {
                 padding: 18px;
@@ -372,7 +370,6 @@
     </style>
 </head>
 <body>
-    <!-- Индикатор MiniApp -->
     <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
     
     <div class="container">
@@ -466,7 +463,7 @@
         const BASE_EXPLORER_URL = 'https://basescan.org';
         const BASE_CURRENCY_SYMBOL = 'ETH';
         
-        // Gas settings (optimized for Base)
+        // Gas settings
         const OPTIMAL_GAS_PRICE_GWEI = 0.2;
         const GAS_LIMIT_BUFFER = 1.2;
         const DEFAULT_GAS_LIMIT = 200000;
@@ -479,7 +476,7 @@
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
         
-        // Флаг для определения MiniApp
+        // Warpcast MiniApp detection
         const isMiniApp = window.farcasterMiniApp !== undefined;
 
         // Initialize app
@@ -497,31 +494,44 @@
             await updateEthPrice();
             updateRoundInfo();
             
-            // Обновляем информацию о пуле каждые 30 секунд
-            setInterval(updateRoundInfo, 30000);
+            // Handle frame actions
+            handleFrameActions();
         });
 
-        // Режим MiniApp
+        // Handle frame actions
+        function handleFrameActions() {
+            const params = new URLSearchParams(window.location.search);
+            const action = params.get('frameAction');
+            
+            if (!action) return;
+            
+            const actionHandlers = {
+                'buy': () => document.getElementById('buy-btn')?.click(),
+                'winners': () => document.getElementById('winners-btn')?.click(),
+                'share': () => document.getElementById('share-btn')?.click(),
+                'connect': () => document.getElementById('connect-btn')?.click()
+            };
+            
+            if (actionHandlers[action]) {
+                actionHandlers[action]();
+                history.replaceState({}, '', location.pathname);
+            }
+        }
+
         async function initMiniAppMode() {
             try {
-                // Используем провайдер Warpcast
                 web3 = new Web3(window.farcasterMiniApp.getProvider());
-                
-                // Автоматически подключаем кошелек
                 const wallet = await window.farcasterMiniApp.connectWallet();
                 account = wallet.address;
-                isBaseNetwork = true; // Предполагаем, что Warpcast использует Base
-                
+                isBaseNetwork = true;
                 updateUI();
                 showNotification("Warpcast wallet connected!");
             } catch (error) {
                 console.error("MiniApp init error:", error);
-                // Если не удалось подключиться, все равно продолжаем работу
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
             }
         }
 
-        // Режим веб-сайта
         async function initWebMode() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -536,7 +546,6 @@
             lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
         }
 
-        // Универсальная функция подключения кошелька
         async function connectWallet() {
             if (isMiniApp) {
                 try {
@@ -552,7 +561,6 @@
             }
         }
 
-        // Упрощенная покупка для MiniApp
         async function confirmPurchaseMiniApp(ticketAmount, costWei) {
             try {
                 const txHash = await window.farcasterMiniApp.sendTransaction({
@@ -560,7 +568,6 @@
                     value: costWei,
                     data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI()
                 });
-                
                 showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
                 return true;
             } catch (error) {
@@ -617,9 +624,8 @@
             document.getElementById('countdown').textContent = 
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 
-            // Update status text color based on time remaining
             const roundStatus = document.getElementById('round-status');
-            if (distance < 3600) { // Less than 1 hour
+            if (distance < 3600) {
                 roundStatus.style.color = "var(--neon-pink)";
                 roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
             } else {
@@ -629,10 +635,8 @@
         }
 
         function initEventHandlers() {
-            // Connect Wallet
             document.getElementById('connect-btn').addEventListener('click', connectWallet);
             
-            // Buy Tickets
             document.getElementById('buy-btn').addEventListener('click', function() {
                 if (!account) {
                     showNotification("Please connect your wallet first", "error");
@@ -642,7 +646,6 @@
                 updateTicketCost();
             });
             
-            // Ticket amount controls
             document.getElementById('decrement-ticket').addEventListener('click', function() {
                 const input = document.getElementById('ticket-amount');
                 if (input.value > 1) input.value = parseInt(input.value) - 1;
@@ -657,23 +660,18 @@
             
             document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
             
-            // Confirm Purchase
             document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
             
-            // Winners
             document.getElementById('winners-btn').addEventListener('click', showWinners);
             
-            // Share
             document.getElementById('share-btn').addEventListener('click', shareLottery);
             
-            // Close modals
             document.querySelectorAll('.close').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
                 });
             });
             
-            // Close modals when clicking outside
             document.querySelectorAll('.modal').forEach(function(modal) {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
@@ -687,7 +685,6 @@
             const shareUrl = `https://neon-xi.vercel.app/`;
             const poolAmount = document.getElementById('current-pool').textContent;
             
-            // Get user referral code if available
             let referralCode = "";
             if (account) {
                 referralCode = `?ref=${account.substring(2, 8)}`;
@@ -700,7 +697,6 @@
                              `${shareUrl}${referralCode}\n\n` +
                              `#NeonLottery #BaseNetwork #ETH`;
             
-            // Different behavior for Warpcast vs regular browser
             if (window.farcasterMiniApp) {
                 try {
                     await window.farcasterMiniApp.post({
@@ -721,13 +717,11 @@
                             url: shareUrl
                         });
                     } else {
-                        // Fallback for desktop browsers
                         const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
                         window.open(warpcastUrl, '_blank');
                     }
                 } catch (error) {
                     console.error("Error sharing:", error);
-                    // Fallback to copy link
                     navigator.clipboard.writeText(shareUrl);
                     showNotification("Link copied to clipboard!");
                 }
@@ -866,7 +860,6 @@
                     document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
                     
                     if (!isMiniApp && account) {
-                        // Estimate gas fee only for web mode with connected wallet
                         const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
                             from: account,
                             value: costWei
@@ -901,18 +894,15 @@
                 confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 confirmBtn.disabled = true;
                 
-                // Get ticket cost
                 const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
                 
                 if (isMiniApp) {
-                    // Simplified flow for MiniApp
                     const success = await confirmPurchaseMiniApp(ticketAmount, costWei);
                     if (success) {
                         document.getElementById('buy-modal').style.display = 'none';
                         updateRoundInfo();
                     }
                 } else {
-                    // Full flow for web with MetaMask
                     const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
                     let gasLimit = DEFAULT_GAS_LIMIT;
                     
@@ -964,18 +954,15 @@
                 const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
                 
-                // Update pool info (работает даже без подключенного кошелька)
                 const prizePoolEth = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
-                // Update user info (только если кошелек подключен)
                 if (account) {
                     const userTickets = await lotteryContract.methods.getUserTickets(account).call();
                     document.getElementById('user-tickets').textContent = userTickets;
                 }
             } catch (error) {
                 console.error("Error updating round info:", error);
-                // Fallback values
                 document.getElementById('current-pool').textContent = "0.00 ETH";
             }
         }
@@ -986,12 +973,10 @@
                     '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
                 document.getElementById('winners-modal').style.display = 'flex';
                 
-                // Get last winner from contract
                 const lastWinnerAddress = await lotteryContract.methods.lastWinner().call();
                 const lastPrize = await lotteryContract.methods.lastPrize().call();
                 const lastPrizeEth = web3.utils.fromWei(lastPrize, 'ether');
                 
-                // Get total rounds
                 const totalRounds = await lotteryContract.methods.totalRounds().call();
                 
                 let winnersHTML = '';
@@ -1010,7 +995,6 @@
                     `;
                 }
                 
-                // Add some mock historical data
                 winnersHTML += `
                     <div class="winner-item">
                         <span>Round #${totalRounds - 1}:</span>
