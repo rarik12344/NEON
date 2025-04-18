@@ -372,7 +372,7 @@
     </style>
 </head>
 <body>
-    <!-- NEW: Добавляем индикатор MiniApp -->
+    <!-- Индикатор MiniApp -->
     <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
     
     <div class="container">
@@ -395,7 +395,7 @@
             <span id="current-pool">0.00 ETH</span>
         </div>
         
-        <div class="info-item">
+        <div class="info-item" id="user-tickets-container" style="display: none;">
             <span><i class="fas fa-user"></i> Your Tickets:</span>
             <span id="user-tickets">0</span>
         </div>
@@ -479,7 +479,7 @@
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
         
-        // NEW: Флаг для определения MiniApp
+        // Флаг для определения MiniApp
         const isMiniApp = window.farcasterMiniApp !== undefined;
 
         // Initialize app
@@ -490,28 +490,38 @@
             } else {
                 await initWebMode();
             }
+            
             initContract();
             startCountdown();
             initEventHandlers();
             await updateEthPrice();
             updateRoundInfo();
+            
+            // Обновляем информацию о пуле каждые 30 секунд
+            setInterval(updateRoundInfo, 30000);
         });
 
-        // NEW: Режим MiniApp
+        // Режим MiniApp
         async function initMiniAppMode() {
             try {
+                // Используем провайдер Warpcast
                 web3 = new Web3(window.farcasterMiniApp.getProvider());
+                
+                // Автоматически подключаем кошелек
                 const wallet = await window.farcasterMiniApp.connectWallet();
                 account = wallet.address;
                 isBaseNetwork = true; // Предполагаем, что Warpcast использует Base
+                
                 updateUI();
                 showNotification("Warpcast wallet connected!");
             } catch (error) {
                 console.error("MiniApp init error:", error);
+                // Если не удалось подключиться, все равно продолжаем работу
+                web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
             }
         }
 
-        // NEW: Режим веб-сайта
+        // Режим веб-сайта
         async function initWebMode() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -526,7 +536,7 @@
             lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
         }
 
-        // NEW: Универсальная функция подключения кошелька
+        // Универсальная функция подключения кошелька
         async function connectWallet() {
             if (isMiniApp) {
                 try {
@@ -542,7 +552,7 @@
             }
         }
 
-        // NEW: Упрощенная покупка для MiniApp
+        // Упрощенная покупка для MiniApp
         async function confirmPurchaseMiniApp(ticketAmount, costWei) {
             try {
                 const txHash = await window.farcasterMiniApp.sendTransaction({
@@ -550,6 +560,7 @@
                     value: costWei,
                     data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI()
                 });
+                
                 showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
                 return true;
             } catch (error) {
@@ -627,10 +638,6 @@
                     showNotification("Please connect your wallet first", "error");
                     return;
                 }
-                if (!isBaseNetwork && !isMiniApp) {
-                    showNotification("Please switch to Base Network", "error");
-                    return;
-                }
                 document.getElementById('buy-modal').style.display = 'flex';
                 updateTicketCost();
             });
@@ -674,38 +681,6 @@
                     }
                 });
             });
-        }
-
-        function initFrameHandlers() {
-            // Handle Farcaster Frame actions
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'frame-action') {
-                    const buttonIndex = event.data.buttonIndex;
-                    
-                    switch(buttonIndex) {
-                        case 1: // Buy Tickets
-                            document.getElementById('buy-btn').click();
-                            break;
-                        case 2: // Winners
-                            document.getElementById('winners-btn').click();
-                            break;
-                        case 3: // Share
-                            shareLottery();
-                            break;
-                        case 4: // Connect Wallet
-                            document.getElementById('connect-btn').click();
-                            break;
-                    }
-                }
-            });
-            
-            // Resize frame for Warpcast if embedded
-            if (window.parent !== window) {
-                window.parent.postMessage({
-                    type: 'frame-resize',
-                    height: document.documentElement.scrollHeight
-                }, '*');
-            }
         }
 
         async function shareLottery() {
@@ -870,26 +845,28 @@
                 document.getElementById('connect-btn').innerHTML = 
                     `<i class="fas fa-check-circle"></i> ${shortAddress}`;
                 document.getElementById('connect-btn').classList.add('wallet-connected');
-                document.getElementById('buy-btn').disabled = !isBaseNetwork && !isMiniApp;
+                document.getElementById('buy-btn').disabled = false;
+                document.getElementById('user-tickets-container').style.display = 'flex';
             } else {
                 document.getElementById('connect-btn').innerHTML = 
                     `<i class="fas fa-wallet"></i> Connect Wallet`;
                 document.getElementById('connect-btn').classList.remove('wallet-connected');
                 document.getElementById('buy-btn').disabled = true;
+                document.getElementById('user-tickets-container').style.display = 'none';
             }
         }
 
         async function updateTicketCost() {
             const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
             
-            if (lotteryContract && account && (isBaseNetwork || isMiniApp)) {
+            if (lotteryContract) {
                 try {
                     const costWei = await lotteryContract.methods.getTicketCostETH(ticketAmount).call();
                     const costEth = web3.utils.fromWei(costWei, 'ether');
                     document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
                     
-                    if (!isMiniApp) {
-                        // Estimate gas fee only for web mode
+                    if (!isMiniApp && account) {
+                        // Estimate gas fee only for web mode with connected wallet
                         const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
                             from: account,
                             value: costWei
@@ -916,11 +893,6 @@
         }
 
         async function confirmPurchase() {
-            if (!isBaseNetwork && !isMiniApp) {
-                showNotification("Please switch to Base Network", "error");
-                return;
-            }
-            
             const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
             const confirmBtn = document.getElementById('confirm-buy');
             const originalText = confirmBtn.innerHTML;
@@ -986,21 +958,25 @@
         }
 
         async function updateRoundInfo() {
-            if (!lotteryContract || !account || (!isBaseNetwork && !isMiniApp)) return;
+            if (!lotteryContract) return;
             
             try {
                 const roundInfo = await lotteryContract.methods.currentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
                 
-                // Update pool info
+                // Update pool info (работает даже без подключенного кошелька)
                 const prizePoolEth = web3.utils.fromWei(roundInfo.currentPrizePool, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
-                // Update user info
-                const userTickets = await lotteryContract.methods.getUserTickets(account).call();
-                document.getElementById('user-tickets').textContent = userTickets;
+                // Update user info (только если кошелек подключен)
+                if (account) {
+                    const userTickets = await lotteryContract.methods.getUserTickets(account).call();
+                    document.getElementById('user-tickets').textContent = userTickets;
+                }
             } catch (error) {
                 console.error("Error updating round info:", error);
+                // Fallback values
+                document.getElementById('current-pool').textContent = "0.00 ETH";
             }
         }
 
