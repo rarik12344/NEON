@@ -624,15 +624,56 @@
 
         async function initMiniAppMode() {
             try {
+                // Initialize Web3 with Warpcast provider
                 web3 = new Web3(window.farcasterMiniApp.getProvider());
-                const wallet = await window.farcasterMiniApp.connectWallet();
-                account = wallet.address;
-                isBaseNetwork = true;
-                updateUI();
-                showNotification("Warpcast wallet connected!");
+                
+                // Check if already connected
+                const connectedAccount = await checkMiniAppConnection();
+                if (connectedAccount) {
+                    account = connectedAccount;
+                    isBaseNetwork = true;
+                    updateUI();
+                    return;
+                }
+                
+                // Add connect button handler for MiniApp
+                document.getElementById('connect-btn').addEventListener('click', async () => {
+                    try {
+                        const wallet = await window.farcasterMiniApp.connectWallet();
+                        if (wallet && wallet.address) {
+                            account = wallet.address;
+                            isBaseNetwork = true;
+                            updateUI();
+                            showNotification("Warpcast wallet connected!");
+                            
+                            // Optional: Get user info
+                            const user = await window.farcasterMiniApp.getUser();
+                            console.log("User info:", user);
+                        }
+                    } catch (error) {
+                        console.error("MiniApp wallet connection error:", error);
+                        showNotification("Connection failed", "error");
+                    }
+                });
+                
             } catch (error) {
                 console.error("MiniApp init error:", error);
+                // Fallback to regular web mode if MiniApp fails
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
+            }
+        }
+
+        // Check if already connected in MiniApp
+        async function checkMiniAppConnection() {
+            try {
+                const wallet = await window.farcasterMiniApp.getWallet();
+                if (wallet && wallet.address) {
+                    return wallet.address;
+                }
+                return null;
+            } catch (error) {
+                console.log("No active MiniApp connection");
+                return null;
             }
         }
 
@@ -653,11 +694,24 @@
         async function connectWallet() {
             if (isMiniApp) {
                 try {
+                    // MiniApp specific connection flow
                     const wallet = await window.farcasterMiniApp.connectWallet();
-                    account = wallet.address;
-                    updateUI();
-                    showNotification("Warpcast wallet connected!");
+                    if (wallet && wallet.address) {
+                        account = wallet.address;
+                        isBaseNetwork = true;
+                        updateUI();
+                        showNotification("Warpcast wallet connected!");
+                        
+                        // Optional: Get additional user info
+                        try {
+                            const user = await window.farcasterMiniApp.getUser();
+                            console.log("User profile:", user);
+                        } catch (e) {
+                            console.log("Couldn't get user profile", e);
+                        }
+                    }
                 } catch (error) {
+                    console.error("MiniApp wallet connection error:", error);
                     showNotification("Connection failed", "error");
                 }
             } else {
@@ -667,16 +721,37 @@
 
         async function confirmPurchaseMiniApp(ticketAmount, costWei) {
             try {
+                // Show loading state
+                document.getElementById('confirm-buy').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Waiting for approval...';
+                
+                // Send transaction through Warpcast
                 const txHash = await window.farcasterMiniApp.sendTransaction({
                     to: CONTRACT_ADDRESS,
-                    value: costWei,
-                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI()
+                    value: costWei.toString(),
+                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI(),
+                    chainId: parseInt(BASE_CHAIN_ID, 16) // Base chain ID
                 });
+                
                 showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
+                
+                // Optional: Notify user about successful transaction
+                try {
+                    await window.farcasterMiniApp.notify({
+                        title: "Tickets Purchased!",
+                        body: `You bought ${ticketAmount} ticket(s) for the lottery`,
+                        icon: "https://i.ibb.co/LGGsLj0/neon-lottery-preview.png"
+                    });
+                } catch (e) {
+                    console.log("Couldn't send notification", e);
+                }
+                
                 return true;
             } catch (error) {
                 console.error("MiniApp transaction error:", error);
-                showNotification("Transaction failed", "error");
+                let errorMsg = "Transaction failed";
+                if (error.message.includes("rejected")) errorMsg = "Transaction rejected";
+                if (error.message.includes("insufficient funds")) errorMsg = "Insufficient funds";
+                showNotification(errorMsg, "error");
                 return false;
             }
         }
