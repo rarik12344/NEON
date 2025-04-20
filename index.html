@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Lottery | Daily ETH Lottery on Base</title>
     
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Neon Lottery | Daily ETH Lottery on Base">
+    <meta name="description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    <meta property="og:title" content="Neon Lottery | Daily ETH Lottery on Base">
+    <meta property="og:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
+    <meta property="og:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://neon-xi.vercel.app/">
+    <meta property="twitter:title" content="Neon Lottery | Daily ETH Lottery on Base">
+    <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
+    <meta property="twitter:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
     <meta property="fc:frame:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
@@ -18,8 +36,12 @@
     <meta name="farcaster-miniapp" content="v1">
     <meta name="farcaster-miniapp:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
-    <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network">
+    <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
+    <meta name="farcaster-miniapp:button:1" content="Buy Tickets">
+    <meta name="farcaster-miniapp:button:2" content="View Winners">
+    <meta name="farcaster-miniapp:button:3" content="Invite Friends">
+    <meta name="farcaster-miniapp:button:4" content="Connect Wallet">
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -332,6 +354,38 @@
             display: none;
         }
         
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .social-share a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+            text-decoration: none;
+        }
+        
+        .social-share a:hover {
+            transform: scale(1.1);
+        }
+        
+        .twitter { background: #1DA1F2; }
+        .warpcast { background: #472FFF; }
+        .telegram { background: #0088cc; }
+        .whatsapp { background: #25D366; }
+        .facebook { background: #1877F2; }
+        .reddit { background: #FF5700; }
+        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -409,8 +463,8 @@
             <i class="fas fa-trophy"></i> View Winners
         </button>
         
-        <button id="share-btn" class="btn btn-purple">
-            <i class="fas fa-share-alt"></i> Share & Earn
+        <button id="invite-btn" class="btn btn-purple">
+            <i class="fas fa-user-plus"></i> Invite Friends
         </button>
     </div>
 
@@ -448,6 +502,64 @@
             <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
             <div id="winners-content">
                 Loading winners history...
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div class="modal" id="invite-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-user-plus"></i> Invite Friends</h2>
+            
+            <p>Invite friends to participate and earn rewards for active participation!</p>
+            
+            <div class="social-share" id="social-share">
+                <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="warpcast" id="warpcast-share"><i class="fas fa-bolt"></i></a>
+                <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
+                <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="reddit" id="reddit-share"><i class="fab fa-reddit"></i></a>
+            </div>
+            
+            <div class="info-item" style="margin-top: 20px;">
+                <span>Your referral link:</span>
+                <span id="referral-link">Connect wallet first</span>
+            </div>
+            
+            <button id="copy-link" class="btn" style="margin-top: 15px;">
+                <i class="fas fa-copy"></i> Copy Link
+            </button>
+            
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--neon-blue);">
+                <i class="fas fa-info-circle"></i> Active participants may qualify for future airdrops!
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
+            
+            <div style="text-align: left; margin-top: 20px;">
+                <p><strong>🏆 Daily ETH Lottery:</strong> Participate in our transparent, blockchain-based lottery with daily draws.</p>
+                
+                <p><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
+                
+                <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission (20%).</p>
+                
+                <p><strong>⏰ Draw Schedule:</strong> Each round lasts 24 hours, ending at 16:00 UTC daily.</p>
+                
+                <p><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                
+                <p><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
+                
+                <p style="margin-top: 30px; text-align: center;">
+                    <strong>Questions?</strong> Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a>
+                </p>
             </div>
         </div>
     </div>
@@ -508,7 +620,7 @@
             const actionHandlers = {
                 'buy': () => document.getElementById('buy-btn')?.click(),
                 'winners': () => document.getElementById('winners-btn')?.click(),
-                'share': () => document.getElementById('share-btn')?.click(),
+                'invite': () => document.getElementById('invite-btn')?.click(),
                 'connect': () => document.getElementById('connect-btn')?.click()
             };
             
@@ -636,6 +748,11 @@
             
             document.getElementById('countdown').textContent = 
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update round end time display
+            const endTime = new Date(currentRoundEndTime * 1000);
+            const endTimeStr = endTime.toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0] + ' UTC';
+            document.getElementById('round-status').textContent = `Round Active - Ends at ${endTimeStr}`;
                 
             const roundStatus = document.getElementById('round-status');
             if (distance < 3600) {
@@ -677,7 +794,9 @@
             
             document.getElementById('winners-btn').addEventListener('click', showWinners);
             
-            document.getElementById('share-btn').addEventListener('click', shareLottery);
+            document.getElementById('invite-btn').addEventListener('click', inviteFriends);
+            
+            document.getElementById('copy-link').addEventListener('click', copyReferralLink);
             
             document.querySelectorAll('.close').forEach(function(button) {
                 button.addEventListener('click', function() {
@@ -692,53 +811,82 @@
                     }
                 });
             });
+            
+            // Info button in header
+            const infoButton = document.createElement('button');
+            infoButton.innerHTML = '<i class="fas fa-info-circle"></i>';
+            infoButton.style.position = 'absolute';
+            infoButton.style.top = '20px';
+            infoButton.style.left = '20px';
+            infoButton.style.background = 'transparent';
+            infoButton.style.border = 'none';
+            infoButton.style.color = 'var(--neon-blue)';
+            infoButton.style.fontSize = '1.5rem';
+            infoButton.style.cursor = 'pointer';
+            infoButton.addEventListener('click', () => {
+                document.getElementById('info-modal').style.display = 'flex';
+            });
+            document.body.appendChild(infoButton);
         }
 
-        async function shareLottery() {
-            const shareUrl = `https://neon-xi.vercel.app/`;
-            const poolAmount = document.getElementById('current-pool').textContent;
+        async function inviteFriends() {
+            document.getElementById('invite-modal').style.display = 'flex';
             
-            let referralCode = "";
             if (account) {
-                referralCode = `?ref=${account.substring(2, 8)}`;
-            }
-            
-            const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
-                             `💰 Current Prize Pool: ${poolAmount}\n` +
-                             `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
-                             `Buy tickets for a chance to win daily ETH prizes!\n` +
-                             `${shareUrl}${referralCode}\n\n` +
-                             `#NeonLottery #BaseNetwork #ETH`;
-            
-            if (window.farcasterMiniApp) {
-                try {
-                    await window.farcasterMiniApp.post({
-                        text: shareText,
-                        embeds: [{ url: shareUrl }]
+                const referralCode = account.substring(2, 8);
+                const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
+                document.getElementById('referral-link').textContent = referralUrl;
+                
+                // Setup social share links
+                const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
+                                 `💰 Win daily ETH prizes with transparent blockchain draws\n` +
+                                 `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
+                                 `Use my referral link to get started:\n${referralUrl}\n\n` +
+                                 `#NeonLottery #BaseNetwork #ETH`;
+                
+                const encodedText = encodeURIComponent(shareText);
+                const encodedUrl = encodeURIComponent(referralUrl);
+                
+                document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
+                document.getElementById('warpcast-share').href = `https://warpcast.com/~/compose?text=${encodedText}`;
+                document.getElementById('telegram-share').href = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+                document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodedText}`;
+                document.getElementById('facebook-share').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+                document.getElementById('reddit-share').href = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent('Neon Lottery - Daily ETH Lottery on Base')}`;
+                
+                if (isMiniApp) {
+                    document.getElementById('warpcast-share').addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        try {
+                            await window.farcasterMiniApp.post({
+                                text: shareText,
+                                embeds: [{ url: referralUrl }]
+                            });
+                            showNotification("Post created on Warpcast!");
+                        } catch (error) {
+                            console.error("Error creating Warpcast post:", error);
+                            showNotification("Failed to create post", "error");
+                        }
                     });
-                    showNotification("Post created on Warpcast!");
-                } catch (error) {
-                    console.error("Error creating Warpcast post:", error);
-                    showNotification("Failed to create post", "error");
                 }
             } else {
-                try {
-                    if (navigator.share) {
-                        await navigator.share({
-                            title: 'Neon Lottery',
-                            text: shareText,
-                            url: shareUrl
-                        });
-                    } else {
-                        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
-                        window.open(warpcastUrl, '_blank');
-                    }
-                } catch (error) {
-                    console.error("Error sharing:", error);
-                    navigator.clipboard.writeText(shareUrl);
-                    showNotification("Link copied to clipboard!");
-                }
+                document.getElementById('referral-link').textContent = "Connect wallet first";
             }
+        }
+
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referral-link').textContent;
+            if (referralLink === "Connect wallet first") {
+                showNotification("Please connect wallet first", "error");
+                return;
+            }
+            
+            navigator.clipboard.writeText(referralLink).then(() => {
+                showNotification("Link copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification("Failed to copy link", "error");
+            });
         }
 
         function setupWalletEvents() {
@@ -969,7 +1117,9 @@
                 const roundInfo = await lotteryContract.methods.getCurrentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
                 
-                const prizePoolEth = web3.utils.fromWei(roundInfo.prizePool, 'ether');
+                // Display prize pool with 20% commission already deducted
+                const prizePoolWei = roundInfo.prizePool;
+                const prizePoolEth = web3.utils.fromWei(prizePoolWei, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
                 if (account) {
@@ -1011,10 +1161,22 @@
                     
                     if (round.winner !== '0x0000000000000000000000000000000000000000') {
                         const prizeEth = web3.utils.fromWei(round.prizeAmount, 'ether');
+                        const txLink = `${BASE_EXPLORER_URL}/tx/${round.randomnessSeed}`;
+                        
                         winnersHTML += `
                             <div class="winner-item">
-                                <span>Round #${i}:</span>
-                                <span>${round.winner.substring(0, 6)}...${round.winner.substring(38)} (${parseFloat(prizeEth).toFixed(4)} ETH)</span>
+                                <div>
+                                    <div><strong>Round #${i}</strong></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                        ${round.winner.substring(0, 6)}...${round.winner.substring(38)}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
+                                    <div style="font-size: 0.8rem;">
+                                        <a href="${txLink}" target="_blank" style="color: var(--neon-blue);">View TX</a>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     }
@@ -1029,6 +1191,9 @@
                             <span>Recent Winners</span>
                         </div>
                         ${winnersHTML}
+                        <div style="margin-top: 20px; font-size: 0.8rem; text-align: center; color: var(--neon-blue);">
+                            All winners and transactions are permanently recorded on the blockchain
+                        </div>
                     `;
                 }
                 
