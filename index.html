@@ -14,24 +14,24 @@
     <meta property="og:url" content="https://neon-xi.vercel.app/">
     <meta property="og:title" content="Neon Lottery | Daily ETH Lottery on Base">
     <meta property="og:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
-    <meta property="og:image" content="https://i.imgur.com/GBiD7fl.png"> <!-- Обновленная картинка -->
+    <meta property="og:image" content="https://i.ibb.co/ch1ksZH/neon-lottery-banner.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://neon-xi.vercel.app/">
     <meta property="twitter:title" content="Neon Lottery | Daily ETH Lottery on Base">
     <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
-    <meta property="twitter:image" content="https://i.imgur.com/GBiD7fl.png"> <!-- Обновленная картинка -->
+    <meta property="twitter:image" content="https://i.ibb.co/ch1ksZH/neon-lottery-banner.png">
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.imgur.com/GBiD7fl.png"> <!-- Обновленная картинка -->
+    <meta property="fc:frame:image" content="https://i.ibb.co/ch1ksZH/neon-lottery-banner.png">
     <meta property="fc:frame:button:1" content="🎫 Participate">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
-    <meta name="farcaster-miniapp:image" content="https://i.imgur.com/GBiD7fl.png"> <!-- Обновленная картинка -->
+    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/ch1ksZH/neon-lottery-banner.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
@@ -380,6 +380,16 @@
         .facebook { background: #1877F2; }
         .reddit { background: #FF5700; }
         
+        /* Warpcast icon */
+        .warpcast-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -514,7 +524,7 @@
             
             <div class="social-share" id="social-share">
                 <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="warpcast" id="warpcast-share"><i class="fas fa-bolt"></i></a>
+                <a href="#" class="warpcast" id="warpcast-share"><span class="warpcast-icon"></span></a>
                 <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
                 <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
                 <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
@@ -739,7 +749,7 @@
                     await window.farcasterMiniApp.notify({
                         title: "Tickets Purchased!",
                         body: `You bought ${ticketAmount} ticket(s) for the lottery`,
-                        icon: "https://i.imgur.com/GBiD7fl.png"
+                        icon: "https://i.ibb.co/ch1ksZH/neon-lottery-banner.png"
                     });
                 } catch (e) {
                     console.log("Couldn't send notification", e);
