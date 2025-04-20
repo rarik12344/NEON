@@ -14,24 +14,24 @@
     <meta property="og:url" content="https://neon-xi.vercel.app/">
     <meta property="og:title" content="Neon Lottery | Daily ETH Lottery on Base">
     <meta property="og:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
-    <meta property="og:image" content="https://i.ibb.co/7t27YmFx/Neon-lottery-2.jpg">
+    <meta property="og:image" content="https://i.ibb.co/W4TP51Jj/Chat-GPT-Image-21-2025-00-21-51-1.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://neon-xi.vercel.app/">
     <meta property="twitter:title" content="Neon Lottery | Daily ETH Lottery on Base">
     <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
-    <meta property="twitter:image" content="https://i.ibb.co/7t27YmFx/Neon-lottery-2.jpg">
+    <meta property="twitter:image" content="https://i.ibb.co/W4TP51Jj/Chat-GPT-Image-21-2025-00-21-51-1.png">
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/7t27YmFx/Neon-lottery-2.jpg">
+    <meta property="fc:frame:image" content="https://i.ibb.co/W4TP51Jj/Chat-GPT-Image-21-2025-00-21-51-1.png">
     <meta property="fc:frame:button:1" content="🎫 Participate">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
-    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/7t27YmFx/Neon-lottery-2.jpg">
+    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/W4TP51Jj/Chat-GPT-Image-21-2025-00-21-51-1.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
@@ -381,15 +381,36 @@
         .facebook { background: #1877F2; }
         .reddit { background: #FF5700; }
         
-        /* Warpcast icon - Official W logo in white on purple square */
-        .warpcast-icon {
+        /* Farcaster icon */
+        .farcaster-icon {
             display: inline-block;
             width: 24px;
             height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect fill='%23472FFF' width='24' height='24' rx='4'/%3E%3Cpath fill='white' d='M12 8.5c-1.2 0-2.3.4-3.2 1.1l-.2.2v5.3l.2.2c.9.7 2 1.1 3.2 1.1s2.3-.4 3.2-1.1l.2-.2V9.8l-.2-.2c-.9-.7-2-1.1-3.2-1.1zm0 6.5c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 8.5c-1.2 0-2.3.4-3.2 1.1l-.2.2v5.3l.2.2c.9.7 2 1.1 3.2 1.1s2.3-.4 3.2-1.1l.2-.2V9.8l-.2-.2c-.9-.7-2-1.1-3.2-1.1zm0 6.5c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1z'/%3E%3C/svg%3E");
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+        }
+        
+        .winner-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .winner-actions a {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--neon-blue);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .winner-actions a:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
         
         @keyframes pulse {
@@ -433,7 +454,7 @@
                 font-size: 1.3rem;
             }
             
-            .warpcast-icon {
+            .farcaster-icon {
                 width: 20px;
                 height: 20px;
             }
@@ -537,7 +558,7 @@
             
             <div class="social-share" id="social-share">
                 <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="warpcast" id="warpcast-share"><span class="warpcast-icon"></span></a>
+                <a href="#" class="warpcast" id="warpcast-share"><span class="farcaster-icon"></span></a>
                 <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
                 <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
                 <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
@@ -762,7 +783,7 @@
                     await window.farcasterMiniApp.notify({
                         title: "Tickets Purchased!",
                         body: `You bought ${ticketAmount} ticket(s) for the lottery`,
-                        icon: "https://i.ibb.co/7t27YmFx/Neon-lottery-2.jpg"
+                        icon: "https://i.ibb.co/W4TP51Jj/Chat-GPT-Image-21-2025-00-21-51-1.png"
                     });
                 } catch (e) {
                     console.log("Couldn't send notification", e);
@@ -1229,6 +1250,7 @@
                     
                     if (round.winner !== '0x0000000000000000000000000000000000000000') {
                         const prizeEth = web3.utils.fromWei(round.prizeAmount, 'ether');
+                        const explorerUrl = `${BASE_EXPLORER_URL}/address/${round.winner}`;
                         
                         winnersHTML += `
                             <div class="winner-item">
@@ -1236,6 +1258,14 @@
                                     <div><strong>Round #${i}</strong></div>
                                     <div style="font-size: 0.8rem; color: var(--text-secondary);">
                                         ${round.winner.substring(0, 6)}...${round.winner.substring(38)}
+                                    </div>
+                                    <div class="winner-actions">
+                                        <a href="${explorerUrl}" target="_blank" title="View on Basescan">
+                                            <i class="fas fa-external-link-alt"></i> Explorer
+                                        </a>
+                                        <a href="https://warpcast.com/~/search?q=${round.winner}" target="_blank" title="Search on Warpcast">
+                                            <i class="fas fa-search"></i> Warpcast
+                                        </a>
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
