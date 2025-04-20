@@ -7,16 +7,16 @@
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.imgur.com/d8m10EX.png">
+    <meta property="fc:frame:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📢 Share">
-    <meta property="fc:frame:button:4" content="ℹ️ Info">
+    <meta property="fc:frame:button:4" content="🔗 Connect">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
-    <meta name="farcaster-miniapp:image" content="https://i.imgur.com/d8m10EX.png">
+    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
@@ -332,43 +332,6 @@
             display: none;
         }
         
-        .info-content {
-            text-align: left;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-        
-        .info-content h3 {
-            color: var(--neon-blue);
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .info-content ul {
-            padding-left: 20px;
-            margin: 10px 0;
-        }
-        
-        .info-content li {
-            margin-bottom: 8px;
-        }
-        
-        .highlight {
-            color: var(--neon-green);
-            font-weight: bold;
-        }
-        
-        .winner-link {
-            color: var(--neon-blue);
-            text-decoration: none;
-            font-size: 0.8rem;
-            margin-left: 5px;
-        }
-        
-        .winner-link:hover {
-            text-decoration: underline;
-        }
-        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -402,10 +365,6 @@
             .btn {
                 padding: 12px;
                 font-size: 0.9rem;
-            }
-            
-            .info-content {
-                font-size: 0.85rem;
             }
         }
     </style>
@@ -451,11 +410,7 @@
         </button>
         
         <button id="share-btn" class="btn btn-purple">
-            <i class="fas fa-share-alt"></i> Invite Friends
-        </button>
-        
-        <button id="info-btn" class="btn">
-            <i class="fas fa-info-circle"></i> Info
+            <i class="fas fa-share-alt"></i> Share & Earn
         </button>
     </div>
 
@@ -497,51 +452,6 @@
         </div>
     </div>
 
-    <!-- Info Modal -->
-    <div class="modal" id="info-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
-            
-            <div class="info-content">
-                <h3>🎰 How It Works</h3>
-                <p>Neon Lottery is a daily ETH lottery on Base Network:</p>
-                <ul>
-                    <li>Each round lasts <span class="highlight">24 hours</span></li>
-                    <li>Buy tickets to participate in the current round</li>
-                    <li>One winner is randomly selected when the round ends</li>
-                    <li>The winner receives the prize pool (after platform fee)</li>
-                    <li>New round starts immediately after the previous one ends</li>
-                </ul>
-                
-                <h3>💰 Prize Distribution</h3>
-                <p>The prize pool is distributed as follows:</p>
-                <ul>
-                    <li><span class="highlight">90%</span> to the winner</li>
-                    <li><span class="highlight">10%</span> platform fee for development and maintenance</li>
-                </ul>
-                
-                <h3>🏆 Winner Announcement</h3>
-                <p>When a round ends:</p>
-                <ul>
-                    <li>The winner is selected using verifiable randomness</li>
-                    <li>The prize transaction is sent automatically</li>
-                    <li>You can view the transaction on BaseScan</li>
-                </ul>
-                
-                <h3>🚀 Future Plans</h3>
-                <p>We're planning exciting updates:</p>
-                <ul>
-                    <li>Active participants will be eligible for future airdrops</li>
-                    <li>More frequent lottery draws</li>
-                    <li>Special bonus rounds</li>
-                </ul>
-                
-                <p>Questions? Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a></p>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Contract details
         const CONTRACT_ADDRESS = "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B";
@@ -562,7 +472,7 @@
         let web3;
         let lotteryContract;
         let account = null;
-        let currentRoundEndTime = 0;
+        let currentRoundEndTime = calculateNextRoundEndTime();
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
         
@@ -579,10 +489,10 @@
             }
             
             initContract();
+            startCountdown();
             initEventHandlers();
             await updateEthPrice();
-            await updateRoundInfo();
-            startCountdown();
+            updateRoundInfo();
             
             // Handle frame actions
             handleFrameActions();
@@ -599,7 +509,6 @@
                 'buy': () => document.getElementById('buy-btn')?.click(),
                 'winners': () => document.getElementById('winners-btn')?.click(),
                 'share': () => document.getElementById('share-btn')?.click(),
-                'info': () => document.getElementById('info-btn')?.click(),
                 'connect': () => document.getElementById('connect-btn')?.click()
             };
             
@@ -693,6 +602,18 @@
             }
         }
 
+        function calculateNextRoundEndTime() {
+            const now = new Date();
+            const endTime = new Date(now);
+            endTime.setUTCHours(16, 0, 0, 0);
+            
+            if (now.getTime() > endTime.getTime()) {
+                endTime.setUTCDate(endTime.getUTCDate() + 1);
+            }
+            
+            return Math.floor(endTime.getTime() / 1000);
+        }
+
         function startCountdown() {
             updateCountdown();
             setInterval(updateCountdown, 1000);
@@ -704,7 +625,8 @@
             
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "00:00:00";
-                document.getElementById('round-status').textContent = "Round Ended - Next at " + formatUTCTime(currentRoundEndTime);
+                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
+                currentRoundEndTime = calculateNextRoundEndTime();
                 return;
             }
             
@@ -723,13 +645,6 @@
                 roundStatus.style.color = "var(--text-secondary)";
                 roundStatus.style.textShadow = "none";
             }
-        }
-
-        function formatUTCTime(timestamp) {
-            const date = new Date(timestamp * 1000);
-            const hours = date.getUTCHours().toString().padStart(2, '0');
-            const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-            return `${hours}:${minutes} UTC`;
         }
 
         function initEventHandlers() {
@@ -764,10 +679,6 @@
             
             document.getElementById('share-btn').addEventListener('click', shareLottery);
             
-            document.getElementById('info-btn').addEventListener('click', function() {
-                document.getElementById('info-modal').style.display = 'flex';
-            });
-            
             document.querySelectorAll('.close').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
@@ -787,23 +698,28 @@
             const shareUrl = `https://neon-xi.vercel.app/`;
             const poolAmount = document.getElementById('current-pool').textContent;
             
+            let referralCode = "";
+            if (account) {
+                referralCode = `?ref=${account.substring(2, 8)}`;
+            }
+            
             const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
                              `💰 Current Prize Pool: ${poolAmount}\n` +
                              `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
                              `Buy tickets for a chance to win daily ETH prizes!\n` +
-                             `${shareUrl}\n\n` +
+                             `${shareUrl}${referralCode}\n\n` +
                              `#NeonLottery #BaseNetwork #ETH`;
             
-            if (isMiniApp) {
+            if (window.farcasterMiniApp) {
                 try {
                     await window.farcasterMiniApp.post({
                         text: shareText,
                         embeds: [{ url: shareUrl }]
                     });
-                    showNotification("Invitation posted to Warpcast!");
+                    showNotification("Post created on Warpcast!");
                 } catch (error) {
                     console.error("Error creating Warpcast post:", error);
-                    showNotification("Failed to create cast", "error");
+                    showNotification("Failed to create post", "error");
                 }
             } else {
                 try {
@@ -814,7 +730,7 @@
                             url: shareUrl
                         });
                     } else {
-                        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+                        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
                         window.open(warpcastUrl, '_blank');
                     }
                 } catch (error) {
@@ -1030,7 +946,6 @@
                         `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
                         `Fee: $${gasUsedUSD}`
                     );
-                    
                     document.getElementById('buy-modal').style.display = 'none';
                     updateRoundInfo();
                 }
@@ -1054,18 +969,11 @@
                 const roundInfo = await lotteryContract.methods.getCurrentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
                 
-                // Calculate prize pool after fee (90%)
-                const prizePoolWei = roundInfo.prizePool;
-                const prizePoolAfterFee = prizePoolWei * 90n / 100n;
-                const prizePoolEth = web3.utils.fromWei(prizePoolAfterFee.toString(), 'ether');
-                
+                const prizePoolEth = web3.utils.fromWei(roundInfo.prizePool, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
-                // Update round end time display
-                document.getElementById('round-status').textContent = 
-                    `Round Active - Ends at ${formatUTCTime(currentRoundEndTime)}`;
-                
                 if (account) {
+                    // For the new contract, we need to check all participants in current round
                     const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
                     const round = await lotteryContract.methods.rounds(currentRoundIndex).call();
                     const participantsCount = parseInt(round.participantsCount);
@@ -1095,6 +1003,7 @@
                 const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
                 let winnersHTML = '';
                 
+                // Show winners from previous rounds (up to 10 rounds back)
                 const roundsToShow = Math.min(currentRoundIndex, 10);
                 
                 for (let i = currentRoundIndex - 1; i >= Math.max(0, currentRoundIndex - roundsToShow); i--) {
@@ -1102,22 +1011,10 @@
                     
                     if (round.winner !== '0x0000000000000000000000000000000000000000') {
                         const prizeEth = web3.utils.fromWei(round.prizeAmount, 'ether');
-                        const txLink = `${BASE_EXPLORER_URL}/tx/${round.randomnessSeed}`;
-                        
                         winnersHTML += `
                             <div class="winner-item">
-                                <div>
-                                    <div>Round #${i}:</div>
-                                    <div style="font-size: 0.8rem; margin-top: 5px;">
-                                        ${round.winner.substring(0, 6)}...${round.winner.substring(38)}
-                                    </div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div>${parseFloat(prizeEth).toFixed(4)} ETH</div>
-                                    <div style="font-size: 0.8rem; margin-top: 5px;">
-                                        <a href="${txLink}" target="_blank" class="winner-link">View TX</a>
-                                    </div>
-                                </div>
+                                <span>Round #${i}:</span>
+                                <span>${round.winner.substring(0, 6)}...${round.winner.substring(38)} (${parseFloat(prizeEth).toFixed(4)} ETH)</span>
                             </div>
                         `;
                     }
