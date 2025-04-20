@@ -26,10 +26,7 @@
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
     <meta property="fc:frame:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
-    <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
-    <meta property="fc:frame:button:2" content="🏆 Winners">
-    <meta property="fc:frame:button:3" content="📢 Share">
-    <meta property="fc:frame:button:4" content="🔗 Connect">
+    <meta property="fc:frame:button:1" content="🎫 Participate">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
@@ -39,9 +36,6 @@
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
     <meta name="farcaster-miniapp:button:1" content="Buy Tickets">
-    <meta name="farcaster-miniapp:button:2" content="View Winners">
-    <meta name="farcaster-miniapp:button:3" content="Invite Friends">
-    <meta name="farcaster-miniapp:button:4" content="Connect Wallet">
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -434,7 +428,7 @@
         </div>
         
         <div class="timer" id="countdown">00:00:00</div>
-        <div class="round-status" id="round-status">Round Active - Ends at 16:00 UTC</div>
+        <div class="round-status" id="round-status">Round Active - Ends in 24 hours</div>
         
         <div class="info-item">
             <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
@@ -465,6 +459,10 @@
         
         <button id="invite-btn" class="btn btn-purple">
             <i class="fas fa-user-plus"></i> Invite Friends
+        </button>
+        
+        <button id="info-btn" class="btn">
+            <i class="fas fa-info-circle"></i> How It Works
         </button>
     </div>
 
@@ -549,9 +547,9 @@
                 
                 <p><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
                 
-                <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission (20%).</p>
+                <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
                 
-                <p><strong>⏰ Draw Schedule:</strong> Each round lasts 24 hours, ending at 16:00 UTC daily.</p>
+                <p><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
                 
                 <p><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
                 
@@ -615,18 +613,12 @@
             const params = new URLSearchParams(window.location.search);
             const action = params.get('frameAction');
             
-            if (!action) return;
-            
-            const actionHandlers = {
-                'buy': () => document.getElementById('buy-btn')?.click(),
-                'winners': () => document.getElementById('winners-btn')?.click(),
-                'invite': () => document.getElementById('invite-btn')?.click(),
-                'connect': () => document.getElementById('connect-btn')?.click()
-            };
-            
-            if (actionHandlers[action]) {
-                actionHandlers[action]();
-                history.replaceState({}, '', location.pathname);
+            if (action === 'buy') {
+                if (isMiniApp) {
+                    document.getElementById('buy-btn').click();
+                } else {
+                    window.location.href = 'https://neon-xi.vercel.app/';
+                }
             }
         }
 
@@ -717,12 +709,7 @@
         function calculateNextRoundEndTime() {
             const now = new Date();
             const endTime = new Date(now);
-            endTime.setUTCHours(16, 0, 0, 0);
-            
-            if (now.getTime() > endTime.getTime()) {
-                endTime.setUTCDate(endTime.getUTCDate() + 1);
-            }
-            
+            endTime.setUTCHours(now.getUTCHours() + 24);
             return Math.floor(endTime.getTime() / 1000);
         }
 
@@ -737,7 +724,7 @@
             
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "00:00:00";
-                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
+                document.getElementById('round-status').textContent = "Round Ended - Next round starting";
                 currentRoundEndTime = calculateNextRoundEndTime();
                 return;
             }
@@ -749,11 +736,6 @@
             document.getElementById('countdown').textContent = 
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Update round end time display
-            const endTime = new Date(currentRoundEndTime * 1000);
-            const endTimeStr = endTime.toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0] + ' UTC';
-            document.getElementById('round-status').textContent = `Round Active - Ends at ${endTimeStr}`;
-                
             const roundStatus = document.getElementById('round-status');
             if (distance < 3600) {
                 roundStatus.style.color = "var(--neon-pink)";
@@ -796,6 +778,10 @@
             
             document.getElementById('invite-btn').addEventListener('click', inviteFriends);
             
+            document.getElementById('info-btn').addEventListener('click', () => {
+                document.getElementById('info-modal').style.display = 'flex';
+            });
+            
             document.getElementById('copy-link').addEventListener('click', copyReferralLink);
             
             document.querySelectorAll('.close').forEach(function(button) {
@@ -811,22 +797,6 @@
                     }
                 });
             });
-            
-            // Info button in header
-            const infoButton = document.createElement('button');
-            infoButton.innerHTML = '<i class="fas fa-info-circle"></i>';
-            infoButton.style.position = 'absolute';
-            infoButton.style.top = '20px';
-            infoButton.style.left = '20px';
-            infoButton.style.background = 'transparent';
-            infoButton.style.border = 'none';
-            infoButton.style.color = 'var(--neon-blue)';
-            infoButton.style.fontSize = '1.5rem';
-            infoButton.style.cursor = 'pointer';
-            infoButton.addEventListener('click', () => {
-                document.getElementById('info-modal').style.display = 'flex';
-            });
-            document.body.appendChild(infoButton);
         }
 
         async function inviteFriends() {
@@ -1117,7 +1087,7 @@
                 const roundInfo = await lotteryContract.methods.getCurrentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
                 
-                // Display prize pool with 20% commission already deducted
+                // Display prize pool with commission already deducted
                 const prizePoolWei = roundInfo.prizePool;
                 const prizePoolEth = web3.utils.fromWei(prizePoolWei, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
@@ -1161,7 +1131,6 @@
                     
                     if (round.winner !== '0x0000000000000000000000000000000000000000') {
                         const prizeEth = web3.utils.fromWei(round.prizeAmount, 'ether');
-                        const txLink = `${BASE_EXPLORER_URL}/tx/${round.randomnessSeed}`;
                         
                         winnersHTML += `
                             <div class="winner-item">
@@ -1173,8 +1142,8 @@
                                 </div>
                                 <div style="text-align: right;">
                                     <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
-                                    <div style="font-size: 0.8rem;">
-                                        <a href="${txLink}" target="_blank" style="color: var(--neon-blue);">View TX</a>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                        ${new Date(round.endTime * 1000).toLocaleDateString()}
                                     </div>
                                 </div>
                             </div>
