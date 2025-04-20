@@ -11,7 +11,7 @@
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📢 Share">
-    <meta property="fc:frame:button:4" content="ℹ️ Info">
+    <meta property="fc:frame:button:4" content="🔗 Connect">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
@@ -336,36 +336,6 @@
             display: none;
         }
         
-        .info-content {
-            text-align: left;
-            line-height: 1.6;
-        }
-        
-        .info-content h3 {
-            color: var(--neon-blue);
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .info-content ul {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .info-content li {
-            margin-bottom: 8px;
-        }
-        
-        .info-content p {
-            margin-bottom: 15px;
-        }
-        
-        .support-link {
-            color: var(--neon-green);
-            text-decoration: none;
-            font-weight: bold;
-        }
-        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -399,10 +369,6 @@
             .btn {
                 padding: 12px;
                 font-size: 0.9rem;
-            }
-            
-            .modal-content {
-                padding: 18px;
             }
         }
     </style>
@@ -455,10 +421,6 @@
         <button id="share-btn" class="btn btn-purple">
             <i class="fas fa-share-alt"></i> Share & Earn
         </button>
-        
-        <button id="info-btn" class="btn">
-            <i class="fas fa-info-circle"></i> How It Works
-        </button>
     </div>
 
     <!-- Buy Tickets Modal -->
@@ -495,47 +457,6 @@
             <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
             <div id="winners-content">
                 Loading winners history...
-            </div>
-        </div>
-    </div>
-
-    <!-- Info Modal -->
-    <div class="modal" id="info-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-info-circle"></i> How Neon Lottery Works</h2>
-            
-            <div class="info-content">
-                <h3>🎯 Daily ETH Lottery</h3>
-                <p>Neon Lottery is a daily ETH lottery on Base Network where you can buy tickets for a chance to win the prize pool.</p>
-                
-                <h3>⏳ How It Works</h3>
-                <ul>
-                    <li>Each round lasts 24 hours</li>
-                    <li>Buy tickets to participate in the current round</li>
-                    <li>When the round ends, one winner is selected randomly</li>
-                    <li>The winner receives the prize (after platform commission)</li>
-                    <li>A new round starts immediately after</li>
-                </ul>
-                
-                <h3>⭐ Points System</h3>
-                <ul>
-                    <li>Earn 10 points for each ticket purchased</li>
-                    <li>Get 20 bonus points when someone uses your referral link</li>
-                    <li>Points will be used for future airdrops and special rewards</li>
-                </ul>
-                
-                <h3>🔗 Referral Program</h3>
-                <p>Share your referral link on Warpcast to earn bonus points when friends join and buy tickets. The more you share, the more points you earn!</p>
-                
-                <h3>💡 Important Notes</h3>
-                <ul>
-                    <li>All transactions happen on-chain</li>
-                    <li>Winner selection is provably fair</li>
-                    <li>Platform commission is deducted from the prize pool</li>
-                </ul>
-                
-                <p>For any questions, contact us on <a href="https://warpcast.com/rarik12344" class="support-link" target="_blank">Warpcast</a></p>
             </div>
         </div>
     </div>
@@ -602,7 +523,7 @@
                 'buy': () => document.getElementById('buy-btn')?.click(),
                 'winners': () => document.getElementById('winners-btn')?.click(),
                 'share': () => document.getElementById('share-btn')?.click(),
-                'info': () => document.getElementById('info-btn')?.click()
+                'connect': () => document.getElementById('connect-btn')?.click()
             };
             
             if (actionHandlers[action]) {
@@ -768,10 +689,6 @@
             
             document.getElementById('share-btn').addEventListener('click', shareLottery);
             
-            document.getElementById('info-btn').addEventListener('click', function() {
-                document.getElementById('info-modal').style.display = 'flex';
-            });
-            
             document.querySelectorAll('.close').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
@@ -851,10 +768,8 @@
                 const data = await response.json();
                 userPoints = data.points || 0;
                 
-                // Check for referral code only in Warpcast MiniApp
-                if (isMiniApp) {
-                    await checkReferral();
-                }
+                // Check for referral code
+                await checkReferral();
                 
                 document.getElementById('user-points').textContent = userPoints;
                 document.getElementById('user-points-container').style.display = 'flex';
@@ -883,8 +798,6 @@
                     
                     if (!data.hasReferral) {
                         referralCode = ref;
-                        // Award bonus points for using referral
-                        await awardPoints(0, true);
                     }
                 } catch (error) {
                     console.error("Error checking referral:", error);
@@ -892,27 +805,39 @@
             }
         }
 
-        async function awardPoints(ticketsBought = 0, isReferral = false) {
+        async function awardPoints(ticketsBought) {
             if (!account) return;
             
             try {
-                const response = await fetch(`${API_URL}/points`, {
+                // Add points for purchase
+                const pointsResponse = await fetch(`${API_URL}/points`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         action: 'add', 
                         address: account,
-                        tickets: ticketsBought,
-                        isReferral: isReferral
+                        tickets: ticketsBought
                     })
                 });
                 
-                const data = await response.json();
-                userPoints = data.points || 0;
+                const pointsData = await pointsResponse.json();
+                userPoints = pointsData.points || 0;
                 
-                if (isReferral) {
-                    showNotification(`+20 bonus points for using referral link! Total: ${userPoints} points`);
-                } else if (ticketsBought > 0) {
+                // Register referral if exists
+                if (referralCode) {
+                    await fetch(`${API_URL}/referrals`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'set', 
+                            address: account,
+                            referrer: referralCode
+                        })
+                    });
+                    
+                    showNotification(`+${ticketsBought * 10} points for purchase + 20 bonus points for referral! Total: ${userPoints} points`);
+                    referralCode = ''; // Clear to prevent reuse
+                } else {
                     showNotification(`+${ticketsBought * 10} points! Total: ${userPoints} points`);
                 }
                 
