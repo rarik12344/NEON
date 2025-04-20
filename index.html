@@ -336,6 +336,13 @@
             display: none;
         }
         
+        .add-to-warpcast-btn {
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+            color: white;
+            margin-top: 10px;
+        }
+        
         .info-content {
             text-align: left;
             font-size: 0.9rem;
@@ -454,6 +461,10 @@
         
         <button id="info-btn" class="btn">
             <i class="fas fa-info-circle"></i> Info
+        </button>
+        
+        <button id="add-to-warpcast" class="btn add-to-warpcast-btn" style="display: none;">
+            <i class="fas fa-plus"></i> Add to Warpcast
         </button>
     </div>
 
@@ -577,8 +588,10 @@
         window.addEventListener('load', async function() {
             if (isMiniApp) {
                 document.getElementById('miniapp-badge').style.display = 'block';
+                document.getElementById('add-to-warpcast').style.display = 'none';
                 await initMiniAppMode();
             } else {
+                document.getElementById('add-to-warpcast').style.display = 'block';
                 await initWebMode();
             }
             
@@ -590,6 +603,11 @@
             
             // Handle frame actions
             handleFrameActions();
+            
+            // Setup Add to Warpcast button
+            document.getElementById('add-to-warpcast').addEventListener('click', () => {
+                window.open('https://warpcast.com/~/add-miniapp?url=https://neon-xi.vercel.app');
+            });
         });
 
         // Handle frame actions
