@@ -11,7 +11,7 @@
     <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
     <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📢 Share">
-    <meta property="fc:frame:button:4" content="🔗 Connect">
+    <meta property="fc:frame:button:4" content="ℹ️ Info">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
@@ -336,6 +336,32 @@
             display: none;
         }
         
+        .info-content {
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .info-content h3 {
+            color: var(--neon-blue);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .info-content ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .info-content li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -369,6 +395,10 @@
             .btn {
                 padding: 12px;
                 font-size: 0.9rem;
+            }
+            
+            .info-content {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -421,6 +451,10 @@
         <button id="share-btn" class="btn btn-purple">
             <i class="fas fa-share-alt"></i> Share & Earn
         </button>
+        
+        <button id="info-btn" class="btn">
+            <i class="fas fa-info-circle"></i> Info
+        </button>
     </div>
 
     <!-- Buy Tickets Modal -->
@@ -457,6 +491,52 @@
             <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
             <div id="winners-content">
                 Loading winners history...
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
+            
+            <div class="info-content">
+                <h3>🎰 How It Works</h3>
+                <p>Neon Lottery is a daily ETH lottery on Base Network:</p>
+                <ul>
+                    <li>Each round lasts <span class="highlight">24 hours</span></li>
+                    <li>Buy tickets to participate in the current round</li>
+                    <li>One winner is randomly selected when the round ends</li>
+                    <li>The winner receives the prize pool (after platform fee)</li>
+                    <li>New round starts immediately after the previous one ends</li>
+                </ul>
+                
+                <h3>⭐ Points System</h3>
+                <p>Earn points for every action:</p>
+                <ul>
+                    <li><span class="highlight">10 points</span> per purchased ticket</li>
+                    <li><span class="highlight">20 bonus points</span> when someone uses your referral link (Warpcast only)</li>
+                    <li>Points will be used for future <span class="highlight">airdrops</span> and special rewards</li>
+                </ul>
+                
+                <h3>🔗 Referral Program</h3>
+                <p>Share your referral link in Warpcast to earn bonus points:</p>
+                <ul>
+                    <li>Only works within Warpcast app</li>
+                    <li>Get <span class="highlight">20 points</span> for each friend who buys tickets</li>
+                    <li>Your friend also gets <span class="highlight">20 bonus points</span></li>
+                </ul>
+                
+                <h3>📢 Important Notes</h3>
+                <ul>
+                    <li>All transactions are on-chain and transparent</li>
+                    <li>Winner selection uses verifiable randomness</li>
+                    <li>Platform fee is used for development and maintenance</li>
+                    <li>By participating you agree to our Terms of Service</li>
+                </ul>
+                
+                <p>Questions? Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a></p>
             </div>
         </div>
     </div>
@@ -523,6 +603,7 @@
                 'buy': () => document.getElementById('buy-btn')?.click(),
                 'winners': () => document.getElementById('winners-btn')?.click(),
                 'share': () => document.getElementById('share-btn')?.click(),
+                'info': () => document.getElementById('info-btn')?.click(),
                 'connect': () => document.getElementById('connect-btn')?.click()
             };
             
@@ -689,6 +770,10 @@
             
             document.getElementById('share-btn').addEventListener('click', shareLottery);
             
+            document.getElementById('info-btn').addEventListener('click', function() {
+                document.getElementById('info-modal').style.display = 'flex';
+            });
+            
             document.querySelectorAll('.close').forEach(function(button) {
                 button.addEventListener('click', function() {
                     this.closest('.modal').style.display = 'none';
@@ -709,7 +794,7 @@
             const poolAmount = document.getElementById('current-pool').textContent;
             
             let referralCode = "";
-            if (account) {
+            if (account && isMiniApp) {
                 referralCode = account.substring(2, 8); // First 6 chars of address (without 0x)
             }
             
@@ -718,14 +803,14 @@
                              `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n` +
                              `⭐ Earn 10 points per ticket + 20 bonus for using my link!\n\n` +
                              `Buy tickets for a chance to win daily ETH prizes!\n` +
-                             `${shareUrl}?ref=${referralCode}\n\n` +
+                             `${shareUrl}${isMiniApp ? `?ref=${referralCode}` : ''}\n\n` +
                              `#NeonLottery #BaseNetwork #ETH`;
             
-            if (window.farcasterMiniApp) {
+            if (isMiniApp) {
                 try {
                     await window.farcasterMiniApp.post({
                         text: shareText,
-                        embeds: [{ url: shareUrl }]
+                        embeds: [{ url: shareUrl + (referralCode ? `?ref=${referralCode}` : '') }]
                     });
                     showNotification("Cast with your referral link created on Warpcast!");
                 } catch (error) {
@@ -738,7 +823,7 @@
                         await navigator.share({
                             title: 'Neon Lottery',
                             text: shareText,
-                            url: `${shareUrl}?ref=${referralCode}`
+                            url: shareUrl
                         });
                     } else {
                         const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
@@ -746,7 +831,7 @@
                     }
                 } catch (error) {
                     console.error("Error sharing:", error);
-                    navigator.clipboard.writeText(`${shareUrl}?ref=${referralCode}`);
+                    navigator.clipboard.writeText(shareUrl);
                     showNotification("Link copied to clipboard!");
                 }
             }
@@ -768,8 +853,10 @@
                 const data = await response.json();
                 userPoints = data.points || 0;
                 
-                // Check for referral code
-                await checkReferral();
+                // Check for referral code (only in Warpcast)
+                if (isMiniApp) {
+                    await checkReferral();
+                }
                 
                 document.getElementById('user-points').textContent = userPoints;
                 document.getElementById('user-points-container').style.display = 'flex';
@@ -782,7 +869,7 @@
             const params = new URLSearchParams(window.location.search);
             const ref = params.get('ref');
             
-            if (ref && account) {
+            if (ref && account && isMiniApp) {
                 try {
                     // Check if user already used a referral
                     const response = await fetch(`${API_URL}/referrals`, {
@@ -798,6 +885,7 @@
                     
                     if (!data.hasReferral) {
                         referralCode = ref;
+                        showNotification("Referral link detected! You'll get bonus points after purchase");
                     }
                 } catch (error) {
                     console.error("Error checking referral:", error);
@@ -823,8 +911,8 @@
                 const pointsData = await pointsResponse.json();
                 userPoints = pointsData.points || 0;
                 
-                // Register referral if exists
-                if (referralCode) {
+                // Register referral if exists (only in Warpcast)
+                if (referralCode && isMiniApp) {
                     await fetch(`${API_URL}/referrals`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
