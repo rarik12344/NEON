@@ -12,14 +12,14 @@
     <meta property="fc:frame:button:2" content="🏆 Winners">
     <meta property="fc:frame:button:3" content="📢 Share">
     <meta property="fc:frame:button:4" content="🔗 Connect">
-    <meta property="fc:frame:post_url" content="https://neon-lottery.vercel.app/api/frame">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
     <meta name="farcaster-miniapp:image" content="https://i.imgur.com/d8m10EX.png">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network">
-    <meta name="farcaster-miniapp:url" content="https://neon-lottery.vercel.app/">
+    <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -481,14 +481,14 @@
         let web3;
         let lotteryContract;
         let account = null;
-        let currentRoundEndTime = calculateNextRoundEndTime();
+        let currentRoundEndTime = 0;
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
         let userPoints = 0;
         let referralCode = "";
         
         // API config
-        const API_URL = "https://neon-lottery.vercel.app/api";
+        const API_URL = "https://neon-xi.vercel.app/api";
         
         // Warpcast MiniApp detection
         const isMiniApp = window.farcasterMiniApp !== undefined;
@@ -503,10 +503,10 @@
             }
             
             initContract();
-            startCountdown();
             initEventHandlers();
             await updateEthPrice();
-            updateRoundInfo();
+            await updateRoundInfo();
+            startCountdown();
             
             // Handle frame actions
             handleFrameActions();
@@ -618,18 +618,6 @@
             }
         }
 
-        function calculateNextRoundEndTime() {
-            const now = new Date();
-            const endTime = new Date(now);
-            endTime.setUTCHours(16, 0, 0, 0);
-            
-            if (now.getTime() > endTime.getTime()) {
-                endTime.setUTCDate(endTime.getUTCDate() + 1);
-            }
-            
-            return Math.floor(endTime.getTime() / 1000);
-        }
-
         function startCountdown() {
             updateCountdown();
             setInterval(updateCountdown, 1000);
@@ -641,8 +629,7 @@
             
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "00:00:00";
-                document.getElementById('round-status').textContent = "Round Ended - Next at 16:00 UTC";
-                currentRoundEndTime = calculateNextRoundEndTime();
+                document.getElementById('round-status').textContent = "Round Ended - Next at " + formatUTCTime(currentRoundEndTime);
                 return;
             }
             
@@ -661,6 +648,13 @@
                 roundStatus.style.color = "var(--text-secondary)";
                 roundStatus.style.textShadow = "none";
             }
+        }
+
+        function formatUTCTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            const hours = date.getUTCHours().toString().padStart(2, '0');
+            const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes} UTC`;
         }
 
         function initEventHandlers() {
@@ -711,7 +705,7 @@
         }
 
         async function shareLottery() {
-            const shareUrl = `https://neon-lottery.vercel.app/`;
+            const shareUrl = `https://neon-xi.vercel.app/`;
             const poolAmount = document.getElementById('current-pool').textContent;
             
             let referralCode = "";
@@ -733,10 +727,10 @@
                         text: shareText,
                         embeds: [{ url: shareUrl }]
                     });
-                    showNotification("Post created on Warpcast!");
+                    showNotification("Cast with your referral link created on Warpcast!");
                 } catch (error) {
                     console.error("Error creating Warpcast post:", error);
-                    showNotification("Failed to create post", "error");
+                    showNotification("Failed to create cast", "error");
                 }
             } else {
                 try {
@@ -747,7 +741,7 @@
                             url: `${shareUrl}?ref=${referralCode}`
                         });
                     } else {
-                        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
+                        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
                         window.open(warpcastUrl, '_blank');
                     }
                 } catch (error) {
@@ -1091,6 +1085,10 @@
                 
                 const prizePoolEth = web3.utils.fromWei(roundInfo.prizePool, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
+                
+                // Update round end time display
+                document.getElementById('round-status').textContent = 
+                    `Round Active - Ends at ${formatUTCTime(currentRoundEndTime)}`;
                 
                 if (account) {
                     const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
