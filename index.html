@@ -1,52 +1,1194 @@
-// В начале скрипта, после объявления переменных
-if (isMiniApp) {
-  // Инициализация MiniApp
-  window.farcasterMiniApp.on('walletChange', (wallet) => {
-    if (wallet?.address) {
-      account = wallet.address;
-      updateUI();
-    }
-  });
-  
-  // Автоматическая проверка при загрузке
-  window.addEventListener('load', async () => {
-    try {
-      const wallet = await window.farcasterMiniApp.getWallet();
-      if (wallet?.address) {
-        account = wallet.address;
-        isBaseNetwork = true;
-        updateUI();
-      }
-    } catch (error) {
-      console.log("No wallet connected");
-    }
-  });
-}
-
-// Модифицированная функция connectWallet
-async function connectWallet() {
-  if (isMiniApp) {
-    try {
-      const wallet = await window.farcasterMiniApp.connectWallet();
-      if (wallet?.address) {
-        account = wallet.address;
-        isBaseNetwork = true;
-        updateUI();
-        showNotification("Connected via Warpcast!");
-        
-        // Получение дополнительной информации о пользователе
-        try {
-          const user = await window.farcasterMiniApp.getUser();
-          console.log("User profile:", user);
-        } catch (e) {
-          console.log("Couldn't get user profile", e);
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Lottery | Daily ETH Lottery on Base</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Neon Lottery | Daily ETH Lottery on Base">
+    <meta name="description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    <meta property="og:title" content="Neon Lottery | Daily ETH Lottery on Base">
+    <meta property="og:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
+    <meta property="og:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://neon-xi.vercel.app/">
+    <meta property="twitter:title" content="Neon Lottery | Daily ETH Lottery on Base">
+    <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
+    <meta property="twitter:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    
+    <!-- Farcaster Frame Metadata -->
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    <meta property="fc:frame:button:1" content="🎫 Participate">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    
+    <!-- Farcaster Mini Apps Metadata -->
+    <meta name="farcaster-miniapp" content="v1">
+    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    <meta name="farcaster-miniapp:title" content="Neon Lottery">
+    <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network with transparent blockchain-based draws">
+    <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
+    <meta name="farcaster-miniapp:button:1" content="Buy Tickets">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Web3 Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #9d00ff;
+            --neon-green: #00ff88;
+            --dark-bg: #0f0f1a;
+            --card-bg: rgba(15, 15, 26, 0.9);
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
         }
-      }
-    } catch (error) {
-      showNotification("Connection failed", "error");
-    }
-  } else {
-    // Оригинальная реализация для web
-    await connectMetaMask();
-  }
-}
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+        
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 
+                0 0 20px rgba(0, 243, 255, 0.2),
+                0 0 40px rgba(255, 0, 255, 0.1);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        .timer {
+            font-size: 2.2rem;
+            margin: 20px 0;
+            color: var(--neon-pink);
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            font-family: 'Poppins', monospace;
+        }
+        
+        .round-status {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .info-item span:first-child {
+            color: var(--text-secondary);
+        }
+        
+        .btn {
+            background: var(--neon-blue);
+            border: none;
+            color: black;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 12px 0;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-pink {
+            background: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+        }
+        
+        .btn-purple {
+            background: var(--neon-purple);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+        }
+        
+        .btn-green {
+            background: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            color: black;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px currentColor;
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none;
+        }
+        
+        .network-warning {
+            background: rgba(255, 85, 85, 0.2);
+            color: #ff5555;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 12px 0;
+            display: none;
+            border: 1px solid #ff5555;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--neon-pink);
+            transition: transform 0.2s;
+        }
+        
+        .close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .ticket-input {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .ticket-input button {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--neon-purple);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .ticket-input button:hover {
+            transform: scale(1.1);
+        }
+        
+        .ticket-input input {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid var(--neon-blue);
+            color: white;
+            width: 70px;
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            padding: 14px 24px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+        }
+        
+        .notification.error {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .gas-info {
+            font-size: 0.85rem;
+            color: var(--neon-blue);
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .winner-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(157, 0, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(157, 0, 255, 0.2);
+        }
+        
+        .wallet-connected {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wallet-connected::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(0, 243, 255, 0),
+                rgba(0, 243, 255, 0),
+                rgba(0, 243, 255, 0.3),
+                rgba(0, 243, 255, 0)
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+        
+        .miniapp-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--neon-pink);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+            display: none;
+        }
+        
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .social-share a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+            text-decoration: none;
+        }
+        
+        .social-share a:hover {
+            transform: scale(1.1);
+        }
+        
+        .twitter { background: #1DA1F2; }
+        .warpcast { background: #472FFF; }
+        .telegram { background: #0088cc; }
+        .whatsapp { background: #25D366; }
+        .facebook { background: #1877F2; }
+        .reddit { background: #FF5700; }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(30deg) translate(-30%, -30%); }
+            100% { transform: rotate(30deg) translate(30%, 30%); }
+        }
+        
+        @keyframes slideIn {
+            from { top: -100px; opacity: 0; }
+            to { top: 20px; opacity: 1; }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 18px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .timer {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
+    
+    <div class="container">
+        <h1>✨ NEON LOTTERY ✨</h1>
+        
+        <div class="network-warning" id="network-warning">
+            <i class="fas fa-exclamation-triangle"></i> Please switch to Base Network to participate
+        </div>
+        
+        <div class="timer" id="countdown">00:00:00</div>
+        <div class="round-status" id="round-status">Round Active - Ends in 24 hours</div>
+        
+        <div class="info-item">
+            <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
+            <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
+        </div>
+        
+        <div class="info-item">
+            <span><i class="fas fa-coins"></i> Current Pool:</span>
+            <span id="current-pool">0.00 ETH</span>
+        </div>
+        
+        <div class="info-item" id="user-tickets-container" style="display: none;">
+            <span><i class="fas fa-user"></i> Your Tickets:</span>
+            <span id="user-tickets">0</span>
+        </div>
+        
+        <button id="connect-btn" class="btn btn-green">
+            <i class="fas fa-wallet"></i> Connect Wallet
+        </button>
+        
+        <button id="buy-btn" class="btn" disabled>
+            <i class="fas fa-ticket-alt"></i> Buy Tickets
+        </button>
+        
+        <button id="winners-btn" class="btn btn-pink">
+            <i class="fas fa-trophy"></i> View Winners
+        </button>
+        
+        <button id="invite-btn" class="btn btn-purple">
+            <i class="fas fa-user-plus"></i> Invite Friends
+        </button>
+        
+        <button id="info-btn" class="btn">
+            <i class="fas fa-info-circle"></i> How It Works
+        </button>
+    </div>
+
+    <!-- Buy Tickets Modal -->
+    <div class="modal" id="buy-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-ticket-alt"></i> Buy Tickets</h2>
+            
+            <div class="ticket-input">
+                <button id="decrement-ticket">-</button>
+                <input type="number" id="ticket-amount" value="1" min="1" max="100">
+                <button id="increment-ticket">+</button>
+            </div>
+            
+            <div class="info-item">
+                <span>Total Cost:</span>
+                <span id="total-cost">0 ETH</span>
+            </div>
+            
+            <div class="gas-info">
+                <i class="fas fa-gas-pump"></i> Estimated fee: <span id="gas-fee-estimate">~$0.10-$0.50</span>
+            </div>
+            
+            <button id="confirm-buy" class="btn">
+                <i class="fas fa-shopping-cart"></i> Confirm Purchase
+            </button>
+        </div>
+    </div>
+
+    <!-- Winners Modal -->
+    <div class="modal" id="winners-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
+            <div id="winners-content">
+                Loading winners history...
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div class="modal" id="invite-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-user-plus"></i> Invite Friends</h2>
+            
+            <p>Invite friends to participate and earn rewards for active participation!</p>
+            
+            <div class="social-share" id="social-share">
+                <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="warpcast" id="warpcast-share"><i class="fas fa-bolt"></i></a>
+                <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
+                <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="reddit" id="reddit-share"><i class="fab fa-reddit"></i></a>
+            </div>
+            
+            <div class="info-item" style="margin-top: 20px;">
+                <span>Your referral link:</span>
+                <span id="referral-link">Connect wallet first</span>
+            </div>
+            
+            <button id="copy-link" class="btn" style="margin-top: 15px;">
+                <i class="fas fa-copy"></i> Copy Link
+            </button>
+            
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--neon-blue);">
+                <i class="fas fa-info-circle"></i> Active participants may qualify for future airdrops!
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
+            
+            <div style="text-align: left; margin-top: 20px;">
+                <p><strong>🏆 Daily ETH Lottery:</strong> Participate in our transparent, blockchain-based lottery with daily draws.</p>
+                
+                <p><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
+                
+                <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
+                
+                <p><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
+                
+                <p><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                
+                <p><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
+                
+                <p style="margin-top: 30px; text-align: center;">
+                    <strong>Questions?</strong> Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contract details
+        const CONTRACT_ADDRESS = "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B";
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
+        
+        // Network config
+        const BASE_CHAIN_ID = '0x2105';
+        const BASE_RPC_URL = 'https://mainnet.base.org';
+        const BASE_EXPLORER_URL = 'https://basescan.org';
+        const BASE_CURRENCY_SYMBOL = 'ETH';
+        
+        // Gas settings
+        const OPTIMAL_GAS_PRICE_GWEI = 0.2;
+        const GAS_LIMIT_BUFFER = 1.2;
+        const DEFAULT_GAS_LIMIT = 200000;
+        
+        // App state
+        let web3;
+        let lotteryContract;
+        let account = null;
+        let currentRoundEndTime = calculateNextRoundEndTime();
+        let isBaseNetwork = false;
+        let ethPriceUSD = 3000;
+        
+        // Warpcast MiniApp detection
+        const isMiniApp = window.farcasterMiniApp !== undefined;
+
+        // Initialize app
+        window.addEventListener('load', async function() {
+            if (isMiniApp) {
+                document.getElementById('miniapp-badge').style.display = 'block';
+                await initMiniAppMode();
+            } else {
+                await initWebMode();
+            }
+            
+            initContract();
+            startCountdown();
+            initEventHandlers();
+            await updateEthPrice();
+            updateRoundInfo();
+            
+            // Handle frame actions
+            handleFrameActions();
+        });
+
+        // Handle frame actions
+        function handleFrameActions() {
+            const params = new URLSearchParams(window.location.search);
+            const action = params.get('frameAction');
+            
+            if (action === 'buy') {
+                if (isMiniApp) {
+                    document.getElementById('buy-btn').click();
+                } else {
+                    window.location.href = 'https://neon-xi.vercel.app/';
+                }
+            }
+        }
+
+        async function initMiniAppMode() {
+            try {
+                web3 = new Web3(window.farcasterMiniApp.getProvider());
+                const wallet = await window.farcasterMiniApp.connectWallet();
+                account = wallet.address;
+                isBaseNetwork = true;
+                updateUI();
+                showNotification("Warpcast wallet connected!");
+            } catch (error) {
+                console.error("MiniApp init error:", error);
+                web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
+            }
+        }
+
+        async function initWebMode() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                setupWalletEvents();
+                await checkConnectedWallet();
+            } else {
+                web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
+            }
+        }
+
+        function initContract() {
+            lotteryContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        }
+
+        async function connectWallet() {
+            if (isMiniApp) {
+                try {
+                    const wallet = await window.farcasterMiniApp.connectWallet();
+                    account = wallet.address;
+                    updateUI();
+                    showNotification("Warpcast wallet connected!");
+                } catch (error) {
+                    showNotification("Connection failed", "error");
+                }
+            } else {
+                await connectMetaMask();
+            }
+        }
+
+        async function confirmPurchaseMiniApp(ticketAmount, costWei) {
+            try {
+                const txHash = await window.farcasterMiniApp.sendTransaction({
+                    to: CONTRACT_ADDRESS,
+                    value: costWei,
+                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI()
+                });
+                showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
+                return true;
+            } catch (error) {
+                console.error("MiniApp transaction error:", error);
+                showNotification("Transaction failed", "error");
+                return false;
+            }
+        }
+
+        async function updateEthPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                const data = await response.json();
+                ethPriceUSD = data.ethereum.usd;
+                updateTicketPriceDisplay();
+            } catch (error) {
+                console.error("Failed to fetch ETH price, using default:", error);
+            }
+        }
+
+        async function updateTicketPriceDisplay() {
+            try {
+                const ticketPriceWei = await lotteryContract.methods.ticketPriceETH().call();
+                const ticketPriceEth = web3.utils.fromWei(ticketPriceWei, 'ether');
+                const ticketPriceUSD = (ticketPriceEth * ethPriceUSD).toFixed(2);
+                document.getElementById('ticket-price').textContent = 
+                    `${ticketPriceEth} ETH (~${ticketPriceUSD} USD)`;
+            } catch (error) {
+                console.error("Error fetching ticket price:", error);
+                document.getElementById('ticket-price').textContent = 
+                    `${(1/ethPriceUSD).toFixed(6)} ETH (~1.00 USD)`;
+            }
+        }
+
+        function calculateNextRoundEndTime() {
+            const now = new Date();
+            const endTime = new Date(now);
+            endTime.setUTCHours(now.getUTCHours() + 24);
+            return Math.floor(endTime.getTime() / 1000);
+        }
+
+        function startCountdown() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            const now = Math.floor(Date.now() / 1000);
+            const distance = currentRoundEndTime - now;
+            
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = "00:00:00";
+                document.getElementById('round-status').textContent = "Round Ended - Next round starting";
+                currentRoundEndTime = calculateNextRoundEndTime();
+                return;
+            }
+            
+            const hours = Math.floor(distance / 3600);
+            const minutes = Math.floor((distance % 3600) / 60);
+            const seconds = Math.floor(distance % 60);
+            
+            document.getElementById('countdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const roundStatus = document.getElementById('round-status');
+            if (distance < 3600) {
+                roundStatus.style.color = "var(--neon-pink)";
+                roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
+            } else {
+                roundStatus.style.color = "var(--text-secondary)";
+                roundStatus.style.textShadow = "none";
+            }
+        }
+
+        function initEventHandlers() {
+            document.getElementById('connect-btn').addEventListener('click', connectWallet);
+            
+            document.getElementById('buy-btn').addEventListener('click', function() {
+                if (!account) {
+                    showNotification("Please connect your wallet first", "error");
+                    return;
+                }
+                document.getElementById('buy-modal').style.display = 'flex';
+                updateTicketCost();
+            });
+            
+            document.getElementById('decrement-ticket').addEventListener('click', function() {
+                const input = document.getElementById('ticket-amount');
+                if (input.value > 1) input.value = parseInt(input.value) - 1;
+                updateTicketCost();
+            });
+            
+            document.getElementById('increment-ticket').addEventListener('click', function() {
+                const input = document.getElementById('ticket-amount');
+                if (input.value < 100) input.value = parseInt(input.value) + 1;
+                updateTicketCost();
+            });
+            
+            document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
+            
+            document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
+            
+            document.getElementById('winners-btn').addEventListener('click', showWinners);
+            
+            document.getElementById('invite-btn').addEventListener('click', inviteFriends);
+            
+            document.getElementById('info-btn').addEventListener('click', () => {
+                document.getElementById('info-modal').style.display = 'flex';
+            });
+            
+            document.getElementById('copy-link').addEventListener('click', copyReferralLink);
+            
+            document.querySelectorAll('.close').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            document.querySelectorAll('.modal').forEach(function(modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        async function inviteFriends() {
+            document.getElementById('invite-modal').style.display = 'flex';
+            
+            if (account) {
+                const referralCode = account.substring(2, 8);
+                const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
+                document.getElementById('referral-link').textContent = referralUrl;
+                
+                // Setup social share links
+                const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
+                                 `💰 Win daily ETH prizes with transparent blockchain draws\n` +
+                                 `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
+                                 `Use my referral link to get started:\n${referralUrl}\n\n` +
+                                 `#NeonLottery #BaseNetwork #ETH`;
+                
+                const encodedText = encodeURIComponent(shareText);
+                const encodedUrl = encodeURIComponent(referralUrl);
+                
+                document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
+                document.getElementById('warpcast-share').href = `https://warpcast.com/~/compose?text=${encodedText}`;
+                document.getElementById('telegram-share').href = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+                document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodedText}`;
+                document.getElementById('facebook-share').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+                document.getElementById('reddit-share').href = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent('Neon Lottery - Daily ETH Lottery on Base')}`;
+                
+                if (isMiniApp) {
+                    document.getElementById('warpcast-share').addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        try {
+                            await window.farcasterMiniApp.post({
+                                text: shareText,
+                                embeds: [{ url: referralUrl }]
+                            });
+                            showNotification("Post created on Warpcast!");
+                        } catch (error) {
+                            console.error("Error creating Warpcast post:", error);
+                            showNotification("Failed to create post", "error");
+                        }
+                    });
+                }
+            } else {
+                document.getElementById('referral-link').textContent = "Connect wallet first";
+            }
+        }
+
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referral-link').textContent;
+            if (referralLink === "Connect wallet first") {
+                showNotification("Please connect wallet first", "error");
+                return;
+            }
+            
+            navigator.clipboard.writeText(referralLink).then(() => {
+                showNotification("Link copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification("Failed to copy link", "error");
+            });
+        }
+
+        function setupWalletEvents() {
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', function(accounts) {
+                    account = accounts[0] || null;
+                    updateUI();
+                    if (account) checkNetwork();
+                });
+                
+                window.ethereum.on('chainChanged', function(chainId) {
+                    checkNetwork();
+                    if (chainId === BASE_CHAIN_ID) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        async function connectMetaMask() {
+            try {
+                if (!window.ethereum) {
+                    showNotification("Please install MetaMask!", "error");
+                    return;
+                }
+                
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                account = accounts[0];
+                
+                await checkNetwork();
+                
+                if (!isBaseNetwork) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: BASE_CHAIN_ID }],
+                        });
+                    } catch (error) {
+                        if (error.code === 4902) {
+                            await addBaseNetwork();
+                        } else {
+                            showNotification("Failed to switch to Base Network", "error");
+                        }
+                    }
+                }
+                
+                updateUI();
+                showNotification("Wallet connected successfully");
+            } catch (error) {
+                console.error("Error connecting wallet:", error);
+                showNotification("Failed to connect wallet", "error");
+            }
+        }
+
+        async function addBaseNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: BASE_CHAIN_ID,
+                        chainName: 'Base Mainnet',
+                        nativeCurrency: {
+                            name: 'Ether',
+                            symbol: BASE_CURRENCY_SYMBOL,
+                            decimals: 18
+                        },
+                        rpcUrls: [BASE_RPC_URL],
+                        blockExplorerUrls: [BASE_EXPLORER_URL]
+                    }],
+                });
+                isBaseNetwork = true;
+                document.getElementById('network-warning').style.display = 'none';
+            } catch (error) {
+                console.error("Error adding Base network:", error);
+                showNotification("Failed to add Base Network", "error");
+            }
+        }
+
+        async function checkNetwork() {
+            if (!window.ethereum) return;
+            
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                isBaseNetwork = (chainId === BASE_CHAIN_ID);
+                
+                if (isBaseNetwork) {
+                    document.getElementById('network-warning').style.display = 'none';
+                    if (account) {
+                        updateRoundInfo();
+                    }
+                } else {
+                    document.getElementById('network-warning').style.display = 'block';
+                    document.getElementById('buy-btn').disabled = true;
+                }
+            } catch (error) {
+                console.error("Error checking network:", error);
+            }
+        }
+
+        async function checkConnectedWallet() {
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                account = window.ethereum.selectedAddress;
+                await checkNetwork();
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            if (account) {
+                const shortAddress = `${account.substring(0, 6)}...${account.substring(38)}`;
+                document.getElementById('connect-btn').innerHTML = 
+                    `<i class="fas fa-check-circle"></i> ${shortAddress}`;
+                document.getElementById('connect-btn').classList.add('wallet-connected');
+                document.getElementById('buy-btn').disabled = false;
+                document.getElementById('user-tickets-container').style.display = 'flex';
+            } else {
+                document.getElementById('connect-btn').innerHTML = 
+                    `<i class="fas fa-wallet"></i> Connect Wallet`;
+                document.getElementById('connect-btn').classList.remove('wallet-connected');
+                document.getElementById('buy-btn').disabled = true;
+                document.getElementById('user-tickets-container').style.display = 'none';
+            }
+        }
+
+        async function updateTicketCost() {
+            const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
+            
+            if (lotteryContract) {
+                try {
+                    const ticketPriceWei = await lotteryContract.methods.ticketPriceETH().call();
+                    const costWei = ticketPriceWei * ticketAmount;
+                    const costEth = web3.utils.fromWei(costWei.toString(), 'ether');
+                    document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
+                    
+                    if (!isMiniApp && account) {
+                        const gasEstimate = await lotteryContract.methods.buyTickets(ticketAmount).estimateGas({
+                            from: account,
+                            value: costWei.toString()
+                        });
+                        
+                        const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
+                        const gasCostEth = web3.utils.fromWei(
+                            (gasEstimate * GAS_LIMIT_BUFFER * gasPriceWei).toString(),
+                            'ether'
+                        );
+                        const gasCostUSD = (gasCostEth * ethPriceUSD).toFixed(2);
+                        
+                        document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
+                    } else {
+                        document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+                    }
+                } catch (error) {
+                    console.error("Error getting ticket cost:", error);
+                    const defaultCost = ticketAmount * 0.0005;
+                    document.getElementById('total-cost').textContent = `${defaultCost.toFixed(6)} ${BASE_CURRENCY_SYMBOL}`;
+                    document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+                }
+            }
+        }
+
+        async function confirmPurchase() {
+            const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
+            const confirmBtn = document.getElementById('confirm-buy');
+            const originalText = confirmBtn.innerHTML;
+            
+            try {
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                confirmBtn.disabled = true;
+                
+                const ticketPriceWei = await lotteryContract.methods.ticketPriceETH().call();
+                const costWei = ticketPriceWei * ticketAmount;
+                
+                if (isMiniApp) {
+                    const success = await confirmPurchaseMiniApp(ticketAmount, costWei.toString());
+                    if (success) {
+                        document.getElementById('buy-modal').style.display = 'none';
+                        updateRoundInfo();
+                    }
+                } else {
+                    const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
+                    let gasLimit = DEFAULT_GAS_LIMIT;
+                    
+                    try {
+                        const estimatedGas = await lotteryContract.methods.buyTickets(ticketAmount)
+                            .estimateGas({ from: account, value: costWei.toString() });
+                        gasLimit = Math.floor(estimatedGas * GAS_LIMIT_BUFFER);
+                    } catch (error) {
+                        console.log("Using default gas limit", error);
+                    }
+                    
+                    const tx = await lotteryContract.methods.buyTickets(ticketAmount).send({
+                        from: account,
+                        value: costWei.toString(),
+                        gas: gasLimit,
+                        gasPrice: gasPriceWei
+                    });
+                    
+                    const gasUsedEth = web3.utils.fromWei(
+                        (tx.gasUsed * tx.effectiveGasPrice).toString(),
+                        'ether'
+                    );
+                    const gasUsedUSD = (gasUsedEth * ethPriceUSD).toFixed(2);
+                    
+                    showNotification(
+                        `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
+                        `Fee: $${gasUsedUSD}`
+                    );
+                    document.getElementById('buy-modal').style.display = 'none';
+                    updateRoundInfo();
+                }
+            } catch (error) {
+                console.error("Error buying tickets:", error);
+                let errorMsg = "Failed to buy tickets";
+                if (error.message.includes("rejected")) errorMsg = "Transaction rejected";
+                if (error.message.includes("insufficient funds")) errorMsg = "Insufficient funds";
+                if (error.message.includes("gas")) errorMsg = "Transaction failed (adjust gas)";
+                showNotification(errorMsg, "error");
+            } finally {
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
+            }
+        }
+
+        async function updateRoundInfo() {
+            if (!lotteryContract) return;
+            
+            try {
+                const roundInfo = await lotteryContract.methods.getCurrentRoundInfo().call();
+                currentRoundEndTime = parseInt(roundInfo.endTime);
+                
+                // Display prize pool with commission already deducted
+                const prizePoolWei = roundInfo.prizePool;
+                const prizePoolEth = web3.utils.fromWei(prizePoolWei, 'ether');
+                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
+                
+                if (account) {
+                    // For the new contract, we need to check all participants in current round
+                    const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
+                    const round = await lotteryContract.methods.rounds(currentRoundIndex).call();
+                    const participantsCount = parseInt(round.participantsCount);
+                    
+                    let userTickets = 0;
+                    for (let i = 0; i < participantsCount; i++) {
+                        const participant = await lotteryContract.methods.getParticipantInfo(currentRoundIndex, i).call();
+                        if (participant.wallet.toLowerCase() === account.toLowerCase()) {
+                            userTickets += parseInt(participant.tickets);
+                        }
+                    }
+                    
+                    document.getElementById('user-tickets').textContent = userTickets;
+                }
+            } catch (error) {
+                console.error("Error updating round info:", error);
+                document.getElementById('current-pool').textContent = "0.00 ETH";
+            }
+        }
+
+        async function showWinners() {
+            try {
+                document.getElementById('winners-content').innerHTML = 
+                    '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+                document.getElementById('winners-modal').style.display = 'flex';
+                
+                const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
+                let winnersHTML = '';
+                
+                // Show winners from previous rounds (up to 10 rounds back)
+                const roundsToShow = Math.min(currentRoundIndex, 10);
+                
+                for (let i = currentRoundIndex - 1; i >= Math.max(0, currentRoundIndex - roundsToShow); i--) {
+                    const round = await lotteryContract.methods.rounds(i).call();
+                    
+                    if (round.winner !== '0x0000000000000000000000000000000000000000') {
+                        const prizeEth = web3.utils.fromWei(round.prizeAmount, 'ether');
+                        
+                        winnersHTML += `
+                            <div class="winner-item">
+                                <div>
+                                    <div><strong>Round #${i}</strong></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                        ${round.winner.substring(0, 6)}...${round.winner.substring(38)}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                        ${new Date(round.endTime * 1000).toLocaleDateString()}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (winnersHTML === '') {
+                    winnersHTML = '<div style="text-align: center; padding: 20px;">No winners yet</div>';
+                } else {
+                    winnersHTML = `
+                        <div style="margin-bottom: 15px; text-align: center;">
+                            <i class="fas fa-trophy" style="color: var(--neon-pink);"></i>
+                            <span>Recent Winners</span>
+                        </div>
+                        ${winnersHTML}
+                        <div style="margin-top: 20px; font-size: 0.8rem; text-align: center; color: var(--neon-blue);">
+                            All winners and transactions are permanently recorded on the blockchain
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('winners-content').innerHTML = winnersHTML;
+            } catch (error) {
+                console.error("Error loading winners:", error);
+                document.getElementById('winners-content').innerHTML = 
+                    '<div style="text-align: center; padding: 20px; color: var(--neon-pink)">' +
+                    '<i class="fas fa-exclamation-triangle"></i> Failed to load winners</div>';
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> 
+                ${message}
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, type === 'error' ? 5000 : 3000);
+        }
+    </script>
+</body>
+</html>
