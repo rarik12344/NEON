@@ -78,6 +78,19 @@
                 radial-gradient(circle at 25% 25%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
         }
+
+        @media (display-mode: minimal-ui) {
+            body {
+                padding: 0;
+                background: var(--dark-bg);
+            }
+            .container {
+                border-radius: 0;
+                max-height: 100vh;
+                max-width: 100%;
+                margin: 0;
+            }
+        }
         
         .container {
             background: var(--card-bg);
@@ -669,28 +682,58 @@
                 // Initialize Web3 with Warpcast provider
                 web3 = new Web3(window.farcasterMiniApp.getProvider());
                 
+                // Setup wallet change listener
+                window.farcasterMiniApp.on('walletChange', (wallet) => {
+                    if (wallet?.address) {
+                        account = wallet.address;
+                        updateUI();
+                    }
+                });
+                
                 // Check if already connected
-                const connectedAccount = await checkMiniAppConnection();
-                if (connectedAccount) {
-                    account = connectedAccount;
+                const wallet = await window.farcasterMiniApp.getWallet();
+                if (wallet?.address) {
+                    account = wallet.address;
                     isBaseNetwork = true;
                     updateUI();
-                    return;
+                    
+                    // Get additional user info
+                    try {
+                        const user = await window.farcasterMiniApp.getUser();
+                        console.log("User profile:", user);
+                    } catch (e) {
+                        console.log("Couldn't get user profile", e);
+                    }
+                    
+                    // Check auth
+                    try {
+                        const auth = await window.farcasterMiniApp.getAuth();
+                        console.log("Auth info:", auth);
+                    } catch (e) {
+                        console.log("Auth not available", e);
+                    }
                 }
                 
                 // Add connect button handler for MiniApp
                 document.getElementById('connect-btn').addEventListener('click', async () => {
                     try {
                         const wallet = await window.farcasterMiniApp.connectWallet();
-                        if (wallet && wallet.address) {
+                        if (wallet?.address) {
                             account = wallet.address;
                             isBaseNetwork = true;
                             updateUI();
                             showNotification("Warpcast wallet connected!");
                             
-                            // Optional: Get user info
-                            const user = await window.farcasterMiniApp.getUser();
-                            console.log("User info:", user);
+                            // Send welcome notification
+                            try {
+                                await window.farcasterMiniApp.notify({
+                                    title: "Welcome to Neon Lottery!",
+                                    body: "You're now ready to participate in daily ETH draws",
+                                    icon: "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg"
+                                });
+                            } catch (e) {
+                                console.log("Couldn't send notification", e);
+                            }
                         }
                     } catch (error) {
                         console.error("MiniApp wallet connection error:", error);
@@ -702,20 +745,6 @@
                 console.error("MiniApp init error:", error);
                 // Fallback to regular web mode if MiniApp fails
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
-            }
-        }
-
-        // Check if already connected in MiniApp
-        async function checkMiniAppConnection() {
-            try {
-                const wallet = await window.farcasterMiniApp.getWallet();
-                if (wallet && wallet.address) {
-                    return wallet.address;
-                }
-                return null;
-            } catch (error) {
-                console.log("No active MiniApp connection");
-                return null;
             }
         }
 
@@ -736,9 +765,8 @@
         async function connectWallet() {
             if (isMiniApp) {
                 try {
-                    // MiniApp specific connection flow
                     const wallet = await window.farcasterMiniApp.connectWallet();
-                    if (wallet && wallet.address) {
+                    if (wallet?.address) {
                         account = wallet.address;
                         isBaseNetwork = true;
                         updateUI();
