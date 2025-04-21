@@ -485,16 +485,16 @@
             </div>
             
             <div class="timer" id="countdown">00:00:00</div>
-            <div class="round-status" id="round-status">Round Active - Ends in 24 hours</div>
+            <div class="round-status" id="round-status">Loading round info...</div>
             
             <div class="info-item">
                 <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
-                <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
+                <span id="ticket-price">Loading...</span>
             </div>
             
             <div class="info-item">
                 <span><i class="fas fa-coins"></i> Current Pool:</span>
-                <span id="current-pool">0.00 ETH</span>
+                <span id="current-pool">Loading...</span>
             </div>
             
             <div class="info-item" id="user-tickets-container" style="display: none;">
@@ -644,9 +644,10 @@
         let web3;
         let lotteryContract;
         let account = null;
-        let currentRoundEndTime = calculateNextRoundEndTime();
+        let currentRoundEndTime = 0;
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
+        let updateInterval;
         
         // Farcaster Mini App
         let farcasterMiniApp = null;
@@ -664,14 +665,32 @@
             }
             
             initContract();
-            startCountdown();
             initEventHandlers();
             await updateEthPrice();
-            updateRoundInfo();
+            
+            // Start auto-updating round info every second
+            startAutoUpdate();
             
             // Handle frame actions
             handleFrameActions();
         });
+
+        // Start auto-updating round info
+        function startAutoUpdate() {
+            // Clear any existing interval
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+            
+            // Update immediately
+            updateRoundInfo();
+            
+            // Set up interval for future updates
+            updateInterval = setInterval(() => {
+                updateRoundInfo();
+                updateCountdown();
+            }, 1000); // Update every second
+        }
 
         // Handle frame actions
         function handleFrameActions() {
@@ -843,26 +862,15 @@
             }
         }
 
-        function calculateNextRoundEndTime() {
-            const now = new Date();
-            const endTime = new Date(now);
-            endTime.setUTCHours(now.getUTCHours() + 24);
-            return Math.floor(endTime.getTime() / 1000);
-        }
-
-        function startCountdown() {
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        }
-
         function updateCountdown() {
+            if (!currentRoundEndTime) return;
+            
             const now = Math.floor(Date.now() / 1000);
             const distance = currentRoundEndTime - now;
             
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "00:00:00";
                 document.getElementById('round-status').textContent = "Round Ended - Next round starting";
-                currentRoundEndTime = calculateNextRoundEndTime();
                 return;
             }
             
@@ -877,9 +885,11 @@
             if (distance < 3600) {
                 roundStatus.style.color = "var(--neon-pink)";
                 roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
+                roundStatus.textContent = `Round Ending Soon - ${hours}h ${minutes}m ${seconds}s`;
             } else {
                 roundStatus.style.color = "var(--text-secondary)";
                 roundStatus.style.textShadow = "none";
+                roundStatus.textContent = `Round Active - ${hours}h ${minutes}m ${seconds}s remaining`;
             }
         }
 
@@ -1258,6 +1268,9 @@
                 const prizePoolEth = web3.utils.fromWei(prizePoolWei, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
+                // Update round status
+                updateCountdown();
+                
                 if (account) {
                     // For the new contract, we need to check all participants in current round
                     const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
@@ -1276,7 +1289,8 @@
                 }
             } catch (error) {
                 console.error("Error updating round info:", error);
-                document.getElementById('current-pool').textContent = "0.00 ETH";
+                document.getElementById('current-pool').textContent = "Loading...";
+                document.getElementById('round-status').textContent = "Loading round info...";
             }
         }
 
