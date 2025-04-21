@@ -24,11 +24,7 @@
     <meta property="twitter:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
     <!-- Farcaster Frame Metadata -->
-    <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
-    <meta property="fc:frame:button:1" content="🎫 Participate">
-    <meta property="fc:frame:button:1:action" content="post_redirect">
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    <meta property="fc:frame" content='{"version":"vNext","imageUrl":"https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg","button":{"title":"🎫 Participate","action":{"type":"post_redirect","url":"https://neon-xi.vercel.app/api/frame"}}}'>
     
     <!-- Farcaster Mini App Manifest References -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -642,10 +638,35 @@
         
         // Farcaster Mini App
         let farcasterMiniApp = null;
-        const isMiniApp = window.farcasterMiniApp !== undefined;
+        let isMiniApp = false;
+        let farcasterContext = null;
 
         // Initialize app
         window.addEventListener('load', async function() {
+            // Check if we're in a Farcaster MiniApp environment
+            if (window.farcasterMiniApp) {
+                isMiniApp = true;
+                farcasterMiniApp = window.farcasterMiniApp;
+                document.getElementById('miniapp-badge').style.display = 'block';
+                document.getElementById('add-frame-btn').style.display = 'block';
+                
+                try {
+                    // Get context information
+                    farcasterContext = farcasterMiniApp.context;
+                    console.log('Farcaster context:', farcasterContext);
+                    
+                    // Initialize MiniApp mode
+                    await initMiniAppMode();
+                } catch (error) {
+                    console.error("Failed to initialize MiniApp mode:", error);
+                    // Fallback to web mode if MiniApp initialization fails
+                    await initWebMode();
+                }
+            } else {
+                // Regular web mode
+                await initWebMode();
+            }
+            
             // Handle frame action from Farcaster
             const urlParams = new URLSearchParams(window.location.search);
             const frameAction = urlParams.get('frameAction');
@@ -656,8 +677,8 @@
                 if (buyModal) {
                     buyModal.style.display = 'flex';
                     
-                    // Auto-connect wallet in MiniApp mode
-                    if (isMiniApp) {
+                    // Auto-connect wallet in MiniApp mode if available
+                    if (isMiniApp && !account) {
                         try {
                             await connectWallet();
                         } catch (error) {
@@ -667,21 +688,21 @@
                 }
             }
             
-            if (isMiniApp) {
-                farcasterMiniApp = window.farcasterMiniApp;
-                document.getElementById('miniapp-badge').style.display = 'block';
-                document.getElementById('add-frame-btn').style.display = 'block';
-                await initMiniAppMode();
-            } else {
-                await initWebMode();
-            }
-            
             initContract();
             initEventHandlers();
             await updateEthPrice();
             
             // Start auto-updating round info every second
             startAutoUpdate();
+            
+            // Hide splash screen when ready in MiniApp mode
+            if (isMiniApp) {
+                try {
+                    await farcasterMiniApp.actions.ready();
+                } catch (error) {
+                    console.error("Error hiding splash screen:", error);
+                }
+            }
         });
 
         // Start auto-updating round info
@@ -703,16 +724,16 @@
 
         async function initMiniAppMode() {
             try {
-                // Initialize MiniApp with proper configuration
-                web3 = new Web3(farcasterMiniApp.ethProvider);
+                // Initialize Web3 with Farcaster's provider
+                web3 = new Web3(farcasterMiniApp.wallet.ethProvider);
                 
                 // Request necessary permissions
-                const permissions = await farcasterMiniApp.requestPermissions({
+                const permissions = await farcasterMiniApp.actions.requestPermissions({
                     permissions: ['identity', 'notifications', 'wallet']
                 });
                 
-                // Connect wallet
-                const wallet = await farcasterMiniApp.connectWallet({
+                // Connect wallet automatically
+                const wallet = await farcasterMiniApp.actions.connectWallet({
                     chainId: BASE_CHAIN_ID,
                     rpcUrl: BASE_RPC_URL
                 });
@@ -722,28 +743,33 @@
                 updateUI();
                 
                 // Show welcome notification in Warpcast
-                farcasterMiniApp.showNotification({
-                    type: 'success',
-                    message: 'Welcome to Neon Lottery!',
-                    duration: 3000
-                });
+                try {
+                    await farcasterMiniApp.actions.showNotification({
+                        type: 'success',
+                        message: 'Welcome to Neon Lottery!',
+                        duration: 3000
+                    });
+                } catch (error) {
+                    console.error("Failed to show notification:", error);
+                }
                 
                 // Track analytics event
-                farcasterMiniApp.trackEvent('app_launched', {
-                    source: 'miniapp',
-                    wallet: account
-                });
-                
-                // Hide splash screen when ready
-                farcasterMiniApp.ready();
+                try {
+                    await farcasterMiniApp.actions.trackEvent('app_launched', {
+                        source: 'miniapp',
+                        wallet: account,
+                        context: farcasterContext?.location?.type || 'unknown'
+                    });
+                } catch (error) {
+                    console.error("Failed to track event:", error);
+                }
                 
                 showNotification("Warpcast wallet connected!");
             } catch (error) {
                 console.error("MiniApp init error:", error);
+                // Fallback to regular web3 provider if MiniApp wallet fails
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
-                
-                // Fallback notification
-                showNotification("Failed to initialize MiniApp mode", "error");
+                showNotification("Failed to initialize MiniApp wallet", "error");
             }
         }
 
@@ -764,17 +790,24 @@
         async function connectWallet() {
             if (isMiniApp) {
                 try {
-                    const wallet = await farcasterMiniApp.connectWallet({
+                    const wallet = await farcasterMiniApp.actions.connectWallet({
                         chainId: BASE_CHAIN_ID,
                         rpcUrl: BASE_RPC_URL
                     });
+                    
                     account = wallet.address;
+                    isBaseNetwork = true;
                     updateUI();
                     
                     // Track wallet connection event
-                    farcasterMiniApp.trackEvent('wallet_connected', {
-                        wallet: account
-                    });
+                    try {
+                        await farcasterMiniApp.actions.trackEvent('wallet_connected', {
+                            wallet: account,
+                            context: farcasterContext?.location?.type || 'unknown'
+                        });
+                    } catch (error) {
+                        console.error("Failed to track event:", error);
+                    }
                     
                     showNotification("Warpcast wallet connected!");
                 } catch (error) {
@@ -789,46 +822,63 @@
         async function confirmPurchaseMiniApp(ticketAmount, costWei) {
             try {
                 // Show loading state in MiniApp
-                farcasterMiniApp.showLoading(true);
+                await farcasterMiniApp.actions.showLoading(true);
                 
-                const txHash = await farcasterMiniApp.sendTransaction({
+                const txHash = await farcasterMiniApp.actions.sendTransaction({
                     to: CONTRACT_ADDRESS,
-                    value: costWei,
+                    value: costWei.toString(),
                     data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI(),
                     chainId: BASE_CHAIN_ID
                 });
                 
                 // Track purchase event
-                farcasterMiniApp.trackEvent('tickets_purchased', {
-                    ticketAmount,
-                    costWei,
-                    txHash
-                });
+                try {
+                    await farcasterMiniApp.actions.trackEvent('tickets_purchased', {
+                        ticketAmount,
+                        costWei: costWei.toString(),
+                        txHash,
+                        context: farcasterContext?.location?.type || 'unknown'
+                    });
+                } catch (error) {
+                    console.error("Failed to track event:", error);
+                }
                 
                 showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
                 
                 // Show success notification in Warpcast
-                farcasterMiniApp.showNotification({
-                    type: 'success',
-                    message: `${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased!`,
-                    duration: 5000
-                });
+                try {
+                    await farcasterMiniApp.actions.showNotification({
+                        type: 'success',
+                        message: `${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased!`,
+                        duration: 5000
+                    });
+                } catch (error) {
+                    console.error("Failed to show notification:", error);
+                }
                 
                 return true;
             } catch (error) {
                 console.error("MiniApp transaction error:", error);
                 
                 // Show error notification in Warpcast
-                farcasterMiniApp.showNotification({
-                    type: 'error',
-                    message: 'Transaction failed',
-                    duration: 5000
-                });
+                try {
+                    await farcasterMiniApp.actions.showNotification({
+                        type: 'error',
+                        message: 'Transaction failed',
+                        duration: 5000
+                    });
+                } catch (error) {
+                    console.error("Failed to show notification:", error);
+                }
                 
                 showNotification("Transaction failed", "error");
                 return false;
             } finally {
-                farcasterMiniApp.showLoading(false);
+                try {
+                    await farcasterMiniApp.actions.showLoading(false);
+                } catch (error) {
+                    console.error("Failed to hide loading:", error);
+                }
             }
         }
 
@@ -928,12 +978,14 @@
             
             document.getElementById('add-frame-btn').addEventListener('click', async () => {
                 try {
-                    await farcasterMiniApp.addFrame({
+                    await farcasterMiniApp.actions.addFrame({
                         title: 'Neon Lottery',
                         iconUrl: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
                         action: {
                             type: 'launch_frame',
-                            url: window.location.href
+                            name: 'Neon Lottery',
+                            splashImageUrl: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
+                            splashBackgroundColor: '#0f0f1a'
                         }
                     });
                     showNotification("Added to your Warpcast frames!");
@@ -987,15 +1039,24 @@
                     document.getElementById('warpcast-share').addEventListener('click', async (e) => {
                         e.preventDefault();
                         try {
-                            await farcasterMiniApp.composeCast({
+                            await farcasterMiniApp.actions.composeCast({
                                 text: shareText,
-                                embeds: [{ url: referralUrl }]
+                                embeds: [{ url: referralUrl }],
+                                parent: farcasterContext?.location?.type === 'cast_embed' ? {
+                                    type: 'cast',
+                                    hash: farcasterContext.location.cast.hash
+                                } : undefined
                             });
                             
                             // Track share event
-                            farcasterMiniApp.trackEvent('shared', {
-                                platform: 'warpcast'
-                            });
+                            try {
+                                await farcasterMiniApp.actions.trackEvent('shared', {
+                                    platform: 'warpcast',
+                                    context: farcasterContext?.location?.type || 'unknown'
+                                });
+                            } catch (error) {
+                                console.error("Failed to track event:", error);
+                            }
                             
                             showNotification("Post created on Warpcast!");
                         } catch (error) {
@@ -1020,9 +1081,14 @@
                 showNotification("Link copied to clipboard!");
                 
                 if (isMiniApp) {
-                    farcasterMiniApp.trackEvent('referral_copied', {
-                        link: referralLink
-                    });
+                    try {
+                        farcasterMiniApp.actions.trackEvent('referral_copied', {
+                            link: referralLink,
+                            context: farcasterContext?.location?.type || 'unknown'
+                        });
+                    } catch (error) {
+                        console.error("Failed to track event:", error);
+                    }
                 }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
