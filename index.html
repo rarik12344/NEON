@@ -40,6 +40,9 @@
     <meta name="farcaster-miniapp:button:1:target" content="https://neon-xi.vercel.app/api/frame">
     <meta name="farcaster-miniapp:post_url" content="https://neon-xi.vercel.app/api/frame">
     
+    <!-- Preload image for better performance -->
+    <link rel="preload" href="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" as="image">
+    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -420,6 +423,11 @@
             background: rgba(0, 243, 255, 0.3);
         }
         
+        .winner-address {
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -453,6 +461,10 @@
             .btn {
                 padding: 12px;
                 font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                padding: 18px;
             }
         }
     </style>
@@ -1260,8 +1272,8 @@
                             <div class="winner-item">
                                 <div>
                                     <div><strong>Round #${i}</strong></div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                                        ${winnerAddress.substring(0, 6)}...${winnerAddress.substring(38)}
+                                    <div class="winner-address" style="font-size: 0.8rem; color: var(--text-secondary);">
+                                        ${winnerAddress}
                                     </div>
                                     <a href="${BASE_EXPLORER_URL}/address/${winnerAddress}" 
                                        target="_blank" 
