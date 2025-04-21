@@ -57,6 +57,12 @@
             --warpcast-purple: #472FFF;
         }
         
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
             background: var(--dark-bg);
@@ -75,23 +81,23 @@
         
         .container {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px;
-            width: 100%;
-            max-width: 450px;
+            border-radius: 12px;
+            padding: 16px;
+            width: 95%;
+            max-width: 420px;
             box-shadow: 
-                0 0 20px rgba(0, 243, 255, 0.2),
-                0 0 40px rgba(255, 0, 255, 0.1);
+                0 0 15px rgba(0, 243, 255, 0.2),
+                0 0 30px rgba(255, 0, 255, 0.1);
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            margin: 20px;
+            backdrop-filter: blur(8px);
+            margin: 10px;
             max-height: 95vh;
             overflow-y: auto;
         }
         
         .container::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
         
         .container::-webkit-scrollbar-track {
@@ -100,40 +106,41 @@
         
         .container::-webkit-scrollbar-thumb {
             background: var(--neon-purple);
-            border-radius: 3px;
+            border-radius: 2px;
         }
         
         h1 {
             color: var(--neon-blue);
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+            letter-spacing: 0.5px;
         }
         
         .timer {
-            font-size: 2.2rem;
-            margin: 20px 0;
+            font-size: 1.8rem;
+            margin: 12px 0;
             color: var(--neon-pink);
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
             font-family: 'Poppins', monospace;
         }
         
         .round-status {
             color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
         }
         
         .info-item {
             display: flex;
             justify-content: space-between;
-            margin: 12px 0;
-            padding: 12px;
+            margin: 8px 0;
+            padding: 10px;
             background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
         }
         
         .info-item span:first-child {
@@ -144,40 +151,40 @@
             background: var(--neon-blue);
             border: none;
             color: black;
-            padding: 14px 20px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin: 12px 0;
+            margin: 8px 0;
             width: 100%;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .btn-pink {
             background: var(--neon-pink);
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 12px rgba(255, 0, 255, 0.3);
         }
         
         .btn-purple {
             background: var(--neon-purple);
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+            box-shadow: 0 0 12px rgba(157, 0, 255, 0.3);
         }
         
         .btn-green {
             background: var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);
             color: black;
         }
         
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px currentColor;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px currentColor;
         }
         
         .btn:active {
@@ -195,11 +202,12 @@
         .network-warning {
             background: rgba(255, 85, 85, 0.2);
             color: #ff5555;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 12px 0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 8px 0;
             display: none;
             border: 1px solid #ff5555;
+            font-size: 0.8rem;
         }
         
         .modal {
@@ -218,28 +226,28 @@
         
         .modal-content {
             background: var(--card-bg);
-            padding: 24px;
-            border-radius: 16px;
+            padding: 20px;
+            border-radius: 12px;
             width: 90%;
-            max-width: 400px;
+            max-width: 380px;
             position: relative;
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
             animation: modalFadeIn 0.3s ease-out;
         }
         
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
         .close {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
+            top: 12px;
+            right: 12px;
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--neon-pink);
             transition: transform 0.2s;
@@ -253,13 +261,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
-            margin: 25px 0;
+            gap: 12px;
+            margin: 20px 0;
         }
         
         .ticket-input button {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             padding: 0;
             display: flex;
             align-items: center;
@@ -267,10 +275,10 @@
             background: var(--neon-purple);
             border: none;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.2s;
         }
         
@@ -282,52 +290,54 @@
             background: rgba(0,0,0,0.3);
             border: 2px solid var(--neon-blue);
             color: white;
-            width: 70px;
+            width: 60px;
             text-align: center;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 1.3rem;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1.1rem;
             font-weight: bold;
         }
         
         .notification {
             position: fixed;
-            top: 20px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--card-bg);
-            padding: 14px 24px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 8px;
             z-index: 1000;
             animation: slideIn 0.3s ease-out;
             border: 1px solid var(--neon-blue);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             max-width: 90%;
+            font-size: 0.9rem;
         }
         
         .notification.error {
             border-color: var(--neon-pink);
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
         }
         
         .gas-info {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--neon-blue);
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
         }
         
         .winner-item {
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;
-            padding: 10px;
+            margin: 8px 0;
+            padding: 8px;
             background: rgba(157, 0, 255, 0.1);
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid rgba(157, 0, 255, 0.2);
+            font-size: 0.85rem;
         }
         
         .wallet-connected {
@@ -355,12 +365,12 @@
         
         .miniapp-badge {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: var(--neon-pink);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 11px;
             z-index: 1000;
             animation: pulse 2s infinite;
             display: none;
@@ -369,8 +379,8 @@
         .social-share {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
         
@@ -378,11 +388,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             transition: transform 0.3s;
             text-decoration: none;
         }
@@ -401,8 +411,8 @@
         /* Improved Farcaster icon */
         .farcaster-icon {
             display: inline-block;
-            width: 80px;
-            height: 80px;
+            width: 45px;
+            height: 45px;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 8.5c-1.2 0-2.3.4-3.2 1.1l-.2.2v5.3l.2.2c.9.7 2 1.1 3.2 1.1s2.3-.4 3.2-1.1l.2-.2V9.8l-.2-.2c-.9-.7-2-1.1-3.2-1.1zm0 6.5c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1z'/%3E%3C/svg%3E");
             background-size: 60%;
             background-repeat: no-repeat;
@@ -411,21 +421,20 @@
         
         .winner-actions {
             display: flex;
-            gap: 8px;
-            margin-top: 5px;
+            gap: 6px;
+            margin-top: 4px;
         }
         
         .winner-actions a {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
+            gap: 3px;
+            padding: 3px 6px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            font-size: 0.75rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
             color: var(--neon-blue);
             text-decoration: none;
-            transition: all 0.2s;
         }
         
         .winner-actions a:hover {
@@ -445,41 +454,8 @@
         }
         
         @keyframes slideIn {
-            from { top: -100px; opacity: 0; }
-            to { top: 20px; opacity: 1; }
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 18px;
-                border-radius: 12px;
-                max-height: 90vh;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .timer {
-                font-size: 1.8rem;
-            }
-            
-            .btn {
-                padding: 12px;
-                font-size: 0.9rem;
-            }
-            
-            .social-share a {
-                width: 45px;
-                height: 45px;
-                font-size: 1.3rem;
-            }
-            
-            .farcaster-icon {
-                width: 60px;
-                height: 60px;
-                background-size: 50%;
-            }
+            from { top: -80px; opacity: 0; }
+            to { top: 15px; opacity: 1; }
         }
     </style>
 </head>
@@ -576,7 +552,7 @@
             <span class="close">&times;</span>
             <h2><i class="fas fa-user-plus"></i> Invite Friends</h2>
             
-            <p>Invite friends to participate and earn rewards for active participation!</p>
+            <p style="font-size: 0.9rem;">Invite friends to participate and earn rewards for active participation!</p>
             
             <div class="social-share" id="social-share">
                 <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
@@ -587,16 +563,16 @@
                 <a href="#" class="reddit" id="reddit-share"><i class="fab fa-reddit"></i></a>
             </div>
             
-            <div class="info-item" style="margin-top: 20px;">
+            <div class="info-item" style="margin-top: 16px;">
                 <span>Your referral link:</span>
-                <span id="referral-link">Connect wallet first</span>
+                <span id="referral-link" style="font-size: 0.85rem;">Connect wallet first</span>
             </div>
             
-            <button id="copy-link" class="btn" style="margin-top: 15px;">
+            <button id="copy-link" class="btn" style="margin-top: 12px;">
                 <i class="fas fa-copy"></i> Copy Link
             </button>
             
-            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--neon-blue);">
+            <div style="margin-top: 16px; font-size: 0.8rem; color: var(--neon-blue);">
                 <i class="fas fa-info-circle"></i> Active participants may qualify for future airdrops!
             </div>
         </div>
@@ -608,20 +584,20 @@
             <span class="close">&times;</span>
             <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
             
-            <div style="text-align: left; margin-top: 20px;">
-                <p><strong>🏆 Daily ETH Lottery:</strong> Participate in our transparent, blockchain-based lottery with daily draws.</p>
+            <div style="text-align: left; margin-top: 16px; font-size: 0.9rem;">
+                <p style="margin-bottom: 10px;"><strong>🏆 Daily ETH Lottery:</strong> Participate in our transparent, blockchain-based lottery with daily draws.</p>
                 
-                <p><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
+                <p style="margin-bottom: 10px;"><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
                 
-                <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
+                <p style="margin-bottom: 10px;"><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
                 
-                <p><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
+                <p style="margin-bottom: 10px;"><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
                 
-                <p><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                <p style="margin-bottom: 10px;"><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
                 
-                <p><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
+                <p style="margin-bottom: 10px;"><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
                 
-                <p style="margin-top: 30px; text-align: center;">
+                <p style="margin-top: 20px; text-align: center; font-size: 0.85rem;">
                     <strong>Questions?</strong> Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a>
                 </p>
             </div>
@@ -631,7 +607,7 @@
     <script>
         // Contract details
         const CONTRACT_ADDRESS = "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B";
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
         
         // Network config
         const BASE_CHAIN_ID = '0x2105';
@@ -880,7 +856,7 @@
             const roundStatus = document.getElementById('round-status');
             if (distance < 3600) {
                 roundStatus.style.color = "var(--neon-pink)";
-                roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
+                roundStatus.style.textShadow = "0 0 8px rgba(255, 0, 255, 0.5)";
             } else {
                 roundStatus.style.color = "var(--text-secondary)";
                 roundStatus.style.textShadow = "none";
@@ -1278,7 +1254,7 @@
                             <div class="winner-item">
                                 <div>
                                     <div><strong>Round #${i}</strong></div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">
                                         ${round.winner.substring(0, 6)}...${round.winner.substring(38)}
                                     </div>
                                     <div class="winner-actions">
@@ -1289,7 +1265,7 @@
                                 </div>
                                 <div style="text-align: right;">
                                     <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">
                                         ${new Date(round.endTime * 1000).toLocaleDateString()}
                                     </div>
                                 </div>
@@ -1299,15 +1275,15 @@
                 }
                 
                 if (winnersHTML === '') {
-                    winnersHTML = '<div style="text-align: center; padding: 20px;">No winners yet</div>';
+                    winnersHTML = '<div style="text-align: center; padding: 16px; font-size: 0.9rem;">No winners yet</div>';
                 } else {
                     winnersHTML = `
-                        <div style="margin-bottom: 15px; text-align: center;">
+                        <div style="margin-bottom: 12px; text-align: center; font-size: 0.9rem;">
                             <i class="fas fa-trophy" style="color: var(--neon-pink);"></i>
                             <span>Recent Winners</span>
                         </div>
                         ${winnersHTML}
-                        <div style="margin-top: 20px; font-size: 0.8rem; text-align: center; color: var(--neon-blue);">
+                        <div style="margin-top: 16px; font-size: 0.75rem; text-align: center; color: var(--neon-blue);">
                             All winners and transactions are permanently recorded on the blockchain
                         </div>
                     `;
@@ -1317,7 +1293,7 @@
             } catch (error) {
                 console.error("Error loading winners:", error);
                 document.getElementById('winners-content').innerHTML = 
-                    '<div style="text-align: center; padding: 20px; color: var(--neon-pink)">' +
+                    '<div style="text-align: center; padding: 16px; color: var(--neon-pink); font-size: 0.9rem;">' +
                     '<i class="fas fa-exclamation-triangle"></i> Failed to load winners</div>';
             }
         }
