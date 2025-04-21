@@ -23,21 +23,12 @@
     <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta property="twitter:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
-    <!-- Farcaster Mini App Embed Metadata -->
-    <meta name="fc:frame" content='{
-      "version": "next",
-      "imageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-      "button": {
-        "title": "🎫 Participate",
-        "action": {
-          "type": "launch_frame",
-          "name": "Neon Lottery",
-          "url": "https://neon-xi.vercel.app/",
-          "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-          "splashBackgroundColor": "#0f0f1a"
-        }
-      }
-    }'>
+    <!-- Farcaster Frame Metadata -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" />
+    <meta property="fc:frame:button:1" content="🎫 Participate" />
+    <meta property="fc:frame:button:1:action" content="post_redirect" />
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame" />
     
     <!-- Farcaster Mini App Manifest References -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -655,6 +646,15 @@
 
         // Initialize app
         window.addEventListener('load', async function() {
+            // Check if launched from Warpcast frame
+            const urlParams = new URLSearchParams(window.location.search);
+            const frameAction = urlParams.get('frameAction');
+            
+            if (frameAction === 'participate') {
+                // Handle frame action - show buy modal immediately
+                document.getElementById('buy-modal').style.display = 'flex';
+            }
+            
             if (isMiniApp) {
                 farcasterMiniApp = window.farcasterMiniApp;
                 document.getElementById('miniapp-badge').style.display = 'block';
@@ -670,9 +670,6 @@
             
             // Start auto-updating round info every second
             startAutoUpdate();
-            
-            // Handle frame actions
-            handleFrameActions();
         });
 
         // Start auto-updating round info
@@ -690,20 +687,6 @@
                 updateRoundInfo();
                 updateCountdown();
             }, 1000); // Update every second
-        }
-
-        // Handle frame actions
-        function handleFrameActions() {
-            const params = new URLSearchParams(window.location.search);
-            const action = params.get('frameAction');
-            
-            if (action === 'buy') {
-                if (isMiniApp) {
-                    document.getElementById('buy-btn').click();
-                } else {
-                    window.location.href = 'https://neon-xi.vercel.app/';
-                }
-            }
         }
 
         async function initMiniAppMode() {
