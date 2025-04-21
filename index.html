@@ -403,6 +403,23 @@
         .facebook { background: #1877F2; }
         .reddit { background: #FF5700; }
         
+        .view-on-basescan {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--neon-blue);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 5px;
+            text-decoration: none;
+            border: 1px solid var(--neon-blue);
+            transition: all 0.2s;
+        }
+        
+        .view-on-basescan:hover {
+            background: rgba(0, 243, 255, 0.3);
+        }
+        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -1237,14 +1254,20 @@
                     
                     if (round.winner !== '0x0000000000000000000000000000000000000000') {
                         const prizeEth = web3.utils.fromWei(round.prizeAmount, 'ether');
+                        const winnerAddress = round.winner;
                         
                         winnersHTML += `
                             <div class="winner-item">
                                 <div>
                                     <div><strong>Round #${i}</strong></div>
                                     <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                                        ${round.winner.substring(0, 6)}...${round.winner.substring(38)}
+                                        ${winnerAddress.substring(0, 6)}...${winnerAddress.substring(38)}
                                     </div>
+                                    <a href="${BASE_EXPLORER_URL}/address/${winnerAddress}" 
+                                       target="_blank" 
+                                       class="view-on-basescan">
+                                        <i class="fas fa-external-link-alt"></i> View on BaseScan
+                                    </a>
                                 </div>
                                 <div style="text-align: right;">
                                     <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
