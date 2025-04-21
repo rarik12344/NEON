@@ -687,6 +687,7 @@
                     if (wallet?.address) {
                         account = wallet.address;
                         updateUI();
+                        updateRoundInfo();
                     }
                 });
                 
@@ -696,6 +697,7 @@
                     account = wallet.address;
                     isBaseNetwork = true;
                     updateUI();
+                    updateRoundInfo();
                     
                     // Get additional user info
                     try {
@@ -722,6 +724,7 @@
                             account = wallet.address;
                             isBaseNetwork = true;
                             updateUI();
+                            updateRoundInfo();
                             showNotification("Warpcast wallet connected!");
                             
                             // Send welcome notification
@@ -770,6 +773,7 @@
                         account = wallet.address;
                         isBaseNetwork = true;
                         updateUI();
+                        updateRoundInfo();
                         showNotification("Warpcast wallet connected!");
                         
                         // Optional: Get additional user info
@@ -1226,7 +1230,7 @@
         }
 
         async function updateRoundInfo() {
-            if (!lotteryContract) return;
+            if (!lotteryContract || !account) return;
             
             try {
                 const roundInfo = await lotteryContract.methods.getCurrentRoundInfo().call();
@@ -1237,25 +1241,26 @@
                 const prizePoolEth = web3.utils.fromWei(prizePoolWei, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
-                if (account) {
-                    // For the new contract, we need to check all participants in current round
-                    const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
-                    const round = await lotteryContract.methods.rounds(currentRoundIndex).call();
-                    const participantsCount = parseInt(round.participantsCount);
-                    
-                    let userTickets = 0;
-                    for (let i = 0; i < participantsCount; i++) {
-                        const participant = await lotteryContract.methods.getParticipantInfo(currentRoundIndex, i).call();
-                        if (participant.wallet.toLowerCase() === account.toLowerCase()) {
-                            userTickets += parseInt(participant.tickets);
-                        }
+                // Get current round index
+                const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
+                
+                // Get participant info for current round
+                let userTickets = 0;
+                const participantsCount = parseInt(roundInfo.participantsCount);
+                
+                for (let i = 0; i < participantsCount; i++) {
+                    const participant = await lotteryContract.methods.getParticipantInfo(currentRoundIndex, i).call();
+                    if (participant.wallet.toLowerCase() === account.toLowerCase()) {
+                        userTickets = parseInt(participant.tickets);
+                        break; // Found the participant, no need to continue
                     }
-                    
-                    document.getElementById('user-tickets').textContent = userTickets;
                 }
+                
+                document.getElementById('user-tickets').textContent = userTickets;
             } catch (error) {
                 console.error("Error updating round info:", error);
                 document.getElementById('current-pool').textContent = "0.00 ETH";
+                document.getElementById('user-tickets').textContent = "0";
             }
         }
 
