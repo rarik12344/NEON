@@ -24,7 +24,11 @@
     <meta property="twitter:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
     <!-- Farcaster Frame Metadata -->
-    <meta property="fc:frame" content='{"version":"vNext","image":"https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg","buttons":[{"label":"🎫 Participate","action":"post_redirect"}],"post_url":"https://neon-xi.vercel.app/api/frame"}' />
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+    <meta property="fc:frame:button:1" content="🎫 Participate">
+    <meta property="fc:frame:button:1:action" content="post_redirect">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini App Manifest References -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -643,6 +647,15 @@
 
         // Initialize app
         window.addEventListener('load', async function() {
+            // First, call ready() immediately to prevent white screen in Preview
+            if (window.farcasterMiniApp) {
+                try {
+                    await window.farcasterMiniApp.actions.ready();
+                } catch (error) {
+                    console.error("Error calling ready:", error);
+                }
+            }
+            
             // Check if we're in a Farcaster MiniApp environment
             if (window.farcasterMiniApp) {
                 isMiniApp = true;
@@ -694,15 +707,6 @@
             
             // Start auto-updating round info every second
             startAutoUpdate();
-            
-            // Hide splash screen when ready in MiniApp mode
-            if (isMiniApp) {
-                try {
-                    await farcasterMiniApp.actions.ready();
-                } catch (error) {
-                    console.error("Error hiding splash screen:", error);
-                }
-            }
         });
 
         // Start auto-updating round info
