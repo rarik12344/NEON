@@ -14,28 +14,31 @@
     <meta property="og:url" content="https://neon-xi.vercel.app/">
     <meta property="og:title" content="Neon Lottery | Daily ETH Lottery on Base">
     <meta property="og:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
-    <meta property="og:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    <meta property="og:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://neon-xi.vercel.app/">
     <meta property="twitter:title" content="Neon Lottery | Daily ETH Lottery on Base">
     <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
-    <meta property="twitter:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    <meta property="twitter:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
     <!-- Farcaster Frame Metadata -->
     <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     <meta property="fc:frame:button:1" content="🎫 Participate">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini Apps Metadata -->
     <meta name="farcaster-miniapp" content="v1">
-    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/LGGsLj0/neon-lottery-preview.png">
+    <meta name="farcaster-miniapp:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     <meta name="farcaster-miniapp:title" content="Neon Lottery">
     <meta name="farcaster-miniapp:description" content="Daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta name="farcaster-miniapp:url" content="https://neon-xi.vercel.app/">
     <meta name="farcaster-miniapp:button:1" content="Buy Tickets">
+    <meta name="farcaster-miniapp:button:1:action" content="post">
+    <meta name="farcaster-miniapp:button:1:target" content="https://neon-xi.vercel.app/api/frame">
+    <meta name="farcaster-miniapp:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -56,19 +59,35 @@
             --text-secondary: #cccccc;
         }
         
-        body {
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             font-family: 'Poppins', sans-serif;
             background: var(--dark-bg);
             color: var(--text-primary);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background-image: 
                 radial-gradient(circle at 25% 25%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+        }
+        
+        #app-container {
+            height: 100%;
+            width: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
         
         .container {
@@ -83,6 +102,7 @@
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            margin: auto;
         }
         
         h1 {
@@ -196,6 +216,8 @@
             align-items: center;
             z-index: 100;
             backdrop-filter: blur(5px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .modal-content {
@@ -210,6 +232,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
             animation: modalFadeIn 0.3s ease-out;
+            margin: 20px 0;
         }
         
         @keyframes modalFadeIn {
@@ -418,146 +441,148 @@
     </style>
 </head>
 <body>
-    <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
-    
-    <div class="container">
-        <h1>✨ NEON LOTTERY ✨</h1>
+    <div id="app-container">
+        <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
         
-        <div class="network-warning" id="network-warning">
-            <i class="fas fa-exclamation-triangle"></i> Please switch to Base Network to participate
-        </div>
-        
-        <div class="timer" id="countdown">00:00:00</div>
-        <div class="round-status" id="round-status">Round Active - Ends in 24 hours</div>
-        
-        <div class="info-item">
-            <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
-            <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
-        </div>
-        
-        <div class="info-item">
-            <span><i class="fas fa-coins"></i> Current Pool:</span>
-            <span id="current-pool">0.00 ETH</span>
-        </div>
-        
-        <div class="info-item" id="user-tickets-container" style="display: none;">
-            <span><i class="fas fa-user"></i> Your Tickets:</span>
-            <span id="user-tickets">0</span>
-        </div>
-        
-        <button id="connect-btn" class="btn btn-green">
-            <i class="fas fa-wallet"></i> Connect Wallet
-        </button>
-        
-        <button id="buy-btn" class="btn" disabled>
-            <i class="fas fa-ticket-alt"></i> Buy Tickets
-        </button>
-        
-        <button id="winners-btn" class="btn btn-pink">
-            <i class="fas fa-trophy"></i> View Winners
-        </button>
-        
-        <button id="invite-btn" class="btn btn-purple">
-            <i class="fas fa-user-plus"></i> Invite Friends
-        </button>
-        
-        <button id="info-btn" class="btn">
-            <i class="fas fa-info-circle"></i> How It Works
-        </button>
-    </div>
-
-    <!-- Buy Tickets Modal -->
-    <div class="modal" id="buy-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-ticket-alt"></i> Buy Tickets</h2>
+        <div class="container">
+            <h1>✨ NEON LOTTERY ✨</h1>
             
-            <div class="ticket-input">
-                <button id="decrement-ticket">-</button>
-                <input type="number" id="ticket-amount" value="1" min="1" max="100">
-                <button id="increment-ticket">+</button>
+            <div class="network-warning" id="network-warning">
+                <i class="fas fa-exclamation-triangle"></i> Please switch to Base Network to participate
+            </div>
+            
+            <div class="timer" id="countdown">00:00:00</div>
+            <div class="round-status" id="round-status">Round Active - Ends in 24 hours</div>
+            
+            <div class="info-item">
+                <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
+                <span id="ticket-price">1.00 USD (~0.0005 ETH)</span>
             </div>
             
             <div class="info-item">
-                <span>Total Cost:</span>
-                <span id="total-cost">0 ETH</span>
+                <span><i class="fas fa-coins"></i> Current Pool:</span>
+                <span id="current-pool">0.00 ETH</span>
             </div>
             
-            <div class="gas-info">
-                <i class="fas fa-gas-pump"></i> Estimated fee: <span id="gas-fee-estimate">~$0.10-$0.50</span>
+            <div class="info-item" id="user-tickets-container" style="display: none;">
+                <span><i class="fas fa-user"></i> Your Tickets:</span>
+                <span id="user-tickets">0</span>
             </div>
             
-            <button id="confirm-buy" class="btn">
-                <i class="fas fa-shopping-cart"></i> Confirm Purchase
-            </button>
-        </div>
-    </div>
-
-    <!-- Winners Modal -->
-    <div class="modal" id="winners-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
-            <div id="winners-content">
-                Loading winners history...
-            </div>
-        </div>
-    </div>
-
-    <!-- Invite Modal -->
-    <div class="modal" id="invite-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-user-plus"></i> Invite Friends</h2>
-            
-            <p>Invite friends to participate and earn rewards for active participation!</p>
-            
-            <div class="social-share" id="social-share">
-                <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="warpcast" id="warpcast-share"><i class="fas fa-bolt"></i></a>
-                <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
-                <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="reddit" id="reddit-share"><i class="fab fa-reddit"></i></a>
-            </div>
-            
-            <div class="info-item" style="margin-top: 20px;">
-                <span>Your referral link:</span>
-                <span id="referral-link">Connect wallet first</span>
-            </div>
-            
-            <button id="copy-link" class="btn" style="margin-top: 15px;">
-                <i class="fas fa-copy"></i> Copy Link
+            <button id="connect-btn" class="btn btn-green">
+                <i class="fas fa-wallet"></i> Connect Wallet
             </button>
             
-            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--neon-blue);">
-                <i class="fas fa-info-circle"></i> Active participants may qualify for future airdrops!
+            <button id="buy-btn" class="btn" disabled>
+                <i class="fas fa-ticket-alt"></i> Buy Tickets
+            </button>
+            
+            <button id="winners-btn" class="btn btn-pink">
+                <i class="fas fa-trophy"></i> View Winners
+            </button>
+            
+            <button id="invite-btn" class="btn btn-purple">
+                <i class="fas fa-user-plus"></i> Invite Friends
+            </button>
+            
+            <button id="info-btn" class="btn">
+                <i class="fas fa-info-circle"></i> How It Works
+            </button>
+        </div>
+
+        <!-- Buy Tickets Modal -->
+        <div class="modal" id="buy-modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2><i class="fas fa-ticket-alt"></i> Buy Tickets</h2>
+                
+                <div class="ticket-input">
+                    <button id="decrement-ticket">-</button>
+                    <input type="number" id="ticket-amount" value="1" min="1" max="100">
+                    <button id="increment-ticket">+</button>
+                </div>
+                
+                <div class="info-item">
+                    <span>Total Cost:</span>
+                    <span id="total-cost">0 ETH</span>
+                </div>
+                
+                <div class="gas-info">
+                    <i class="fas fa-gas-pump"></i> Estimated fee: <span id="gas-fee-estimate">~$0.10-$0.50</span>
+                </div>
+                
+                <button id="confirm-buy" class="btn">
+                    <i class="fas fa-shopping-cart"></i> Confirm Purchase
+                </button>
             </div>
         </div>
-    </div>
 
-    <!-- Info Modal -->
-    <div class="modal" id="info-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
-            
-            <div style="text-align: left; margin-top: 20px;">
-                <p><strong>🏆 Daily ETH Lottery:</strong> Participate in our transparent, blockchain-based lottery with daily draws.</p>
+        <!-- Winners Modal -->
+        <div class="modal" id="winners-modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2><i class="fas fa-trophy"></i> Previous Winners</h2>
+                <div id="winners-content">
+                    Loading winners history...
+                </div>
+            </div>
+        </div>
+
+        <!-- Invite Modal -->
+        <div class="modal" id="invite-modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2><i class="fas fa-user-plus"></i> Invite Friends</h2>
                 
-                <p><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
+                <p>Invite friends to participate and earn rewards for active participation!</p>
                 
-                <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
+                <div class="social-share" id="social-share">
+                    <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="warpcast" id="warpcast-share"><i class="fas fa-bolt"></i></a>
+                    <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="reddit" id="reddit-share"><i class="fab fa-reddit"></i></a>
+                </div>
                 
-                <p><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
+                <div class="info-item" style="margin-top: 20px;">
+                    <span>Your referral link:</span>
+                    <span id="referral-link">Connect wallet first</span>
+                </div>
                 
-                <p><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                <button id="copy-link" class="btn" style="margin-top: 15px;">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
                 
-                <p><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
+                <div style="margin-top: 20px; font-size: 0.9rem; color: var(--neon-blue);">
+                    <i class="fas fa-info-circle"></i> Active participants may qualify for future airdrops!
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Modal -->
+        <div class="modal" id="info-modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2><i class="fas fa-info-circle"></i> About Neon Lottery</h2>
                 
-                <p style="margin-top: 30px; text-align: center;">
-                    <strong>Questions?</strong> Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a>
-                </p>
+                <div style="text-align: left; margin-top: 20px;">
+                    <p><strong>🏆 Daily ETH Lottery:</strong> Participate in our transparent, blockchain-based lottery with daily draws.</p>
+                    
+                    <p><strong>🔗 Blockchain-powered:</strong> All draws are executed on-chain with verifiable randomness for complete transparency.</p>
+                    
+                    <p><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
+                    
+                    <p><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
+                    
+                    <p><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                    
+                    <p><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
+                    
+                    <p style="margin-top: 30px; text-align: center;">
+                        <strong>Questions?</strong> Contact us on <a href="https://warpcast.com/rarik12344" target="_blank" style="color: var(--neon-blue);">Warpcast</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -624,15 +649,44 @@
 
         async function initMiniAppMode() {
             try {
+                // Initialize MiniApp with proper configuration
                 web3 = new Web3(window.farcasterMiniApp.getProvider());
-                const wallet = await window.farcasterMiniApp.connectWallet();
+                
+                // Request necessary permissions
+                const permissions = await window.farcasterMiniApp.requestPermissions({
+                    permissions: ['identity', 'notifications', 'wallet']
+                });
+                
+                // Connect wallet
+                const wallet = await window.farcasterMiniApp.connectWallet({
+                    chainId: BASE_CHAIN_ID,
+                    rpcUrl: BASE_RPC_URL
+                });
+                
                 account = wallet.address;
                 isBaseNetwork = true;
                 updateUI();
+                
+                // Show welcome notification in Warpcast
+                window.farcasterMiniApp.showNotification({
+                    type: 'success',
+                    message: 'Welcome to Neon Lottery!',
+                    duration: 3000
+                });
+                
+                // Track analytics event
+                window.farcasterMiniApp.trackEvent('app_launched', {
+                    source: 'miniapp',
+                    wallet: account
+                });
+                
                 showNotification("Warpcast wallet connected!");
             } catch (error) {
                 console.error("MiniApp init error:", error);
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
+                
+                // Fallback notification
+                showNotification("Failed to initialize MiniApp mode", "error");
             }
         }
 
@@ -653,11 +707,21 @@
         async function connectWallet() {
             if (isMiniApp) {
                 try {
-                    const wallet = await window.farcasterMiniApp.connectWallet();
+                    const wallet = await window.farcasterMiniApp.connectWallet({
+                        chainId: BASE_CHAIN_ID,
+                        rpcUrl: BASE_RPC_URL
+                    });
                     account = wallet.address;
                     updateUI();
+                    
+                    // Track wallet connection event
+                    window.farcasterMiniApp.trackEvent('wallet_connected', {
+                        wallet: account
+                    });
+                    
                     showNotification("Warpcast wallet connected!");
                 } catch (error) {
+                    console.error("MiniApp wallet connection error:", error);
                     showNotification("Connection failed", "error");
                 }
             } else {
@@ -667,17 +731,47 @@
 
         async function confirmPurchaseMiniApp(ticketAmount, costWei) {
             try {
+                // Show loading state in MiniApp
+                window.farcasterMiniApp.showLoading(true);
+                
                 const txHash = await window.farcasterMiniApp.sendTransaction({
                     to: CONTRACT_ADDRESS,
                     value: costWei,
-                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI()
+                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI(),
+                    chainId: BASE_CHAIN_ID
                 });
+                
+                // Track purchase event
+                window.farcasterMiniApp.trackEvent('tickets_purchased', {
+                    ticketAmount,
+                    costWei,
+                    txHash
+                });
+                
                 showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
+                
+                // Show success notification in Warpcast
+                window.farcasterMiniApp.showNotification({
+                    type: 'success',
+                    message: `${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased!`,
+                    duration: 5000
+                });
+                
                 return true;
             } catch (error) {
                 console.error("MiniApp transaction error:", error);
+                
+                // Show error notification in Warpcast
+                window.farcasterMiniApp.showNotification({
+                    type: 'error',
+                    message: 'Transaction failed',
+                    duration: 5000
+                });
+                
                 showNotification("Transaction failed", "error");
                 return false;
+            } finally {
+                window.farcasterMiniApp.showLoading(false);
             }
         }
 
@@ -832,6 +926,12 @@
                                 text: shareText,
                                 embeds: [{ url: referralUrl }]
                             });
+                            
+                            // Track share event
+                            window.farcasterMiniApp.trackEvent('shared', {
+                                platform: 'warpcast'
+                            });
+                            
                             showNotification("Post created on Warpcast!");
                         } catch (error) {
                             console.error("Error creating Warpcast post:", error);
@@ -853,6 +953,12 @@
             
             navigator.clipboard.writeText(referralLink).then(() => {
                 showNotification("Link copied to clipboard!");
+                
+                if (isMiniApp) {
+                    window.farcasterMiniApp.trackEvent('referral_copied', {
+                        link: referralLink
+                    });
+                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
                 showNotification("Failed to copy link", "error");
