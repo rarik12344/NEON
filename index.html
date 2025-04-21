@@ -512,10 +512,6 @@
             <i class="fas fa-trophy"></i> View Winners
         </button>
         
-        <button id="invite-btn" class="btn btn-purple">
-            <i class="fas fa-user-plus"></i> Invite Friends
-        </button>
-        
         <button id="info-btn" class="btn">
             <i class="fas fa-info-circle"></i> How It Works
         </button>
@@ -559,38 +555,6 @@
         </div>
     </div>
 
-    <!-- Invite Modal -->
-    <div class="modal" id="invite-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-user-plus"></i> Invite Friends</h2>
-            
-            <p style="font-size: 0.9rem;">Invite friends to participate and earn rewards for active participation!</p>
-            
-            <div class="social-share" id="social-share">
-                <a href="#" class="twitter" id="twitter-share"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="warpcast" id="warpcast-share"><span class="farcaster-icon"></span></a>
-                <a href="#" class="telegram" id="telegram-share"><i class="fab fa-telegram"></i></a>
-                <a href="#" class="whatsapp" id="whatsapp-share"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" class="facebook" id="facebook-share"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="reddit" id="reddit-share"><i class="fab fa-reddit"></i></a>
-            </div>
-            
-            <div class="info-item" style="margin-top: 16px;">
-                <span>Your referral link:</span>
-                <span id="referral-link" style="font-size: 0.85rem;">Connect wallet first</span>
-            </div>
-            
-            <button id="copy-link" class="btn" style="margin-top: 12px;">
-                <i class="fas fa-copy"></i> Copy Link
-            </button>
-            
-            <div style="margin-top: 16px; font-size: 0.8rem; color: var(--neon-blue);">
-                <i class="fas fa-info-circle"></i> Active participants may qualify for future airdrops!
-            </div>
-        </div>
-    </div>
-
     <!-- Info Modal -->
     <div class="modal" id="info-modal">
         <div class="modal-content">
@@ -605,8 +569,6 @@
                 <p style="margin-bottom: 10px;"><strong>💰 Prize Pool:</strong> The displayed pool amount already includes platform commission.</p>
                 
                 <p style="margin-bottom: 10px;"><strong>⏳ Draw Schedule:</strong> Each round lasts 24 hours with automatic draws.</p>
-                
-                <p style="margin-bottom: 10px;"><strong>🎁 Referral Rewards:</strong> Active participants who invite friends may qualify for special rewards and future airdrops.</p>
                 
                 <p style="margin-bottom: 10px;"><strong>📜 Full History:</strong> All winners and transactions are permanently recorded on the Base blockchain.</p>
                 
@@ -637,15 +599,16 @@
         let web3;
         let lotteryContract;
         let account = null;
-        let currentRoundEndTime = calculateNextRoundEndTime();
+        let currentRoundEndTime = 0;
         let isBaseNetwork = false;
         let ethPriceUSD = 3000;
+        let isMiniApp = false;
         
-        // Warpcast MiniApp detection
-        const isMiniApp = window.farcasterMiniApp !== undefined;
-
         // Initialize app
         window.addEventListener('load', async function() {
+            // Check if running in Warpcast MiniApp
+            isMiniApp = window.farcasterMiniApp !== undefined;
+            
             if (isMiniApp) {
                 document.getElementById('miniapp-badge').style.display = 'block';
                 await initMiniAppMode();
@@ -657,7 +620,8 @@
             startCountdown();
             initEventHandlers();
             await updateEthPrice();
-            updateRoundInfo();
+            await updateRoundInfo();
+            await loadWinners();
             
             // Handle frame actions
             handleFrameActions();
@@ -672,7 +636,7 @@
                 if (isMiniApp) {
                     document.getElementById('buy-btn').click();
                 } else {
-                    window.location.href = 'https://neon-xi.vercel.app/';
+                    window.location.reload();
                 }
             }
         }
@@ -688,6 +652,9 @@
                         account = wallet.address;
                         updateUI();
                         updateRoundInfo();
+                    } else {
+                        account = null;
+                        updateUI();
                     }
                 });
                 
@@ -705,14 +672,6 @@
                         console.log("User profile:", user);
                     } catch (e) {
                         console.log("Couldn't get user profile", e);
-                    }
-                    
-                    // Check auth
-                    try {
-                        const auth = await window.farcasterMiniApp.getAuth();
-                        console.log("Auth info:", auth);
-                    } catch (e) {
-                        console.log("Auth not available", e);
                     }
                 }
                 
@@ -775,14 +734,6 @@
                         updateUI();
                         updateRoundInfo();
                         showNotification("Warpcast wallet connected!");
-                        
-                        // Optional: Get additional user info
-                        try {
-                            const user = await window.farcasterMiniApp.getUser();
-                            console.log("User profile:", user);
-                        } catch (e) {
-                            console.log("Couldn't get user profile", e);
-                        }
                     }
                 } catch (error) {
                     console.error("MiniApp wallet connection error:", error);
@@ -855,13 +806,6 @@
             }
         }
 
-        function calculateNextRoundEndTime() {
-            const now = new Date();
-            const endTime = new Date(now);
-            endTime.setUTCHours(now.getUTCHours() + 24);
-            return Math.floor(endTime.getTime() / 1000);
-        }
-
         function startCountdown() {
             updateCountdown();
             setInterval(updateCountdown, 1000);
@@ -874,7 +818,6 @@
             if (distance < 0) {
                 document.getElementById('countdown').textContent = "00:00:00";
                 document.getElementById('round-status').textContent = "Round Ended - Next round starting";
-                currentRoundEndTime = calculateNextRoundEndTime();
                 return;
             }
             
@@ -889,9 +832,11 @@
             if (distance < 3600) {
                 roundStatus.style.color = "var(--neon-pink)";
                 roundStatus.style.textShadow = "0 0 8px rgba(255, 0, 255, 0.5)";
+                roundStatus.textContent = "Round Ending Soon!";
             } else {
                 roundStatus.style.color = "var(--text-secondary)";
                 roundStatus.style.textShadow = "none";
+                roundStatus.textContent = `Round Active - Ends in ${hours}h ${minutes}m`;
             }
         }
 
@@ -925,13 +870,9 @@
             
             document.getElementById('winners-btn').addEventListener('click', showWinners);
             
-            document.getElementById('invite-btn').addEventListener('click', inviteFriends);
-            
             document.getElementById('info-btn').addEventListener('click', () => {
                 document.getElementById('info-modal').style.display = 'flex';
             });
-            
-            document.getElementById('copy-link').addEventListener('click', copyReferralLink);
             
             document.querySelectorAll('.close').forEach(function(button) {
                 button.addEventListener('click', function() {
@@ -945,66 +886,6 @@
                         this.style.display = 'none';
                     }
                 });
-            });
-        }
-
-        async function inviteFriends() {
-            document.getElementById('invite-modal').style.display = 'flex';
-            
-            if (account) {
-                const referralCode = account.substring(2, 8);
-                const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
-                document.getElementById('referral-link').textContent = referralUrl;
-                
-                // Setup social share links
-                const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
-                                 `💰 Win daily ETH prizes with transparent blockchain draws\n` +
-                                 `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
-                                 `Use my referral link to get started:\n${referralUrl}\n\n` +
-                                 `#NeonLottery #BaseNetwork #ETH`;
-                
-                const encodedText = encodeURIComponent(shareText);
-                const encodedUrl = encodeURIComponent(referralUrl);
-                
-                document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
-                document.getElementById('warpcast-share').href = `https://warpcast.com/~/compose?text=${encodedText}`;
-                document.getElementById('telegram-share').href = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
-                document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodedText}`;
-                document.getElementById('facebook-share').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-                document.getElementById('reddit-share').href = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent('Neon Lottery - Daily ETH Lottery on Base')}`;
-                
-                if (isMiniApp) {
-                    document.getElementById('warpcast-share').addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        try {
-                            await window.farcasterMiniApp.post({
-                                text: shareText,
-                                embeds: [{ url: referralUrl }]
-                            });
-                            showNotification("Post created on Warpcast!");
-                        } catch (error) {
-                            console.error("Error creating Warpcast post:", error);
-                            showNotification("Failed to create post", "error");
-                        }
-                    });
-                }
-            } else {
-                document.getElementById('referral-link').textContent = "Connect wallet first";
-            }
-        }
-
-        function copyReferralLink() {
-            const referralLink = document.getElementById('referral-link').textContent;
-            if (referralLink === "Connect wallet first") {
-                showNotification("Please connect wallet first", "error");
-                return;
-            }
-            
-            navigator.clipboard.writeText(referralLink).then(() => {
-                showNotification("Link copied to clipboard!");
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showNotification("Failed to copy link", "error");
             });
         }
 
@@ -1230,8 +1111,6 @@
         }
 
         async function updateRoundInfo() {
-            if (!lotteryContract || !account) return;
-            
             try {
                 const roundInfo = await lotteryContract.methods.getCurrentRoundInfo().call();
                 currentRoundEndTime = parseInt(roundInfo.endTime);
@@ -1241,35 +1120,35 @@
                 const prizePoolEth = web3.utils.fromWei(prizePoolWei, 'ether');
                 document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${BASE_CURRENCY_SYMBOL}`;
                 
-                // Get current round index
-                const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
-                
-                // Get participant info for current round
-                let userTickets = 0;
-                const participantsCount = parseInt(roundInfo.participantsCount);
-                
-                for (let i = 0; i < participantsCount; i++) {
-                    const participant = await lotteryContract.methods.getParticipantInfo(currentRoundIndex, i).call();
-                    if (participant.wallet.toLowerCase() === account.toLowerCase()) {
-                        userTickets = parseInt(participant.tickets);
-                        break; // Found the participant, no need to continue
+                if (account) {
+                    // Get current round index
+                    const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
+                    
+                    // Get participant info for current round
+                    let userTickets = 0;
+                    const participantsCount = parseInt(roundInfo.participantsCount);
+                    
+                    for (let i = 0; i < participantsCount; i++) {
+                        const participant = await lotteryContract.methods.getParticipantInfo(currentRoundIndex, i).call();
+                        if (participant.wallet.toLowerCase() === account.toLowerCase()) {
+                            userTickets = parseInt(participant.tickets);
+                            break; // Found the participant, no need to continue
+                        }
                     }
+                    
+                    document.getElementById('user-tickets').textContent = userTickets;
                 }
-                
-                document.getElementById('user-tickets').textContent = userTickets;
             } catch (error) {
                 console.error("Error updating round info:", error);
                 document.getElementById('current-pool').textContent = "0.00 ETH";
-                document.getElementById('user-tickets').textContent = "0";
+                if (account) {
+                    document.getElementById('user-tickets').textContent = "0";
+                }
             }
         }
 
-        async function showWinners() {
+        async function loadWinners() {
             try {
-                document.getElementById('winners-content').innerHTML = 
-                    '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-                document.getElementById('winners-modal').style.display = 'flex';
-                
                 const currentRoundIndex = await lotteryContract.methods.currentRoundIndex().call();
                 let winnersHTML = '';
                 
@@ -1329,6 +1208,10 @@
                     '<div style="text-align: center; padding: 16px; color: var(--neon-pink); font-size: 0.9rem;">' +
                     '<i class="fas fa-exclamation-triangle"></i> Failed to load winners</div>';
             }
+        }
+
+        async function showWinners() {
+            document.getElementById('winners-modal').style.display = 'flex';
         }
 
         function showNotification(message, type = 'success') {
