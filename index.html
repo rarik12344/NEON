@@ -24,11 +24,11 @@
     <meta property="twitter:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
     <!-- Farcaster Frame Metadata -->
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" />
-    <meta property="fc:frame:button:1" content="🎫 Participate" />
-    <meta property="fc:frame:button:1:action" content="post_redirect" />
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame" />
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+    <meta property="fc:frame:button:1" content="🎫 Participate">
+    <meta property="fc:frame:button:1:action" content="post_redirect">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini App Manifest References -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -646,13 +646,25 @@
 
         // Initialize app
         window.addEventListener('load', async function() {
-            // Check if launched from Warpcast frame
+            // Handle frame action from Farcaster
             const urlParams = new URLSearchParams(window.location.search);
             const frameAction = urlParams.get('frameAction');
             
             if (frameAction === 'participate') {
-                // Handle frame action - show buy modal immediately
-                document.getElementById('buy-modal').style.display = 'flex';
+                // Show buy modal immediately for frame users
+                const buyModal = document.getElementById('buy-modal');
+                if (buyModal) {
+                    buyModal.style.display = 'flex';
+                    
+                    // Auto-connect wallet in MiniApp mode
+                    if (isMiniApp) {
+                        try {
+                            await connectWallet();
+                        } catch (error) {
+                            console.error("Failed to auto-connect wallet:", error);
+                        }
+                    }
+                }
             }
             
             if (isMiniApp) {
