@@ -1,35 +1,38 @@
-export default (req, res) => {
-  // Разрешаем только необходимые источники
-  const csp = [
-    "default-src 'none'",
-    "img-src https://i.ibb.co", // Разрешаем только изображения с imgbb
-    "frame-src 'self'",
-    "style-src 'unsafe-inline'", // Для встроенных стилей фрейма
-    "connect-src 'self'"
-  ].join('; ');
+export default async function handler(req, res) {
+  
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
-  res.setHeader('Content-Security-Policy', csp);
-  res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.setHeader('X-Frame-Options', 'ALLOW-FROM https://warpcast.com');
-
-  const html = `<!DOCTYPE html>
+  
+  const frameHtml = `
+    <!DOCTYPE html>
     <html>
       <head>
+        <!-- Обязательные мета-теги -->
         <meta property="fc:frame" content="vNext">
         <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
         <meta property="fc:frame:button:1" content="🎫 Participate">
         <meta property="fc:frame:post_url" content="https://${req.headers.host}/api/frame">
         
-        <!-- Fallback для браузеров -->
-        <title>Neon Lottery</title>
-        <meta name="viewport" content="width=device-width">
+        <!-- Open Graph для совместимости -->
+        <meta property="og:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+        <meta property="og:title" content="Neon Lottery">
+        
+        <!-- Дополнительные настройки -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="margin:0;background:#0f0f1a">
-        <img src="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" 
-             alt="Neon Lottery" 
-             style="width:100%;height:auto">
+      <body>
+        <!-- Fallback контент -->
+        <div style="text-align: center; padding: 2rem; font-family: Arial, sans-serif;">
+          <h1>Neon Lottery</h1>
+          <img src="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" 
+               alt="Neon Lottery Banner" 
+               style="max-width: 100%; border-radius: 8px;">
+          <p>Open in Warpcast to participate in the lottery</p>
+        </div>
       </body>
-    </html>`;
+    </html>
+  `;
 
-  res.status(200).end(html);
-};
+  return res.status(200).send(frameHtml);
+}
