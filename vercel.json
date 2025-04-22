@@ -1,9 +1,15 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "api/frame.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     {
       "src": "/api/frame",
-      "dest": "/api/frame.js",
+      "dest": "/api/frame",
       "headers": {
         "Content-Type": "text/html"
       }
