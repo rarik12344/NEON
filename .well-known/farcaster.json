@@ -1,16 +1,16 @@
 {
-  "name": "Neon Lottery",  
-  "iconUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  
-  "homeUrl": "https://neon-xi.vercel.app/",  
-  "imageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  
-  "buttonTitle": "Open",  
-  "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  
-  "splashBackgroundColor": "#0f0f1a",
-  "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
-  "description": "A lottery app for Farcaster users",  
   "accountAssociation": {
     "header": "eyJmaWQiOjY4MzQ3NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDFCRERDZjc3Mzc0NWIyNzI3RjBCN2JjNUZmMzVBN2RhZTYxZTEyNDgifQ",
     "payload": "eyJkb21haW4iOiJuZW9uLXhpLnZlcmNlbC5hcHAifQ",
     "signature": "MHgxMmQ3MDRiZWJlMTJhYmZhOTM1YTVmZWQzMmI1YjAwYjFkNmVjYzUzNTkzZTQ0ZThhNmExNDFiNjYxNTY2YWNiNzYwZGQ4MTE1MDBkYjA5NmY1ZWJlMTk5OWY2MjQzYTc4ODZiNTViYTQ1ZjAxZmZiMzRkNjg5YzZkMzIwM2EwNTFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Neon Lottery",
+    "iconUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+    "homeUrl": "https://neon-xi.vercel.app/",
+    "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+    "splashBackgroundColor": "#0f0f1a",
+    "webhookUrl": "https://neon-xi.vercel.app/api/webhook"
   }
 }
