@@ -1,7 +1,7 @@
-module.exports = (req, res) => {
+export default function handler(req, res) {
   if (req.method === 'POST') {
-    res.writeHead(302, {
-      Location: 'https://neon-xi.vercel.app/?action=participate'
+    res.writeHead(302, { 
+      Location: 'https://neon-xi.vercel.app/?action=participate' 
     });
     return res.end();
   }
@@ -19,4 +19,4 @@ module.exports = (req, res) => {
       </head>
     </html>
   `);
-};
+}
