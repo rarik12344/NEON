@@ -14,6 +14,12 @@
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*"
       }
+    },
+    {
+      "src": "/(.*)",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; img-src https://i.ibb.co; frame-src 'self' https://warpcast.com"
+      }
     }
   ]
 }
