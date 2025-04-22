@@ -1,33 +1,39 @@
 export default async function handler(req, res) {
-  try {
-    // Устанавливаем правильные заголовки
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('X-Frame-Options', 'ALLOW-FROM https://warpcast.com');
-    
-    // Оптимизированное изображение (рекомендуемый размер 1200x630px)
-    const imageUrl = 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg';
-    
-    // Полный HTML для фрейма
-    const frameHtml = `<!DOCTYPE html>
+  // Безопасные заголовки CSP
+  const csp = [
+    "default-src 'none'",
+    "img-src https://i.ibb.co",
+    "frame-src 'self'",
+    "style-src 'unsafe-inline'",
+    "connect-src 'self'"
+  ].join('; ');
+
+  // Устанавливаем заголовки
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Content-Security-Policy', csp);
+  res.setHeader('X-Frame-Options', 'ALLOW-FROM https://warpcast.com');
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+
+  // HTML для фрейма (без JavaScript)
+  const html = `<!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#">
 <head>
-  <!-- Обязательные мета-теги для Farcaster Frame -->
+  <!-- Обязательные мета-теги -->
   <meta property="fc:frame" content="vNext">
-  <meta property="fc:frame:image" content="${imageUrl}">
+  <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
   <meta property="fc:frame:button:1" content="🎫 Participate">
   <meta property="fc:frame:post_url" content="https://${req.headers.host}/api/frame">
   
-  <!-- Open Graph для совместимости -->
+  <!-- Open Graph -->
   <meta property="og:title" content="Neon Lottery">
-  <meta property="og:image" content="${imageUrl}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:description" content="Daily ETH lottery on Base Network">
+  <meta property="og:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+  <meta property="og:url" content="https://${req.headers.host}">
   
-  <!-- Контент для браузера -->
-  <title>Neon Lottery | Daily ETH Lottery</title>
+  <!-- Fallback для браузера -->
+  <title>Neon Lottery</title>
   <style>
-    body {
+    body { 
       font-family: 'Poppins', sans-serif;
       background: #0f0f1a;
       color: white;
@@ -38,21 +44,17 @@ export default async function handler(req, res) {
     img {
       max-width: 100%;
       border-radius: 12px;
-      margin-top: 1rem;
+      margin: 1rem 0;
     }
   </style>
 </head>
 <body>
   <h1>✨ Neon Lottery ✨</h1>
   <p>Daily ETH lottery on Base Network</p>
-  <img src="${imageUrl}" alt="Neon Lottery Banner">
+  <img src="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" alt="Neon Lottery">
   <p>Open in Warpcast to participate</p>
 </body>
 </html>`;
 
-    return res.status(200).send(frameHtml);
-  } catch (error) {
-    console.error('Frame generation error:', error);
-    return res.status(500).send('Internal Server Error');
-  }
+  return res.status(200).send(html);
 }
