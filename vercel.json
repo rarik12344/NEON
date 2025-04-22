@@ -1,18 +1,18 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "api/frame.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     {
       "src": "/api/frame",
+      "dest": "/api/frame",
       "headers": {
         "Content-Type": "text/html",
         "Cache-Control": "no-store"
-      }
-    },
-    {
-      "src": "/.well-known/farcaster.json",
-      "headers": {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
       }
     }
   ]
