@@ -11,28 +11,16 @@
     "homeUrl": "https://neon-xi.vercel.app/",
     "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
     "splashBackgroundColor": "#0f0f1a",
-    "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
     "buttonTitle": "🎫 Play Now",
     "imageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-    "description": "Daily ETH lottery with transparent blockchain draws",
-    "primaryCategory": "games",
-    "tags": ["gaming", "blockchain", "ethereum"],
-    "screenshotUrls": [
-      "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg"
-    ]
+    "description": "Daily ETH lottery with transparent blockchain draws"
   },
   "app": {
     "identity": {
-      "supports": ["farcaster", "ethereum"],
-      "proof": {
-        "method": "eth",
-        "chain": "base",
-        "contract": "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B"
-      }
-    },
-    "permissions": ["identity", "notifications"]
+      "supports": ["farcaster"]
+    }
   },
   "termsUrl": "https://neon-xi.vercel.app/terms",
   "privacyUrl": "https://neon-xi.vercel.app/privacy",
-  "version": "1.0.1"
+  "version": "1.0.0"
 }
