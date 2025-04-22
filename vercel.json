@@ -6,12 +6,14 @@
         {
           "key": "Content-Type",
           "value": "application/json"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/frame",
+      "destination": "/api/frame.js"
     }
   ]
 }
