@@ -1,20 +1,10 @@
 {
   "version": 2,
-  "routes": [
-    {
-      "src": "/api/.*",
-      "dest": "/api/$1",
-      "headers": {
-        "Content-Type": "text/html"
-      }
-    },
-    {
-      "src": "/.well-known/farcaster.json",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "public, max-age=3600",
-        "Content-Type": "application/json"
-      }
+  "regions": ["fra1"],  // Явно указываем регион
+  "functions": {
+    "api/frame.js": {
+      "memory": 1024,  // Минимальный объем памяти
+      "maxDuration": 5  // Макс. время выполнения (сек)
     }
-  ]
+  }
 }
