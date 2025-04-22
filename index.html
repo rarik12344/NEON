@@ -647,15 +647,6 @@
 
         // Initialize app
         window.addEventListener('load', async function() {
-            // First, call ready() immediately to prevent white screen in Preview
-            if (window.farcasterMiniApp) {
-                try {
-                    await window.farcasterMiniApp.actions.ready();
-                } catch (error) {
-                    console.error("Error calling ready:", error);
-                }
-            }
-            
             // Check if we're in a Farcaster MiniApp environment
             if (window.farcasterMiniApp) {
                 isMiniApp = true;
@@ -664,6 +655,9 @@
                 document.getElementById('add-frame-btn').style.display = 'block';
                 
                 try {
+                    // Call ready() immediately to prevent white screen in Preview
+                    await farcasterMiniApp.actions.ready();
+                    
                     // Get context information
                     farcasterContext = farcasterMiniApp.context;
                     console.log('Farcaster context:', farcasterContext);
