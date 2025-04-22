@@ -1,13 +1,13 @@
 {
-  "name": "Neon Lottery",  // Обязательно
-  "iconUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  // Обязательно
-  "homeUrl": "https://neon-xi.vercel.app/",  // Обязательно
-  "imageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  // Обязательно
-  "buttonTitle": "Open",  // Рекомендуется
-  "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  // Обязательно для Mini App
+  "name": "Neon Lottery",  
+  "iconUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  
+  "homeUrl": "https://neon-xi.vercel.app/",  
+  "imageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  
+  "buttonTitle": "Open",  
+  "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",  
   "splashBackgroundColor": "#0f0f1a",
   "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
-  "description": "A lottery app for Farcaster users",  // Рекомендуется
+  "description": "A lottery app for Farcaster users",  
   "accountAssociation": {
     "header": "eyJmaWQiOjY4MzQ3NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDFCRERDZjc3Mzc0NWIyNzI3RjBCN2JjNUZmMzVBN2RhZTYxZTEyNDgifQ",
     "payload": "eyJkb21haW4iOiJuZW9uLXhpLnZlcmNlbC5hcHAifQ",
