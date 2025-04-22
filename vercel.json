@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "regions": ["fra1"],  // Явно указываем регион
+  "regions": ["fra1"],  
   "functions": {
     "api/frame.js": {
-      "memory": 1024,  // Минимальный объем памяти
-      "maxDuration": 5  // Макс. время выполнения (сек)
+      "memory": 1024,  
+      "maxDuration": 5  
     }
   }
 }
