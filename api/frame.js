@@ -1,42 +1,24 @@
-export default function handler(req, res) {
+module.exports = (req, res) => {
   if (req.method === 'POST') {
-    // Обработка действия из фрейма
-    const frameAction = req.body.untrustedData.buttonIndex;
-    
-    if (frameAction === 1) { // Кнопка Participate
-      return res.redirect(302, `https://neon-xi.vercel.app/?frameAction=participate`);
-    }
-
-    // Возвращаем Frame-ответ
-    return res.status(200).json({
-      type: 'frame',
-      frame: {
-        version: 'vNext',
-        image: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
-        buttons: [
-          {
-            label: '🎫 Participate',
-            action: 'post_redirect'
-          }
-        ],
-        postUrl: 'https://neon-xi.vercel.app/api/frame'
-      }
+    // Обработка нажатия кнопки во фрейме
+    res.writeHead(302, {
+      Location: 'https://neon-xi.vercel.app/?action=participate'
     });
+    res.end();
+  } else {
+    // Возвращаем метаданные фрейма для GET-запросов
+    res.setHeader('Content-Type', 'text/html');
+    res.end(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta property="fc:frame" content="vNext">
+          <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+          <meta property="fc:frame:button:1" content="🎫 Participate">
+          <meta property="fc:frame:button:1:action" content="post_redirect">
+          <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+        </head>
+      </html>
+    `);
   }
-
-  // GET запрос - показываем базовый фрейм
-  return res.status(200).json({
-    type: 'frame',
-    frame: {
-      version: 'vNext',
-      image: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
-      buttons: [
-        {
-          label: '🎫 Participate',
-          action: 'post_redirect'
-        }
-      ],
-      postUrl: 'https://neon-xi.vercel.app/api/frame'
-    }
-  });
-}
+};
