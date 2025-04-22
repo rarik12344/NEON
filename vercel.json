@@ -11,8 +11,42 @@
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
         }
       ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/api/frame",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/frame",
+      "dest": "/api/frame.js",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "src": "/api/webhook",
+      "dest": "/api/webhook.js",
+      "methods": ["POST"]
     }
   ]
 }
