@@ -1,25 +1,18 @@
 {
   "version": 2,
-  "routes": [
+  "headers": [
     {
-      "src": "/api/frame",
-      "headers": {
-        "Content-Type": "text/html",
-        "Cache-Control": "no-store"
-      }
-    },
-    {
-      "src": "/.well-known/farcaster.json",
-      "headers": {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    },
-    {
-      "src": "/(.*)",
-      "headers": {
-        "Content-Security-Policy": "default-src 'self'; img-src https://i.ibb.co; frame-src 'self' https://warpcast.com"
-      }
+      "source": "/.well-known/farcaster.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     }
   ]
 }
