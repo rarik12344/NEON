@@ -1,5 +1,18 @@
 {
   "name": "neon-lottery",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.1.0",
+    "web3": "^1.8.0"
+  },
+  "devDependencies": {
+    "vite": "^4.4.0"
+  }
 }
