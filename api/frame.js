@@ -1,13 +1,11 @@
-export default function handler(req, res) {
+export default async function handler(req, res) {
+  // POST-запрос от фрейма
   if (req.method === 'POST') {
-    res.writeHead(302, { 
-      Location: 'https://neon-xi.vercel.app/?action=participate' 
-    });
-    return res.end();
+    return Response.redirect('https://neon-xi.vercel.app/?action=participate', 302);
   }
 
-  res.setHeader('Content-Type', 'text/html');
-  return res.end(`
+  // GET-запрос (отображение фрейма)
+  return new Response(`
     <!DOCTYPE html>
     <html>
       <head>
@@ -18,5 +16,10 @@ export default function handler(req, res) {
         <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
       </head>
     </html>
-  `);
+  `, {
+    headers: {
+      'Content-Type': 'text/html',
+      'Cache-Control': 'public, max-age=3600'
+    }
+  });
 }
