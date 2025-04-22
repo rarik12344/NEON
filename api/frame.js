@@ -1,30 +1,26 @@
 export default async (req, res) => {
-  const frameData = {
-    imageUrl: "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-    postUrl: `https://${req.headers.host}/api/frame`,
-    buttons: [{ label: "🎫 Participate" }],
-    version: "vNext"
-  };
-
-  const html = `<!DOCTYPE html>
+  const frameHtml = `<!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#">
 <head>
-  <meta property="fc:frame" content="${frameData.version}">
-  <meta property="fc:frame:image" content="${frameData.imageUrl}">
-  <meta property="fc:frame:button:1" content="${frameData.buttons[0].label}">
-  <meta property="fc:frame:post_url" content="${frameData.postUrl}">
-  
-  <meta property="og:title" content="Neon Lottery">
-  <meta property="og:image" content="${frameData.imageUrl}">
-  <meta name="viewport" content="width=device-width">
-  
-  <style>
-    body { margin: 0; background: #0f0f1a; }
-    img { max-width: 100%; height: auto; display: block; }
-  </style>
+  <!-- Обязательные мета-теги для Farcaster Frame -->
+  <meta property="fc:frame" content="vNext">
+  <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+  <meta property="fc:frame:button:1" content="🎫 Participate">
+  <meta property="fc:frame:post_url" content="https://${req.headers.host}/api/frame">
+
+  <!-- Критически важные Open Graph теги для предпросмотра -->
+  <meta property="og:title" content="Neon Lottery | Daily ETH Lottery">
+  <meta property="og:description" content="Win daily ETH prizes on Base Network">
+  <meta property="og:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+  <meta property="og:url" content="https://${req.headers.host}">
+  <meta property="og:type" content="website">
+
+  <!-- Дополнительные мета-теги -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="fc:frame:image:aspect_ratio" content="1.91:1">
 </head>
-<body>
-  <img src="${frameData.imageUrl}" alt="Neon Lottery">
+<body style="margin:0;background:#0f0f1a">
+  <img src="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg" alt="Neon Lottery" style="width:100%">
 </body>
 </html>`;
 
@@ -32,5 +28,5 @@ export default async (req, res) => {
     .setHeader('Content-Type', 'text/html')
     .setHeader('Cache-Control', 'no-store, max-age=0')
     .status(200)
-    .send(html);
+    .send(frameHtml);
 };
