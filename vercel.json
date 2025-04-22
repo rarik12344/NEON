@@ -1,23 +1,19 @@
 {
-  "headers": [
+  "version": 2,
+  "routes": [
     {
-      "source": "/.well-known/farcaster.json",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Content-Type",
-          "value": "application/json"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
+      "src": "/api/frame",
+      "dest": "/api/frame.js",
+      "headers": {
+        "Content-Type": "text/html"
+      }
+    },
     {
-      "source": "/api/frame",
-      "destination": "/api/frame.js"
+      "src": "/.well-known/farcaster.json",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
+      }
     }
   ]
 }
