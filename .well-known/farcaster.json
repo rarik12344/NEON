@@ -5,12 +5,16 @@
     "signature": "MHgxMmQ3MDRiZWJlMTJhYmZhOTM1YTVmZWQzMmI1YjAwYjFkNmVjYzUzNTkzZTQ0ZThhNmExNDFiNjYxNTY2YWNiNzYwZGQ4MTE1MDBkYjA5NmY1ZWJlMTk5OWY2MjQzYTc4ODZiNTViYTQ1ZjAxZmZiMzRkNjg5YzZkMzIwM2EwNTFj"
   },
   "frame": {
-    "version": "1",
-    "name": "Neon Lottery",
-    "iconUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-    "homeUrl": "https://neon-xi.vercel.app/",
-    "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-    "splashBackgroundColor": "#0f0f1a",
-    "webhookUrl": "https://neon-xi.vercel.app/api/webhook"
+    "version": "vNext",
+    "title": "Neon Lottery",
+    "icon": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+    "navigation": {
+      "home": "https://neon-xi.vercel.app/",
+      "splash": {
+        "image": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+        "background": "#0f0f1a"
+      }
+    },
+    "webhook": "https://neon-xi.vercel.app/api/webhook"
   }
 }
