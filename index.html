@@ -23,21 +23,12 @@
     <meta property="twitter:description" content="Participate in daily ETH lottery on Base Network with transparent blockchain-based draws">
     <meta property="twitter:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     
-    <!-- Farcaster Mini App Embed Metadata -->
-    <meta name="fc:frame" content='{
-      "version": "next",
-      "imageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-      "button": {
-        "title": "🎫 Participate",
-        "action": {
-          "type": "launch_frame",
-          "name": "Neon Lottery",
-          "url": "https://neon-xi.vercel.app/",
-          "splashImageUrl": "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
-          "splashBackgroundColor": "#0f0f1a"
-        }
-      }
-    }'>
+    <!-- Farcaster Frame Meta Tags -->
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
+    <meta property="fc:frame:button:1" content="🎫 Participate">
+    <meta property="fc:frame:button:1:action" content="post_redirect">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini App Manifest References -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -52,7 +43,7 @@
     <!-- Web3 Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <!-- Farcaster Mini App SDK -->
-    <script src="https://unpkg.com/@farcaster/miniapp@latest/dist/miniapp.umd.js"></script>
+    <script src="https://unpkg.com/@farcaster/miniapp-sdk@latest/dist/miniapp.umd.js"></script>
     
     <style>
         :root {
@@ -651,15 +642,30 @@
         
         // Farcaster Mini App
         let farcasterMiniApp = null;
-        const isMiniApp = window.farcasterMiniApp !== undefined;
+        const isMiniApp = window.farcaster !== undefined;
 
         // Initialize app
         window.addEventListener('load', async function() {
+            // Initialize Mini App if in Warpcast
             if (isMiniApp) {
-                farcasterMiniApp = window.farcasterMiniApp;
-                document.getElementById('miniapp-badge').style.display = 'block';
-                document.getElementById('add-frame-btn').style.display = 'block';
-                await initMiniAppMode();
+                try {
+                    farcasterMiniApp = window.farcaster;
+                    document.getElementById('miniapp-badge').style.display = 'block';
+                    document.getElementById('add-frame-btn').style.display = 'block';
+                    
+                    // Initialize Mini App SDK
+                    await farcasterMiniApp.ready();
+                    
+                    // Handle frame actions
+                    handleFrameActions();
+                    
+                    // Initialize wallet connection
+                    await initMiniAppMode();
+                } catch (error) {
+                    console.error("MiniApp initialization error:", error);
+                    // Fallback to web mode
+                    await initWebMode();
+                }
             } else {
                 await initWebMode();
             }
@@ -670,9 +676,6 @@
             
             // Start auto-updating round info every second
             startAutoUpdate();
-            
-            // Handle frame actions
-            handleFrameActions();
         });
 
         // Start auto-updating round info
@@ -695,59 +698,31 @@
         // Handle frame actions
         function handleFrameActions() {
             const params = new URLSearchParams(window.location.search);
-            const action = params.get('frameAction');
+            const action = params.get('action');
             
-            if (action === 'buy') {
-                if (isMiniApp) {
-                    document.getElementById('buy-btn').click();
-                } else {
-                    window.location.href = 'https://neon-xi.vercel.app/';
-                }
+            if (action === 'participate') {
+                document.getElementById('buy-btn').click();
             }
         }
 
         async function initMiniAppMode() {
             try {
-                // Initialize MiniApp with proper configuration
-                web3 = new Web3(farcasterMiniApp.ethProvider);
+                // Initialize Web3 with MiniApp provider
+                web3 = new Web3(farcasterMiniApp.ethereum);
                 
-                // Request necessary permissions
-                const permissions = await farcasterMiniApp.requestPermissions({
-                    permissions: ['identity', 'notifications', 'wallet']
-                });
+                // Check if wallet is already connected
+                const accounts = await farcasterMiniApp.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    account = accounts[0];
+                    isBaseNetwork = await checkNetwork();
+                    updateUI();
+                }
                 
-                // Connect wallet
-                const wallet = await farcasterMiniApp.connectWallet({
-                    chainId: BASE_CHAIN_ID,
-                    rpcUrl: BASE_RPC_URL
-                });
-                
-                account = wallet.address;
-                isBaseNetwork = true;
-                updateUI();
-                
-                // Show welcome notification in Warpcast
-                farcasterMiniApp.showNotification({
-                    type: 'success',
-                    message: 'Welcome to Neon Lottery!',
-                    duration: 3000
-                });
-                
-                // Track analytics event
-                farcasterMiniApp.trackEvent('app_launched', {
-                    source: 'miniapp',
-                    wallet: account
-                });
-                
-                // Hide splash screen when ready
-                farcasterMiniApp.ready();
-                
-                showNotification("Warpcast wallet connected!");
+                showNotification("Warpcast Mini App initialized!");
             } catch (error) {
                 console.error("MiniApp init error:", error);
+                // Fallback to regular web3 provider
                 web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
-                
-                // Fallback notification
                 showNotification("Failed to initialize MiniApp mode", "error");
             }
         }
@@ -767,19 +742,16 @@
         }
 
         async function connectWallet() {
-            if (isMiniApp) {
+            if (isMiniApp && farcasterMiniApp) {
                 try {
-                    const wallet = await farcasterMiniApp.connectWallet({
-                        chainId: BASE_CHAIN_ID,
-                        rpcUrl: BASE_RPC_URL
+                    // Request wallet connection through MiniApp SDK
+                    const accounts = await farcasterMiniApp.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
                     });
-                    account = wallet.address;
-                    updateUI();
                     
-                    // Track wallet connection event
-                    farcasterMiniApp.trackEvent('wallet_connected', {
-                        wallet: account
-                    });
+                    account = accounts[0];
+                    isBaseNetwork = await checkNetwork();
+                    updateUI();
                     
                     showNotification("Warpcast wallet connected!");
                 } catch (error) {
@@ -788,52 +760,6 @@
                 }
             } else {
                 await connectMetaMask();
-            }
-        }
-
-        async function confirmPurchaseMiniApp(ticketAmount, costWei) {
-            try {
-                // Show loading state in MiniApp
-                farcasterMiniApp.showLoading(true);
-                
-                const txHash = await farcasterMiniApp.sendTransaction({
-                    to: CONTRACT_ADDRESS,
-                    value: costWei,
-                    data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI(),
-                    chainId: BASE_CHAIN_ID
-                });
-                
-                // Track purchase event
-                farcasterMiniApp.trackEvent('tickets_purchased', {
-                    ticketAmount,
-                    costWei,
-                    txHash
-                });
-                
-                showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
-                
-                // Show success notification in Warpcast
-                farcasterMiniApp.showNotification({
-                    type: 'success',
-                    message: `${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased!`,
-                    duration: 5000
-                });
-                
-                return true;
-            } catch (error) {
-                console.error("MiniApp transaction error:", error);
-                
-                // Show error notification in Warpcast
-                farcasterMiniApp.showNotification({
-                    type: 'error',
-                    message: 'Transaction failed',
-                    duration: 5000
-                });
-                
-                showNotification("Transaction failed", "error");
-                return false;
-            } finally {
-                farcasterMiniApp.showLoading(false);
             }
         }
 
@@ -933,13 +859,10 @@
             
             document.getElementById('add-frame-btn').addEventListener('click', async () => {
                 try {
-                    await farcasterMiniApp.addFrame({
+                    await farcasterMiniApp.addToFrames({
                         title: 'Neon Lottery',
-                        iconUrl: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
-                        action: {
-                            type: 'launch_frame',
-                            url: window.location.href
-                        }
+                        imageUrl: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
+                        postUrl: 'https://neon-xi.vercel.app/api/frame'
                     });
                     showNotification("Added to your Warpcast frames!");
                 } catch (error) {
@@ -996,12 +919,6 @@
                                 text: shareText,
                                 embeds: [{ url: referralUrl }]
                             });
-                            
-                            // Track share event
-                            farcasterMiniApp.trackEvent('shared', {
-                                platform: 'warpcast'
-                            });
-                            
                             showNotification("Post created on Warpcast!");
                         } catch (error) {
                             console.error("Error creating Warpcast post:", error);
@@ -1023,12 +940,6 @@
             
             navigator.clipboard.writeText(referralLink).then(() => {
                 showNotification("Link copied to clipboard!");
-                
-                if (isMiniApp) {
-                    farcasterMiniApp.trackEvent('referral_copied', {
-                        link: referralLink
-                    });
-                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
                 showNotification("Failed to copy link", "error");
@@ -1112,7 +1023,7 @@
         }
 
         async function checkNetwork() {
-            if (!window.ethereum) return;
+            if (!window.ethereum) return false;
             
             try {
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -1127,8 +1038,11 @@
                     document.getElementById('network-warning').style.display = 'block';
                     document.getElementById('buy-btn').disabled = true;
                 }
+                
+                return isBaseNetwork;
             } catch (error) {
                 console.error("Error checking network:", error);
+                return false;
             }
         }
 
@@ -1205,13 +1119,20 @@
                 const ticketPriceWei = await lotteryContract.methods.ticketPriceETH().call();
                 const costWei = ticketPriceWei * ticketAmount;
                 
-                if (isMiniApp) {
-                    const success = await confirmPurchaseMiniApp(ticketAmount, costWei.toString());
-                    if (success) {
-                        document.getElementById('buy-modal').style.display = 'none';
-                        updateRoundInfo();
-                    }
+                if (isMiniApp && farcasterMiniApp) {
+                    // Use MiniApp transaction flow
+                    const txHash = await farcasterMiniApp.sendTransaction({
+                        to: CONTRACT_ADDRESS,
+                        value: costWei.toString(),
+                        data: lotteryContract.methods.buyTickets(ticketAmount).encodeABI(),
+                        chainId: BASE_CHAIN_ID
+                    });
+                    
+                    showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`);
+                    document.getElementById('buy-modal').style.display = 'none';
+                    updateRoundInfo();
                 } else {
+                    // Regular web flow
                     const gasPriceWei = web3.utils.toWei(OPTIMAL_GAS_PRICE_GWEI.toString(), 'gwei');
                     let gasLimit = DEFAULT_GAS_LIMIT;
                     
