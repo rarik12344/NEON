@@ -30,6 +30,8 @@ export default async (req, res) => {
   res
     .setHeader('Content-Type', 'application/json')
     .setHeader('Cache-Control', 'no-store, max-age=0')
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Vercel-CDN-Cache-Control', 'no-store, max-age=0') // Важно для Vercel
     .status(200)
     .json(manifest);
 };
