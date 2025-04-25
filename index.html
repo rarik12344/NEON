@@ -27,6 +27,9 @@
     
     <!-- Farcaster Frame Meta Tags -->
     <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:app" content="neon-lottery">
+    <meta property="fc:frame:app:name" content="Neon Lottery">
+    <meta property="fc:frame:app:icon" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     <meta property="fc:frame:image" content="https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg">
     <meta property="fc:frame:image:aspect_ratio" content="1.91:1">
     <meta property="fc:frame:button:1" content="🎫 Participate">
@@ -44,9 +47,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Web3 Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@2.0.0/dist/web3.min.js"></script>
     <!-- Farcaster Mini App SDK -->
-    <script src="https://unpkg.com/@farcaster/miniapp-sdk@latest/dist/miniapp.umd.js"></script>
+    <script src="https://unpkg.com/@farcaster/miniapp-sdk@1.2.0/dist/miniapp.umd.js"></script>
     
     <style>
         :root {
@@ -659,11 +662,21 @@
                     // Initialize Mini App SDK
                     await farcasterMiniApp.ready();
                     
+                    // Check authentication status
+                    const isAuth = await farcasterMiniApp.isAuthenticated();
+                    if (isAuth) {
+                        const userInfo = await farcasterMiniApp.getUserInfo();
+                        account = userInfo.address;
+                        updateUI();
+                    }
+                    
                     // Handle frame actions
                     handleFrameActions();
                     
-                    // Initialize wallet connection
-                    await initMiniAppMode();
+                    // Initialize Web3 with MiniApp provider
+                    web3 = new Web3(farcasterMiniApp.ethereum);
+                    
+                    showNotification("Warpcast Mini App initialized!");
                 } catch (error) {
                     console.error("MiniApp initialization error:", error);
                     // Fallback to web mode
@@ -708,28 +721,6 @@
             }
         }
 
-        async function initMiniAppMode() {
-            try {
-                // Initialize Web3 with MiniApp provider
-                web3 = new Web3(farcasterMiniApp.ethereum);
-                
-                // Check if wallet is already connected
-                const accounts = await farcasterMiniApp.ethereum.request({ method: 'eth_accounts' });
-                if (accounts.length > 0) {
-                    account = accounts[0];
-                    isBaseNetwork = await checkNetwork();
-                    updateUI();
-                }
-                
-                showNotification("Warpcast Mini App initialized!");
-            } catch (error) {
-                console.error("MiniApp init error:", error);
-                // Fallback to regular web3 provider
-                web3 = new Web3(new Web3.providers.HttpProvider(BASE_RPC_URL));
-                showNotification("Failed to initialize MiniApp mode", "error");
-            }
-        }
-
         async function initWebMode() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -747,12 +738,16 @@
         async function connectWallet() {
             if (isMiniApp && farcasterMiniApp) {
                 try {
-                    // Request wallet connection through MiniApp SDK
-                    const accounts = await farcasterMiniApp.ethereum.request({ 
-                        method: 'eth_requestAccounts' 
-                    });
+                    // Request authentication through MiniApp SDK
+                    await farcasterMiniApp.authenticate();
                     
-                    account = accounts[0];
+                    // Get user info after authentication
+                    const userInfo = await farcasterMiniApp.getUserInfo();
+                    account = userInfo.address;
+                    
+                    // Initialize Web3 with MiniApp provider
+                    web3 = new Web3(farcasterMiniApp.ethereum);
+                    
                     isBaseNetwork = await checkNetwork();
                     updateUI();
                     
