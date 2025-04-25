@@ -15,23 +15,9 @@
         {
           "key": "Cache-Control",
           "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/",
-      "headers": [
+        },
         {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/api/frame",
-      "headers": [
-        {
-          "key": "Cache-Control",
+          "key": "Vercel-CDN-Cache-Control",
           "value": "no-store, max-age=0"
         }
       ]
@@ -39,14 +25,11 @@
   ],
   "routes": [
     {
-      "src": "/api/frame",
-      "dest": "/api/frame.js",
-      "methods": ["GET", "POST"]
-    },
-    {
-      "src": "/api/webhook",
-      "dest": "/api/webhook.js",
-      "methods": ["POST"]
+      "src": "/.well-known/farcaster.json",
+      "dest": "/.well-known/farcaster.json",
+      "headers": {
+        "Cache-Control": "no-store, max-age=0"
+      }
     }
   ]
 }
