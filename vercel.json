@@ -17,31 +17,16 @@
           "value": "no-store, max-age=0"
         }
       ]
-    },
-    {
-      "source": "/",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/api/frame",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
     }
   ],
   "routes": [
+    {
+      "src": "/.well-known/farcaster.json",
+      "dest": "/.well-known/farcaster.json",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
     {
       "src": "/api/frame",
       "dest": "/api/frame.js",
@@ -51,10 +36,6 @@
       "src": "/api/webhook",
       "dest": "/api/webhook.js",
       "methods": ["POST"]
-    },
-    {
-      "src": "/.well-known/farcaster.json",
-      "dest": "/.well-known/farcaster.json"
     }
   ]
 }
