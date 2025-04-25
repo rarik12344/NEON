@@ -3,16 +3,12 @@
   "routes": [
     {
       "src": "/.well-known/farcaster.json",
-      "dest": "/api/farcaster-manifest.js",
+      "dest": "/api/farcaster.js",
       "headers": {
         "Cache-Control": "no-store, max-age=0",
-        "CDN-Cache-Control": "no-store"
+        "CDN-Cache-Control": "no-store",
+        "Vercel-CDN-Cache-Control": "no-store"
       }
-    },
-    {
-      "src": "/api/frame",
-      "dest": "/api/frame.js",
-      "methods": ["GET", "POST"]
     }
   ]
 }
