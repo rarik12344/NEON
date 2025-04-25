@@ -1,24 +1,19 @@
 {
-  "version": 2,
+  "version": 3,
+  "build": {
+    "env": {
+      "NO_CACHE": "1"
+    }
+  },
   "routes": [
     {
       "src": "/.well-known/farcaster.json",
       "dest": "/api/farcaster.js",
       "headers": {
-        "Content-Type": "application/json",
         "Cache-Control": "no-store, max-age=0",
+        "CDN-Cache-Control": "no-store",
         "Vercel-CDN-Cache-Control": "no-store"
       }
-    },
-    {
-      "src": "/api/frame",
-      "dest": "/api/frame.js",
-      "methods": ["GET", "POST"]
-    },
-    {
-      "src": "/api/webhook",
-      "dest": "/api/webhook.js",
-      "methods": ["POST"]
     }
   ]
 }
