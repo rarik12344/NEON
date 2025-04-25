@@ -4,9 +4,26 @@ export default async (req, res) => {
   if (isFrameRequest) {
     return res.status(200).json({
       type: 'frame',
-      image: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
-      buttons: [{ label: '🎫 Participate', action: 'post_redirect' }],
-      postUrl: `https://${req.headers.host}/api/frame`
+      version: 'vNext',
+      image: {
+        url: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
+        aspectRatio: '1.91:1'
+      },
+      buttons: [
+        {
+          label: '🎫 Participate',
+          action: 'post_redirect'
+        }
+      ],
+      postUrl: `https://${req.headers.host}/api/frame`,
+      metadata: {
+        'fc:frame': 'vNext',
+        'fc:frame:image': 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
+        'fc:frame:image:aspect_ratio': '1.91:1',
+        'fc:frame:button:1': '🎫 Participate',
+        'fc:frame:button:1:action': 'post_redirect',
+        'fc:frame:post_url': `https://${req.headers.host}/api/frame`
+      }
     });
   }
 
