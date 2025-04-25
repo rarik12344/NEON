@@ -6,7 +6,8 @@
       "dest": "/api/manifest.js",
       "headers": {
         "Content-Type": "application/json",
-        "Cache-Control": "no-store, max-age=0"
+        "Cache-Control": "no-store, max-age=0",
+        "Vercel-CDN-Cache-Control": "no-store, max-age=0"
       }
     },
     {
