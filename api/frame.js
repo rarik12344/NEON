@@ -1,10 +1,7 @@
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    // Обработка действия из фрейма
     const { buttonIndex } = req.body;
-    
     if (buttonIndex === 1) {
-      // Перенаправление на страницу покупки билетов
       return res.status(200).json({
         type: 'redirect',
         url: 'https://neon-xi.vercel.app/?frameAction=buy'
@@ -12,9 +9,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // Ответ по умолчанию
+  // Ответ для GET-запроса (предпросмотр Frame)
   res.status(200).json({
-    type: 'message',
-    message: 'Neon Lottery - Daily ETH Draws'
+    type: 'frame',
+    imageUrl: 'https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg',
+    buttons: [{ label: '🎫 Participate', action: 'post' }],
+    postUrl: 'https://neon-xi.vercel.app/api/frame'
   });
 }
