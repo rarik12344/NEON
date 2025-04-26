@@ -1,18 +1,17 @@
 {
   "version": 2,
-  "build": {
-    "env": {
-      "NO_CACHE": "1"
+  "builds": [
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/.well-known/farcaster.json",
-      "dest": "/api/farcaster.js",
+      "dest": "/.well-known/farcaster.json",
       "headers": {
-        "Cache-Control": "no-store, max-age=0",
-        "CDN-Cache-Control": "no-store",
-        "Vercel-CDN-Cache-Control": "no-store"
+        "Cache-Control": "no-store, max-age=0"
       }
     },
     {
