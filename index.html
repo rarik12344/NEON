@@ -30,7 +30,23 @@
     <meta property="fc:frame:button:1:action" content="post_redirect">
     <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
-    <!-- Farcaster Mini App Manifest References -->
+    <!-- Warpcast MiniApp Configuration -->
+    <meta name="fc:frame" content='{
+      "version":"next",
+      "imageUrl":"https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+      "button":{
+        "title":"Spin to Win",
+        "action":{
+          "type":"launch_frame",
+          "name":"Neon Lottery",
+          "url":"https://neon-xi.vercel.app/",
+          "splashImageUrl":"https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+          "splashBackgroundColor":"#0f0f1a"
+        }
+      }
+    }'>
+    
+    <!-- Farcaster MiniApp Manifest References -->
     <link rel="manifest" href="/.well-known/farcaster.json">
     
     <!-- Preload critical resources -->
@@ -52,10 +68,11 @@
             --card-bg: rgba(15, 15, 26, 0.9);
             --text-primary: #ffffff;
             --text-secondary: #cccccc;
+            --app-height: 100vh;
         }
         
         html, body {
-            height: 100%;
+            height: var(--app-height);
             width: 100%;
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
@@ -79,10 +96,17 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            flex-direction: column;
+            padding: 0;
             box-sizing: border-box;
+        }
+        
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
         
         .container {
@@ -97,7 +121,7 @@
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            margin: auto;
+            margin: 0 auto;
         }
         
         h1 {
@@ -205,7 +229,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: var(--app-height);
             background: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
@@ -451,6 +475,41 @@
             background: rgba(255, 255, 255, 0.2);
         }
         
+        /* Bottom tabs navigation */
+        .bottom-tabs {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab-button {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .tab-button.active {
+            color: var(--neon-blue);
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .tab-button:hover {
+            color: var(--neon-pink);
+        }
+        
         @keyframes pulse {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -494,63 +553,81 @@
 </head>
 <body>
     <div id="app-container">
-        <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
-        
-        <div class="container">
-            <div class="miniapp-header" id="miniapp-header" style="display: none;">
-                <div></div>
-                <div class="miniapp-actions">
-                    <button class="miniapp-btn" id="miniapp-share-btn" title="Share">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
-                    <button class="miniapp-btn" id="miniapp-frame-btn" title="Add to Frames">
-                        <i class="fas fa-plus"></i>
-                    </button>
+        <div class="content-area">
+            <div class="miniapp-badge" id="miniapp-badge">Warpcast Mode</div>
+            
+            <div class="container">
+                <div class="miniapp-header" id="miniapp-header" style="display: none;">
+                    <div></div>
+                    <div class="miniapp-actions">
+                        <button class="miniapp-btn" id="miniapp-share-btn" title="Share">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <button class="miniapp-btn" id="miniapp-frame-btn" title="Add to Frames">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
+                
+                <h1>✨ NEON LOTTERY ✨</h1>
+                
+                <div class="network-warning" id="network-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Please switch to Base Network to participate
+                </div>
+                
+                <div class="timer" id="countdown">00:00:00</div>
+                <div class="round-status" id="round-status">Loading round info...</div>
+                
+                <div class="info-item">
+                    <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
+                    <span id="ticket-price">Loading...</span>
+                </div>
+                
+                <div class="info-item">
+                    <span><i class="fas fa-coins"></i> Current Pool:</span>
+                    <span id="current-pool">Loading...</span>
+                </div>
+                
+                <div class="info-item" id="user-tickets-container" style="display: none;">
+                    <span><i class="fas fa-user"></i> Your Tickets:</span>
+                    <span id="user-tickets">0</span>
+                </div>
+                
+                <button id="connect-btn" class="btn btn-green">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
+                
+                <button id="buy-btn" class="btn" disabled>
+                    <i class="fas fa-ticket-alt"></i> Buy Tickets
+                </button>
+                
+                <button id="winners-btn" class="btn btn-pink">
+                    <i class="fas fa-trophy"></i> View Winners
+                </button>
+                
+                <button id="invite-btn" class="btn btn-purple">
+                    <i class="fas fa-user-plus"></i> Invite Friends
+                </button>
+                
+                <button id="info-btn" class="btn">
+                    <i class="fas fa-info-circle"></i> How It Works
+                </button>
             </div>
-            
-            <h1>✨ NEON LOTTERY ✨</h1>
-            
-            <div class="network-warning" id="network-warning">
-                <i class="fas fa-exclamation-triangle"></i> Please switch to Base Network to participate
-            </div>
-            
-            <div class="timer" id="countdown">00:00:00</div>
-            <div class="round-status" id="round-status">Loading round info...</div>
-            
-            <div class="info-item">
-                <span><i class="fas fa-ticket-alt"></i> Ticket Price:</span>
-                <span id="ticket-price">Loading...</span>
-            </div>
-            
-            <div class="info-item">
-                <span><i class="fas fa-coins"></i> Current Pool:</span>
-                <span id="current-pool">Loading...</span>
-            </div>
-            
-            <div class="info-item" id="user-tickets-container" style="display: none;">
-                <span><i class="fas fa-user"></i> Your Tickets:</span>
-                <span id="user-tickets">0</span>
-            </div>
-            
-            <button id="connect-btn" class="btn btn-green">
-                <i class="fas fa-wallet"></i> Connect Wallet
+        </div>
+
+        <!-- Bottom navigation tabs -->
+        <div class="bottom-tabs">
+            <button class="tab-button active" data-tab="home" aria-label="Home">
+                <i class="fas fa-home"></i>
             </button>
-            
-            <button id="buy-btn" class="btn" disabled>
-                <i class="fas fa-ticket-alt"></i> Buy Tickets
+            <button class="tab-button" data-tab="lottery" aria-label="Lottery">
+                <i class="fas fa-ticket-alt"></i>
             </button>
-            
-            <button id="winners-btn" class="btn btn-pink">
-                <i class="fas fa-trophy"></i> View Winners
+            <button class="tab-button" data-tab="winners" aria-label="Winners">
+                <i class="fas fa-trophy"></i>
             </button>
-            
-            <button id="invite-btn" class="btn btn-purple">
-                <i class="fas fa-user-plus"></i> Invite Friends
-            </button>
-            
-            <button id="info-btn" class="btn">
-                <i class="fas fa-info-circle"></i> How It Works
+            <button class="tab-button" data-tab="profile" aria-label="Profile">
+                <i class="fas fa-user"></i>
             </button>
         </div>
 
@@ -703,11 +780,48 @@
                 startAutoUpdate();
                 handleFrameActions();
                 
+                // Set up bottom tabs navigation
+                setupBottomTabs();
+                
             } catch (error) {
                 console.error("Initialization error:", error);
                 showNotification("App initialization failed", "error");
             }
         });
+
+        // Setup bottom tabs navigation
+        function setupBottomTabs() {
+            const tabs = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Handle tab switching
+                    const tabName = tab.getAttribute('data-tab');
+                    switch(tabName) {
+                        case 'lottery':
+                            document.getElementById('buy-btn').scrollIntoView({ behavior: 'smooth' });
+                            break;
+                        case 'winners':
+                            document.getElementById('winners-btn').click();
+                            break;
+                        case 'profile':
+                            if (AppState.account) {
+                                document.getElementById('invite-btn').click();
+                            } else {
+                                document.getElementById('connect-btn').click();
+                            }
+                            break;
+                        default:
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
 
         // Initialize MiniApp mode
         async function initializeMiniApp() {
