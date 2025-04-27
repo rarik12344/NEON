@@ -1,25 +1,32 @@
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { buttonIndex, fid } = req.body;
+    const { untrustedData } = req.body;
     
-    if (buttonIndex === 1) {
+    if (untrustedData.buttonIndex === 1) {
       return res.status(200).json({
-        type: 'redirect',
-        url: `https://neon-xi.vercel.app/?frameAction=buy&fid=${fid}`
+        type: 'frame',
+        image: `https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg?t=${Date.now()}`,
+        buttons: [
+          {
+            label: '🎫 Participate',
+            action: 'post_redirect',
+          }
+        ],
+        postUrl: `https://neon-xi.vercel.app/api/frame?t=${Date.now()}`,
       });
     }
   }
 
-  // Dynamic image generation (optional)
-  const imageUrl = `https://neon-xi.vercel.app/api/image?date=${Date.now()}`;
-
+  // GET request - initial frame
   res.status(200).json({
     type: 'frame',
-    imageUrl: imageUrl,
+    image: `https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg?t=${Date.now()}`,
     buttons: [
-      { label: '🎫 Participate', action: 'post' },
-      { label: '🏆 Winners', action: 'post' }
+      {
+        label: '🎫 Participate',
+        action: 'post_redirect',
+      }
     ],
-    postUrl: 'https://neon-xi.vercel.app/api/frame'
+    postUrl: `https://neon-xi.vercel.app/api/frame?t=${Date.now()}`,
   });
 }
