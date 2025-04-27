@@ -1,56 +1,55 @@
-// api/frame.js
 export default async function handler(req, res) {
-  // 1. Настройка базовых параметров
-  const HARDCODED_BASE_URL = "https://neon-xi.vercel.app"; // На случай проблем с env переменными
-  const BASE_URL = process.env.BASE_URL || HARDCODED_BASE_URL;
+  // 1. Базовые настройки
+  const BASE_URL = "https://neon-xi.vercel.app";
   const TIMESTAMP = Date.now();
-  
-  // 2. URL ресурсов с anti-cache параметрами
   const IMAGE_URL = `https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg?t=${TIMESTAMP}`;
   const POST_URL = `${BASE_URL}/api/frame?t=${TIMESTAMP}`;
-  
-  // 3. Формирование ответа Frame
+
+  // 2. Формирование ответа Frame
   const frameResponse = {
     type: 'frame',
     frame: {
-      version: 'vNext', // Обязательная версия
-      image: IMAGE_URL, // Абсолютный URL изображения
+      version: 'vNext',
+      image: IMAGE_URL,
       buttons: [{
-        label: '🎫 Participate', // Максимум 4 кнопки
-        action: 'post_redirect' // Или 'post' для обычного действия
+        label: '🎫 Participate',
+        action: 'post_redirect'
       }],
-      postUrl: POST_URL, // Абсолютный URL для обработки
-      ogImage: IMAGE_URL, // Дублирование для совместимости
-      accepts: { // Дополнительные параметры
+      postUrl: POST_URL,
+      ogImage: IMAGE_URL,
+      accepts: {
         'x-frame-payload': true
       }
     }
   };
 
-  // 4. Обработка POST-запроса (взаимодействие пользователя)
+  // 3. Обработка POST-запроса
   if (req.method === 'POST') {
     try {
-      // Парсинг входящих данных
-      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const buttonIndex = body?.untrustedData?.buttonIndex;
-      
-      // Логирование для отладки
-      console.log('Received POST:', {
-        buttonIndex,
-        body: JSON.stringify(body, null, 2)
-      });
+      // Правильный парсинг входящего тела запроса
+      let body;
+      if (typeof req.body === 'string' && req.body.length > 0) {
+        body = JSON.parse(req.body);
+      } else if (typeof req.body === 'object') {
+        body = req.body;
+      } else {
+        throw new Error('Invalid request body');
+      }
 
-      // Обработка действия кнопки
-      if (buttonIndex === 1) {
+      // Проверка структуры данных
+      if (body?.untrustedData?.buttonIndex) {
+        console.log('Valid frame interaction:', body.untrustedData);
         return res.status(200).json(frameResponse);
       }
+      
+      throw new Error('Invalid frame data');
     } catch (error) {
-      console.error('Frame POST error:', error);
-      return res.status(400).json({ error: 'Invalid request' });
+      console.error('Frame POST error:', error.message);
+      // Возвращаем корректный Frame даже при ошибке
+      return res.status(200).json(frameResponse);
     }
   }
 
-  // 5. Обработка GET-запроса (первоначальная загрузка Frame)
-  console.log('Serving GET frame');
+  // 4. Обработка GET-запроса
   res.status(200).json(frameResponse);
 }
