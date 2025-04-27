@@ -7,11 +7,15 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
         },
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
         }
       ]
     },
@@ -24,11 +28,11 @@
         },
         {
           "key": "Access-Control-Allow-Methods",
-          "value": "POST, OPTIONS"
+          "value": "POST, GET, OPTIONS"
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
+          "value": "Content-Type, Authorization, X-Farcaster-Frame-Signature"
         }
       ]
     }
@@ -47,15 +51,15 @@
     {
       "src": "/api/webhook",
       "methods": ["POST", "OPTIONS"],
-      "dest": "/api/webhook",
+      "dest": "/api/webhook.js",
       "headers": {
         "Content-Type": "application/json"
       }
     },
     {
       "src": "/api/frame",
-      "methods": ["POST", "GET"],
-      "dest": "/api/frame"
+      "methods": ["POST", "GET", "OPTIONS"],
+      "dest": "/api/frame.js"
     },
     {
       "src": "/.well-known/farcaster.json",
@@ -74,18 +78,24 @@
     "env": {
       "NEXT_PUBLIC_BASE_URL": "https://neon-xi.vercel.app",
       "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B",
-      "NEXT_PUBLIC_CHAIN_ID": "8453"
+      "NEXT_PUBLIC_CHAIN_ID": "8453",
+      "NEXT_PUBLIC_WEBHOOK_SECRET": "@neon-lottery-webhook-secret"
     }
   },
   "functions": {
-    "api/webhook": {
+    "api/webhook.js": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 10,
+      "runtime": "edge"
     },
-    "api/frame": {
+    "api/frame.js": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 10,
+      "runtime": "edge"
     }
   },
-  "regions": ["cle1"]
+  "regions": ["cle1"],
+  "github": {
+    "silent": true
+  }
 }
