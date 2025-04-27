@@ -8,5 +8,9 @@
         { "key": "Cache-Control", "value": "no-store, max-age=0" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/api/frame", "destination": "/api/frame.js" },
+    { "source": "/api/webhook", "destination": "/api/webhook.js" }
   ]
 }
