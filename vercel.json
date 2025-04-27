@@ -1,0 +1,132 @@
+
+{
+  "version": 2,
+  "public": true,
+  "headers": [
+    {
+      "source": "/.well-known/farcaster.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "POST, GET, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Farcaster-Frame-Signature"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "ALLOW-FROM https://warpcast.com"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/frame",
+      "destination": "/api/frame.js"
+    },
+    {
+      "source": "/api/webhook",
+      "destination": "/api/webhook.js"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/webhook",
+      "methods": ["POST", "OPTIONS"],
+      "dest": "/api/webhook.js",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "src": "/api/frame",
+      "methods": ["POST", "GET", "OPTIONS"],
+      "dest": "/api/frame.js",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "src": "/.well-known/farcaster.json",
+      "dest": "/.well-known/farcaster.json",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/assets/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "status": 200
+    }
+  ],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_BASE_URL": "https://neon-xi.vercel.app",
+      "NEXT_PUBLIC_CONTRACT_ADDRESS": "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B",
+      "NEXT_PUBLIC_CHAIN_ID": "8453",
+      "WEBHOOK_SECRET": "@neon-lottery-webhook-secret",
+      "FRAME_SECRET": "@neon-lottery-frame-secret"
+    }
+  },
+  "functions": {
+    "api/webhook.js": {
+      "memory": 1024,
+      "maxDuration": 15,
+      "runtime": "edge",
+      "includeFiles": ".well-known/farcaster.json"
+    },
+    "api/frame.js": {
+      "memory": 1024,
+      "maxDuration": 15,
+      "runtime": "edge"
+    }
+  },
+  "regions": ["cle1"],
+  "github": {
+    "silent": true,
+    "autoAlias": true
+  },
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/discord",
+      "destination": "https://discord.gg/YOUR_INVITE_CODE",
+      "permanent": false
+    },
+    {
+      "source": "/twitter",
+      "destination": "https://twitter.com/yourhandle",
+      "permanent": false
+    }
+  ]
+}
