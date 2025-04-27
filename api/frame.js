@@ -1,55 +1,71 @@
+// api/frame.js
 export default async function handler(req, res) {
-  // 1. Базовые настройки
-  const BASE_URL = "https://neon-xi.vercel.app";
-  const TIMESTAMP = Date.now();
-  const IMAGE_URL = `https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg?t=${TIMESTAMP}`;
-  const POST_URL = `${BASE_URL}/api/frame?t=${TIMESTAMP}`;
-
-  // 2. Формирование ответа Frame
-  const frameResponse = {
-    type: 'frame',
-    frame: {
-      version: 'vNext',
-      image: IMAGE_URL,
-      buttons: [{
-        label: '🎫 Participate',
-        action: 'post_redirect'
-      }],
-      postUrl: POST_URL,
-      ogImage: IMAGE_URL,
-      accepts: {
-        'x-frame-payload': true
+  // 1. Конфигурация (можно вынести в отдельный файл)
+  const CONFIG = {
+    BASE_URL: "https://neon-xi.vercel.app",
+    IMAGE: {
+      url: "https://i.ibb.co/NdV9qyFh/NEONLOTTERY.jpg",
+      aspectRatio: "1:1" // Соотношение для Frame
+    },
+    BUTTONS: [
+      {
+        label: "🎫 Participate",
+        action: "post_redirect",
+        target: "https://neon-xi.vercel.app/" // Куда ведет кнопка
       }
+    ]
+  };
+
+  // 2. Генерация URL
+  const timestamp = Date.now();
+  const imageUrl = `${CONFIG.IMAGE.url}?t=${timestamp}`;
+  const postUrl = `${CONFIG.BASE_URL}/api/frame?t=${timestamp}`;
+
+  // 3. Логирование запросов
+  const logRequest = () => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    if (req.method === 'POST') {
+      console.log('Body:', JSON.stringify(req.body, null, 2));
     }
   };
 
-  // 3. Обработка POST-запроса
-  if (req.method === 'POST') {
-    try {
-      // Правильный парсинг входящего тела запроса
-      let body;
-      if (typeof req.body === 'string' && req.body.length > 0) {
-        body = JSON.parse(req.body);
-      } else if (typeof req.body === 'object') {
-        body = req.body;
-      } else {
-        throw new Error('Invalid request body');
-      }
-
-      // Проверка структуры данных
-      if (body?.untrustedData?.buttonIndex) {
-        console.log('Valid frame interaction:', body.untrustedData);
-        return res.status(200).json(frameResponse);
-      }
-      
-      throw new Error('Invalid frame data');
-    } catch (error) {
-      console.error('Frame POST error:', error.message);
-      // Возвращаем корректный Frame даже при ошибке
-      return res.status(200).json(frameResponse);
+  // 4. Формирование ответа
+  const buildFrame = () => ({
+    type: 'frame',
+    frame: {
+      version: 'vNext',
+      image: imageUrl,
+      imageAspectRatio: CONFIG.IMAGE.aspectRatio,
+      buttons: CONFIG.BUTTONS.map(btn => ({
+        label: btn.label,
+        action: btn.action,
+        ...(btn.target ? { target: btn.target } : {})
+      })),
+      postUrl: postUrl,
+      ogImage: imageUrl,
+      accepts: { 'x-frame-payload': true }
     }
-  }
+  });
 
-  // 4. Обработка GET-запроса
-  res.status(200).json(frameResponse);
+  // 5. Обработка запроса
+  try {
+    logRequest();
+    
+    // Валидация POST-запроса
+    if (req.method === 'POST') {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      
+      // Здесь можно добавить логику обработки разных кнопок
+      if (body?.untrustedData?.buttonIndex) {
+        console.log(`Button ${body.untrustedData.buttonIndex} pressed`);
+      }
+    }
+
+    // Всегда возвращаем Frame
+    res.status(200).json(buildFrame());
+    
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(200).json(buildFrame()); // Важно всегда возвращать Frame
+  }
 }
