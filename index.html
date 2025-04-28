@@ -26,20 +26,28 @@
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
     
-    <!-- Farcaster Frame Meta Tags -->
-    <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-    <meta property="fc:frame:image:aspect_ratio" content="1.91:1">
-    <meta property="fc:frame:button:1" content="🎫 Купить билеты">
-    <meta property="fc:frame:button:1:action" content="post_redirect">
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/redirect">
+    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
+    <meta name="fc:frame" content='{
+        "version": "next",
+        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "button": {
+            "title": "🎫 Купить билеты",
+            "action": {
+                "type": "launch_frame",
+                "name": "Neon Lottery",
+                "url": "https://neon-xi.vercel.app/",
+                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                "splashBackgroundColor": "#0f0f1a"
+            }
+        }
+    }' />
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
     
     <!-- Preload critical resources -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" as="script">
-    <link rel="preload" href="https://unpkg.com/@farcaster/miniapp@latest/dist/miniapp.umd.js" as="script">
+    <link rel="preload" href="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js" as="script">
     <link rel="preload" href="https://i.ibb.co/HfcPqDfC/ogneon.jpg" as="image" type="image/jpeg">
     
     <!-- Fonts & Icons -->
@@ -784,6 +792,7 @@
 
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+        <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
         <script src="https://unpkg.com/@farcaster/miniapp@latest/dist/miniapp.umd.js"></script>
         
         <script>
@@ -798,7 +807,8 @@
                 defaultGasPrice: 0.2,
                 gasLimitBuffer: 1.2,
                 defaultGasLimit: 200000,
-                ethPriceUSD: 3000
+                ethPriceUSD: 3000,
+                frameVersion: 'next'
             };
 
             // App State
@@ -808,6 +818,8 @@
                 account: null,
                 isMiniApp: false,
                 farcaster: null,
+                frameSdk: null,
+                frameContext: null,
                 currentRound: null,
                 ethPrice: 3000,
                 updateInterval: null
@@ -816,6 +828,16 @@
             // Initialize the application
             document.addEventListener('DOMContentLoaded', async () => {
                 try {
+                    // Initialize Frame SDK first
+                    if (window.FarcasterFrameSDK) {
+                        await initializeFrame();
+                    } else {
+                        const script = document.createElement('script');
+                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
+                        script.onload = initializeFrame;
+                        document.head.appendChild(script);
+                    }
+                    
                     // Check if running in Warpcast MiniApp
                     if (window.farcasterMiniApp) {
                         AppState.isMiniApp = true;
@@ -839,6 +861,49 @@
                     showNotification("App initialization failed", "error");
                 }
             });
+
+            // Initialize Frame
+            async function initializeFrame() {
+                try {
+                    AppState.frameSdk = window.FarcasterFrameSDK;
+                    AppState.frameContext = await AppState.frameSdk.getContext();
+                    
+                    // Log frame context for debugging
+                    console.log('Frame context:', AppState.frameContext);
+                    
+                    // Setup frame event listeners
+                    setupFrameEventListeners();
+                    
+                    // Tell the frame we're ready
+                    await AppState.frameSdk.actions.ready();
+                    
+                } catch (error) {
+                    console.error("Frame initialization error:", error);
+                }
+            }
+
+            // Setup frame event listeners
+            function setupFrameEventListeners() {
+                if (!AppState.frameSdk) return;
+                
+                // Primary button click
+                AppState.frameSdk.on('primaryButtonClick', () => {
+                    document.getElementById('buy-btn').click();
+                });
+                
+                // Frame added event
+                AppState.frameSdk.on('frameAdded', ({ notificationDetails }) => {
+                    showNotification("Frame added to your app!", "success");
+                    if (notificationDetails) {
+                        console.log('Notification details:', notificationDetails);
+                    }
+                });
+                
+                // Frame add rejected
+                AppState.frameSdk.on('frameAddRejected', ({ reason }) => {
+                    showNotification(`Frame add rejected: ${reason}`, "error");
+                });
+            }
 
             // Initialize MiniApp mode
             async function initializeMiniApp() {
@@ -981,6 +1046,20 @@
                         console.error("MiniApp wallet connection error:", error);
                         showNotification("Connection failed", "error");
                     }
+                } else if (AppState.frameSdk) {
+                    try {
+                        // Use Frame SDK wallet provider
+                        const accounts = await AppState.frameSdk.wallet.ethProvider.request({
+                            method: 'eth_requestAccounts'
+                        });
+                        
+                        AppState.account = accounts[0];
+                        updateUI();
+                        showNotification("Wallet connected via Frame", "success");
+                    } catch (error) {
+                        console.error("Frame wallet connection error:", error);
+                        showNotification("Failed to connect wallet", "error");
+                    }
                 } else {
                     await connectMetaMask();
                 }
@@ -1025,7 +1104,8 @@
             // Check if connected to Base network
             function isBaseNetwork() {
                 return AppState.isMiniApp || 
-                       (window.ethereum && window.ethereum.chainId === CONFIG.baseChainId);
+                       (window.ethereum && window.ethereum.chainId === CONFIG.baseChainId) ||
+                       (AppState.frameContext && AppState.frameContext.client?.chainId === CONFIG.baseChainId);
             }
 
             // Add Base network to wallet
@@ -1172,7 +1252,32 @@
                     const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
                     const costWei = ticketPriceWei * ticketAmount;
                     
-                    if (AppState.isMiniApp) {
+                    if (AppState.frameSdk) {
+                        // Use Frame SDK for transaction
+                        const txHash = await AppState.frameSdk.wallet.ethProvider.request({
+                            method: 'eth_sendTransaction',
+                            params: [{
+                                to: CONFIG.contractAddress,
+                                value: costWei.toString(),
+                                data: AppState.contract.methods.buyTickets(ticketAmount).encodeABI(),
+                                chainId: parseInt(CONFIG.baseChainId, 16)
+                            }]
+                        });
+                        
+                        showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`, "success");
+                        document.getElementById('buy-modal').style.display = 'none';
+                        updateRoundInfo();
+                        
+                        // Track event if available
+                        if (AppState.frameSdk.trackEvent) {
+                            AppState.frameSdk.trackEvent('tickets_purchased', {
+                                ticketAmount,
+                                costWei,
+                                txHash
+                            });
+                        }
+                    } 
+                    else if (AppState.isMiniApp) {
                         const success = await confirmPurchaseMiniApp(ticketAmount, costWei.toString());
                         if (success) {
                             document.getElementById('buy-modal').style.display = 'none';
@@ -1440,6 +1545,15 @@
                     const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
                     document.getElementById('referral-link').textContent = referralUrl;
                     
+                    // Add "Add Frame" button if SDK is available
+                    if (AppState.frameSdk) {
+                        const addFrameBtn = document.createElement('button');
+                        addFrameBtn.className = 'btn btn-purple';
+                        addFrameBtn.innerHTML = '<i class="fas fa-plus"></i> Add to Farcaster';
+                        addFrameBtn.onclick = addFrameToApp;
+                        document.getElementById('social-share').prepend(addFrameBtn);
+                    }
+                    
                     // Setup social share links
                     const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
                                      `💰 Win daily ETH prizes with transparent blockchain draws\n` +
@@ -1470,6 +1584,26 @@
                     }
                 } else {
                     document.getElementById('referral-link').textContent = "Connect wallet first";
+                }
+            }
+
+            // Add frame to Farcaster app
+            async function addFrameToApp() {
+                if (!AppState.frameSdk) {
+                    showNotification("Frame SDK not available", "error");
+                    return;
+                }
+                
+                try {
+                    const result = await AppState.frameSdk.actions.addFrame();
+                    if (result.added) {
+                        showNotification("Frame added to your app!", "success");
+                    } else {
+                        showNotification(`Failed to add frame: ${result.reason}`, "error");
+                    }
+                } catch (error) {
+                    console.error("Error adding frame:", error);
+                    showNotification("Failed to add frame", "error");
                 }
             }
 
