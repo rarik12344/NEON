@@ -1,4 +1,26 @@
 {
+  "miniapp": {
+    "version": "1",
+    "name": "Neon Lottery",
+    "iconUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-ICON.png",
+    "permissions": ["identity", "wallet", "notifications"],
+    "launchUrl": "https://neon-xi.vercel.app/?miniapp=true",
+    "supportedFrames": true,
+    "chains": [
+      {
+        "id": "0x2105",
+        "name": "Base",
+        "rpcUrl": "https://mainnet.base.org",
+        "iconUrl": "https://i.ibb.co/0jQ7JQz/base-logo.png",
+        "currency": "ETH"
+      }
+    ],
+    "theme": {
+      "primaryColor": "#00f3ff",
+      "backgroundColor": "#0f0f1a",
+      "textColor": "#ffffff"
+    }
+  },
   "accountAssociation": {
     "header": "eyJmaWQiOjM2MjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyY2Q4NWEwOTMyNjFmNTkyNzA4MDRBNkVBNjk3Q2VBNENlQkVjYWZFIn0",
     "payload": "eyJkb21haW4iOiJuZW9uLXhpLnZlcmNlbC5hcHAifQ==",
