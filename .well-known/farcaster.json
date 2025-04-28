@@ -37,6 +37,21 @@
         "iconUrl": "https://i.ibb.co/rRCTNS0L/base.jpg",
         "currency": "ETH"
       }
-    ]
+    ],
+    "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+    "splashBackgroundColor": "#0f0f1a",
+    "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
+    "subtitle": "Daily ETH lottery on Base",
+    "description": "Win Ethereum daily with transparent blockchain-powered draws",
+    "screenshotUrls": [
+      "https://i.ibb.co/x8hzZcFL/screen1.jpg",
+      "https://i.ibb.co/My9gv7LP/screen2.jpg",
+      "https://i.ibb.co/ZzSwRT6Y/screen3.jpg"
+    ],
+    "primaryCategory": "finance",
+    "tags": ["ethereum", "lottery", "base", "prizes"],
+    "heroImageUrl": "https://i.ibb.co/KjHjK466/heroimage.jpg",
+    "ogTitle": "Neon Lottery Daily ETH Draws",
+    "ogDescription": "Transparent blockchain lottery with daily ETH prizes"
   }
 }
