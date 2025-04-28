@@ -1,7 +1,8 @@
 export default async (req, res) => {
-  const MINIAPP_URL = "https://neon-xi.vercel.app/?miniapp=true&source=frame"
-  
-  res.setHeader('Content-Type', 'application/json')
+  const MINIAPP_URL = "https://neon-xi.vercel.app/?miniapp=true&source=frame&fid=" + 
+    (req.body?.untrustedData?.fid || "");
+
+  res.setHeader('Content-Type', 'application/json');
   
   return res.json({
     version: "vNext",
@@ -11,5 +12,5 @@ export default async (req, res) => {
       "og:image": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
       "og:title": "Neon Lottery | Daily ETH Draws"
     }
-  })
-}
+  });
+};
