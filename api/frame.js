@@ -1,29 +1,30 @@
 export default async (req, res) => {
-  // Устанавливаем CORS-заголовки для ВСЕХ типов запросов
+  // Устанавливаем заголовки
+  res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Особенная обработка OPTIONS-запроса (preflight)
+  res.setHeader('Cache-Control', 'public, max-age=300');
+
+  // Обработка OPTIONS для CORS
   if (req.method === 'OPTIONS') {
-    // Добавляем дополнительные заголовки для preflight
-    res.setHeader('Access-Control-Max-Age', '86400'); // Кешируем preflight на 24 часа
-    return res.status(204).end(); // No Content
+    return res.status(204).end();
   }
 
-  // Остальной код обработки GET/POST запросов...
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
-
-  // Ваша основная логика обработки Frame
-  const frameConfig = {
+  // Конфигурация Frame
+  const frameData = {
     version: "vNext",
     image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    buttons: [{ label: "🎫 Buy Tickets", action: "post_redirect" }],
+    imageAspectRatio: "1.91:1",
+    buttons: [
+      {
+        label: "🎫 Buy Tickets",
+        action: "post_redirect"
+      }
+    ],
     postUrl: "https://neon-xi.vercel.app/api/frame"
   };
 
-  // Обработка POST-запроса (взаимодействие с кнопкой)
+  // Обработка POST-запроса
   if (req.method === 'POST') {
     try {
       const { untrustedData } = req.body;
@@ -32,15 +33,13 @@ export default async (req, res) => {
         throw new Error('Invalid frame data');
       }
 
-      console.log(`Frame action: Button ${untrustedData.buttonIndex} pressed by fid:${untrustedData.fid || 'unknown'}`);
-      
-      // Возвращаем обновленный Frame после нажатия кнопки
+      // Обновляем Frame после нажатия кнопки
       return res.json({
-        ...frameConfig,
-        image: "https://i.ibb.co/HfcPqDfC/ogneon-processing.jpg", // Опционально: другая картинка
+        ...frameData,
+        image: "https://i.ibb.co/HfcPqDfC/ogneon-processing.jpg",
         buttons: [
-          { 
-            label: "Processing...", 
+          {
+            label: "Processing...",
             action: "post_redirect"
           }
         ]
@@ -48,13 +47,10 @@ export default async (req, res) => {
 
     } catch (error) {
       console.error('Frame error:', error);
-      return res.status(400).json({ 
-        error: "Invalid request",
-        details: error.message 
-      });
+      return res.status(400).json({ error: "Invalid request" });
     }
   }
 
   // GET-запрос: первоначальное отображение Frame
-  return res.json(frameConfig);
-}
+  return res.json(frameData);
+};
