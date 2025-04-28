@@ -10,20 +10,24 @@
     "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "homeUrl": "https://neon-xi.vercel.app/",
     "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    "buttonTitle": "🎟 Buy tickets",
     "buttons": [{
-      "label": "Открыть в приложении",
+      "label": "🎟 Купить билеты",
       "action": "post_redirect"
     }],
     "postUrl": "https://neon-xi.vercel.app/api/redirect",
-    "refreshPeriod": 300
+    "refreshPeriod": 300,
+    "ogTags": {
+      "title": "Neon Lottery | Daily ETH Draws",
+      "description": "Win ETH daily on Base Network",
+      "image": "https://i.ibb.co/HfcPqDfC/ogneon.jpg"
+    }
   },
   "miniapp": {
     "version": "1",
     "name": "Neon Lottery",
     "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "permissions": ["identity", "wallet", "notifications"],
-    "launchUrl": "https://neon-xi.vercel.app/?miniapp=true",
+    "launchUrl": "https://neon-xi.vercel.app/?miniapp=true&source=frame",
     "supportedFrames": true,
     "chains": [
       {
@@ -33,12 +37,6 @@
         "iconUrl": "https://i.ibb.co/rRCTNS0L/base.jpg",
         "currency": "ETH"
       }
-    ],
-    "theme": {
-      "primaryColor": "#00f3ff",
-      "backgroundColor": "#0f0f1a",
-      "textColor": "#ffffff"
-    },
-    "frameValidationUrl": "https://neon-xi.vercel.app/api/frame"
+    ]
   }
 }
