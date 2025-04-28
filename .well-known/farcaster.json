@@ -1,4 +1,32 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjM2MjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyY2Q4NWEwOTMyNjFmNTkyNzA4MDRBNkVBNjk3Q2VBNENlQkVjYWZFIn0",
+    "payload": "eyJkb21haW4iOiJuZW9uLXhpLnZlcmNlbC5hcHAifQ==",
+    "signature": "MHgwZmJiYWIwODg3YTU2MDFiNDU3MzVkOTQ5MDRjM2Y1NGUxMzVhZTQxOGEzMWQ5ODNhODAzZmZlYWNlZWMyZDYzNWY4ZTFjYWU4M2NhNTAwOTMzM2FmMTc1NDlmMDY2YTVlOWUwNTljNmZiNDUxMzg0Njk1NzBhODNiNjcyZWJjZTFi"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Neon Lottery",
+    "iconUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-ICON.png",
+    "homeUrl": "https://neon-xi.vercel.app/",
+    "imageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-SHARE.jpg",
+    "buttonTitle": "🎟 Play Now",
+    "splashImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-SPLASH.jpg",
+    "splashBackgroundColor": "#0f0f1a",
+    "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
+    "subtitle": "Daily ETH lottery on Base",
+    "description": "Win Ethereum daily with transparent blockchain-powered draws on Base Network",
+    "screenshotUrls": [
+      "https://i.ibb.co/8XqJY7Z/NEONLOTTERY-SCREEN1.jpg",
+      "https://i.ibb.co/4WYjK0B/NEONLOTTERY-SCREEN2.jpg"
+    ],
+    "primaryCategory": "finance",
+    "tags": ["ethereum", "lottery", "base", "prizes"],
+    "heroImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-HERO.jpg",
+    "ogTitle": "Neon Lottery | Daily ETH Draws",
+    "ogDescription": "Transparent blockchain lottery with daily ETH prizes on Base Network",
+    "ogImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-OG.jpg"
+  },
   "miniapp": {
     "version": "1",
     "name": "Neon Lottery",
@@ -19,36 +47,7 @@
       "primaryColor": "#00f3ff",
       "backgroundColor": "#0f0f1a",
       "textColor": "#ffffff"
-    }
-  },
-  "accountAssociation": {
-    "header": "eyJmaWQiOjM2MjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyY2Q4NWEwOTMyNjFmNTkyNzA4MDRBNkVBNjk3Q2VBNENlQkVjYWZFIn0",
-    "payload": "eyJkb21haW4iOiJuZW9uLXhpLnZlcmNlbC5hcHAifQ==",
-    "signature": "MHgwZmJiYWIwODg3YTU2MDFiNDU3MzVkOTQ5MDRjM2Y1NGUxMzVhZTQxOGEzMWQ5ODNhODAzZmZlYWNlZWMyZDYzNWY4ZTFjYWU4M2NhNTAwOTMzM2FmMTc1NDlmMDY2YTVlOWUwNTljNmZiNDUxMzg0Njk1NzBhODNiNjcyZWJjZTFi"
-  },
-  "frame": {
-    "version": "1",
-    "name": "Neon Lottery",
-    "iconUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-ICON.png",
-    "homeUrl": "https://neon-xi.vercel.app/",
-    "imageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-SHARE.jpg",
-    "buttonTitle": "🎟 Play Now",
-    "splashImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-ICON.png",
-    "splashBackgroundColor": "#0f0f1a",
-    "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
-    "subtitle": "Daily ETH lottery on Base",
-    "description": "Win Ethereum daily with transparent blockchain-powered draws on Base Network",
-    "screenshotUrls": [
-      "https://i.ibb.co/8XqJY7Z/NEONLOTTERY-SCREEN1.jpg",
-      "https://i.ibb.co/4WYjK0B/NEONLOTTERY-SCREEN2.jpg"
-    ],
-    "primaryCategory": "finance",
-    "tags": ["ethereum", "lottery", "gambling", "base", "prizes"],
-    "heroImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-HERO.jpg",
-    "tagline": "Win ETH every day",
-    "ogTitle": "Neon Lottery | Daily ETH Draws",
-    "ogDescription": "Transparent blockchain lottery with daily ETH prizes on Base Network",
-    "ogImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-OG.jpg",
-    "noindex": false
+    },
+    "frameValidationUrl": "https://neon-xi.vercel.app/api/frame"
   }
 }
