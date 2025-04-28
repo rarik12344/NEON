@@ -24,20 +24,11 @@ export default async (req, res) => {
       
       // Ответ при нажатии кнопки "Buy Tickets"
       return res.json({
-        frame: {
-          version: "vNext",
-          image: "https://i.ibb.co/qMYFwLc6/hueon.jpg",
-          imageAspectRatio: "1.91:1",
-          buttons: [
-            { 
-              label: "Processing...", 
-              action: "post" 
-            }
-          ],
-          postUrl: "https://neon-xi.vercel.app/api/frame"
-        }
-      });
-
+  version: "vNext",
+  image: "https://i.ibb.co/qMYFwLc6/hueon.jpg",
+  buttons: [{ label: "🎫 Buy Tickets", action: "post_redirect" }],
+  postUrl: "https://neon-xi.vercel.app/api/frame"
+});
     } catch (error) {
       console.error('Frame error:', error);
       return res.status(400).json({ 
