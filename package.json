@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vercel dev",
-    "deploy": "vercel deploy --prod"
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "@vercel/node": "^2.15.4"
-  },
-  "engines": {
-    "node": ">=18.x"
   }
 }
