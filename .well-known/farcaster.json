@@ -7,30 +7,31 @@
   "frame": {
     "version": "1",
     "name": "Neon Lottery",
-    "iconUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-ICON.png",
+    "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "homeUrl": "https://neon-xi.vercel.app/",
-    "imageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-SHARE.jpg",
+    "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
     "buttonTitle": "🎟 Play Now",
-    "splashImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-SPLASH.jpg",
+    "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
     "splashBackgroundColor": "#0f0f1a",
     "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
     "subtitle": "Daily ETH lottery on Base",
     "description": "Win Ethereum daily with transparent blockchain-powered draws on Base Network",
     "screenshotUrls": [
-      "https://i.ibb.co/8XqJY7Z/NEONLOTTERY-SCREEN1.jpg",
-      "https://i.ibb.co/4WYjK0B/NEONLOTTERY-SCREEN2.jpg"
+      "https://i.ibb.co/x8hzZcFL/screen1.jpg",
+      "https://i.ibb.co/My9gv7LP/screen2.jpg",
+      "https://i.ibb.co/ZzSwRT6Y/screen3.jpg"
     ],
     "primaryCategory": "finance",
     "tags": ["ethereum", "lottery", "base", "prizes"],
-    "heroImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-HERO.jpg",
+    "heroImageUrl": "https://i.ibb.co/KjHjK466/heroimage.jpg",
     "ogTitle": "Neon Lottery Daily ETH Draws",
     "ogDescription": "Transparent blockchain lottery with daily ETH prizes on Base Network",
-    "ogImageUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-OG.jpg"
+    "ogImageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg"
   },
   "miniapp": {
     "version": "1",
     "name": "Neon Lottery",
-    "iconUrl": "https://i.ibb.co/NdV9qyF/NEONLOTTERY-ICON.png",
+    "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "permissions": ["identity", "wallet", "notifications"],
     "launchUrl": "https://neon-xi.vercel.app/?miniapp=true",
     "supportedFrames": true,
@@ -39,7 +40,7 @@
         "id": "0x2105",
         "name": "Base",
         "rpcUrl": "https://mainnet.base.org",
-        "iconUrl": "https://i.ibb.co/0jQ7JQz/base-logo.png",
+        "iconUrl": "https://i.ibb.co/rRCTNS0L/base.jpg",
         "currency": "ETH"
       }
     ],
