@@ -1,56 +1,57 @@
 export default async (req, res) => {
-  // Устанавливаем заголовки
+  // Заголовки CORS
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Cache-Control', 'public, max-age=300');
-
-  // Обработка OPTIONS для CORS
+  
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
   }
 
-  // Конфигурация Frame
-  const frameData = {
-    version: "vNext",
-    image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    imageAspectRatio: "1.91:1",
-    buttons: [
-      {
-        label: "🎫 Buy Tickets",
-        action: "post_redirect"
-      }
-    ],
-    postUrl: "https://neon-xi.vercel.app/api/frame"
-  };
-
-  // Обработка POST-запроса
+  // Обработка ввода пользователя
   if (req.method === 'POST') {
     try {
       const { untrustedData } = req.body;
+      const ticketCount = parseInt(untrustedData.inputText);
       
-      if (!untrustedData?.buttonIndex) {
-        throw new Error('Invalid frame data');
+      // Валидация ввода
+      if (isNaN(ticketCount) || ticketCount < 1 || ticketCount > 100) {
+        return res.json({
+          version: "vNext",
+          image: "https://i.ibb.co/HfcPqDfC/ogneon-error.jpg",
+          buttons: [{ label: "Некорректное число (1-100)", action: "post" }],
+          postUrl: "https://neon-xi.vercel.app/api/frame"
+        });
       }
 
-      // Обновляем Frame после нажатия кнопки
+      // Успешный ответ
       return res.json({
-        ...frameData,
+        version: "vNext",
         image: "https://i.ibb.co/HfcPqDfC/ogneon-processing.jpg",
-        buttons: [
-          {
-            label: "Processing...",
-            action: "post_redirect"
-          }
-        ]
+        buttons: [{ label: `Покупаем ${ticketCount} билетов...`, action: "post_redirect" }],
+        postUrl: `https://neon-xi.vercel.app/api/process?count=${ticketCount}`
       });
 
     } catch (error) {
-      console.error('Frame error:', error);
-      return res.status(400).json({ error: "Invalid request" });
+      console.error('Error:', error);
+      return errorResponse(res);
     }
   }
 
-  // GET-запрос: первоначальное отображение Frame
-  return res.json(frameData);
+  // Первоначальный GET-запрос
+  return res.json({
+    version: "vNext",
+    image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+    input: { text: "Введите количество билетов (1-100)" },
+    buttons: [{ label: "🎫 Купить", action: "post" }],
+    postUrl: "https://neon-xi.vercel.app/api/frame"
+  });
 };
+
+function errorResponse(res) {
+  return res.json({
+    version: "vNext",
+    image: "https://i.ibb.co/HfcPqDfC/ogneon-error.jpg",
+    buttons: [{ label: "Ошибка, попробуйте снова", action: "post" }],
+    postUrl: "https://neon-xi.vercel.app/api/frame"
+  });
+}
