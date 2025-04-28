@@ -1,26 +1,25 @@
 export default async (req, res) => {
-  // Устанавливаем обязательные заголовки CORS и кеширования
-  res.setHeader('Content-Type', 'application/json');
+  // Устанавливаем CORS-заголовки для ВСЕХ типов запросов
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
-
-  // Обработка OPTIONS-запроса для CORS
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // Особенная обработка OPTIONS-запроса (preflight)
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    // Добавляем дополнительные заголовки для preflight
+    res.setHeader('Access-Control-Max-Age', '86400'); // Кешируем preflight на 24 часа
+    return res.status(204).end(); // No Content
   }
 
-  // Конфигурация Frame
+  // Остальной код обработки GET/POST запросов...
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+
+  // Ваша основная логика обработки Frame
   const frameConfig = {
     version: "vNext",
-    image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg", // Унифицированный URL изображения
-    imageAspectRatio: "1.91:1",
-    buttons: [
-      { 
-        label: "🎫 Buy Tickets", 
-        action: "post_redirect" // Используем post_redirect вместо post
-      }
-    ],
+    image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+    buttons: [{ label: "🎫 Buy Tickets", action: "post_redirect" }],
     postUrl: "https://neon-xi.vercel.app/api/frame"
   };
 
