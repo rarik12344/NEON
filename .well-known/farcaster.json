@@ -1,4 +1,3 @@
-
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjY4MzQ3NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDFCRERDZjc3Mzc0NWIyNzI3RjBCN2JjNUZmMzVBN2RhZTYxZTEyNDgifQ",
@@ -6,12 +5,12 @@
     "signature": "MHgxMmQ3MDRiZWJlMTJhYmZhOTM1YTVmZWQzMmI1YjAwYjFkNmVjYzUzNTkzZTQ0ZThhNmExNDFiNjYxNTY2YWNiNzYwZGQ4MTE1MDBkYjA5NmY1ZWJlMTk5OWY2MjQzYTc4ODZiNTViYTQ1ZjAxZmZiMzRkNjg5YzZkMzIwM2EwNTFj"
   },
   "frame": {
-    "version": "vNext",
+    "version": "1",
     "name": "Neon Lottery",
     "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "homeUrl": "https://neon-xi.vercel.app/",
     "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    "buttonTitle": "🎟 Купить билеты",
+    "buttonTitle": "🎟 Buy tickets",
     "buttons": [{
       "label": "Открыть в приложении",
       "action": "post_redirect"
