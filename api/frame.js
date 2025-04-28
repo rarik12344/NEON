@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     const response = {
       frame: {
         version: "vNext",
-        image: "https://i.ibb.co/NdV9qyF/NEONLOTTERY.jpg",
+        image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
         imageAspectRatio: "1.91:1",
         buttons: [
           { label: "🎫 Buy Tickets", action: "post" }
