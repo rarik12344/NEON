@@ -1,99 +1,78 @@
-// api/webhook.js
+import { createCanvas } from 'canvas';
+
+const IMAGE_WIDTH = 1200;
+const IMAGE_HEIGHT = 628;
+
 export default async function handler(req, res) {
-  // Поддержка CORS для preflight-запросов
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Farcaster-Frame-Signature');
-    return res.status(200).end();
-  }
-
-  // Только POST-запросы
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   try {
-    const event = req.body;
-    console.log('📦 Received Farcaster webhook event:', JSON.stringify(event, null, 2));
-
-    // Верификация подписи (рекомендуется для production)
-    const signature = req.headers['x-farcaster-frame-signature'];
-    if (process.env.NODE_ENV === 'production' && !signature) {
-      console.warn('⚠️ Missing frame signature');
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    // Обработка основных типов событий Farcaster
-    switch (event.type) {
-      case 'frame_action':
-        console.log(`🖼 Frame action by ${event.actor?.fid} on ${new Date(event.timestamp).toISOString()}`);
-        await handleFrameAction(event);
+    const { type = 'default', state = '' } = req.query;
+    
+    // Create canvas
+    const canvas = createCanvas(IMAGE_WIDTH, IMAGE_HEIGHT);
+    const ctx = canvas.getContext('2d');
+    
+    // Draw background
+    ctx.fillStyle = '#0f0f1a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw gradient overlay
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, 'rgba(0, 243, 255, 0.1)');
+    gradient.addColorStop(1, 'rgba(255, 0, 255, 0.1)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw content based on type
+    switch(type) {
+      case 'buy':
+        drawBuyFrame(ctx, canvas.width, canvas.height, state);
         break;
-
-      case 'transaction':
-        console.log(`💸 Transaction ${event.hash} (status: ${event.status})`);
-        await handleTransaction(event);
+      case 'winners':
+        drawWinnersFrame(ctx, canvas.width, canvas.height, state);
         break;
-
-      case 'user_action':
-        console.log(`👤 User action: ${event.action} by ${event.actor?.fid}`);
-        await handleUserAction(event);
+      case 'info':
+        drawInfoFrame(ctx, canvas.width, canvas.height, state);
         break;
-
-      case 'ping':
-        console.log('🏓 Ping received - webhook is active');
-        break;
-
       default:
-        console.warn(`⚠️ Unhandled event type: ${event.type}`);
+        drawDefaultFrame(ctx, canvas.width, canvas.height, state);
     }
-
-    // Успешный ответ
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    return res.status(200).json({ 
-      success: true,
-      processed_event: event.type,
-      timestamp: new Date().toISOString()
-    });
-
+    
+    // Set content type and send image
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(canvas.toBuffer());
   } catch (error) {
-    console.error('❌ Webhook error:', error);
-    return res.status(500).json({ 
-      error: 'Internal server error',
-      details: error.message 
-    });
+    console.error('Image generation error:', error);
+    res.status(500).send('Error generating image');
   }
 }
 
-// Обработчики конкретных событий
-async function handleFrameAction(event) {
-  const { buttonIndex, inputText, fid } = event.data;
-  console.log(`🔄 Processing frame action: button ${buttonIndex}, input: "${inputText}" by user ${fid}`);
-
-  // Здесь можно:
-  // 1. Записывать действия пользователей
-  // 2. Обновлять состояние фреймов
-  // 3. Инициировать процессы в ответ на действия
+function drawDefaultFrame(ctx, width, height) {
+  // Draw title
+  ctx.fillStyle = '#00f3ff';
+  ctx.font = 'bold 72px "Space Grotesk", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('NEON LOTTERY', width/2, 150);
+  
+  // Draw subtitle
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '36px "Poppins", sans-serif';
+  ctx.fillText('Daily ETH Lottery on Base', width/2, 220);
+  
+  // Draw CTA
+  ctx.fillStyle = '#ff00ff';
+  ctx.font = 'bold 48px "Space Grotesk", sans-serif';
+  ctx.fillText('Click to Play!', width/2, 400);
 }
 
-async function handleTransaction(event) {
-  const { hash, status, chainId, to } = event.data;
-  console.log(`🔄 Processing tx ${hash} (status: ${status}) on chain ${chainId}`);
-
-  if (to.toLowerCase() === process.env.NEXT_PUBLIC_CONTRACT_ADDRESS.toLowerCase()) {
-    console.log('🎫 Contract interaction detected - processing lottery tickets...');
-    // Здесь можно обновлять состояние лотереи
-  }
+function drawBuyFrame(ctx, width, height) {
+  // ... аналогичные функции для других типов фреймов ...
 }
 
-async function handleUserAction(event) {
-  const { action, fid } = event.data;
-  console.log(`🔄 Processing user action: ${action} by ${fid}`);
+function drawWinnersFrame(ctx, width, height) {
+  // ... аналогичные функции для других типов фреймов ...
+}
 
-  // Пример обработки:
-  if (action === 'ticket_purchase') {
-    console.log('🎟️ New ticket purchase detected');
-    // Логика обработки покупки билетов
-  }
+function drawInfoFrame(ctx, width, height) {
+  // ... аналогичные функции для других типов фреймов ...
 }
