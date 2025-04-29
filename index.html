@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-height: 100vh">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>✨ Neon Lottery | Daily ETH Draws on Base</title>
     
     <!-- Primary Meta Tags -->
-    <title>✨ Neon Lottery | Daily ETH Draws on Base</title>
+    <meta name="title" content="✨ Neon Lottery | Daily ETH Draws on Base">
     <meta name="description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://neon-xi.vercel.app/">
-    <meta property="og:title" content="✨ Neon Lottery | Daily ETH Draws on Base">
-    <meta property="og:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Neon Lottery | Daily ETH Draws">
+    <meta property="og:description" content="Win ETH daily on Base Network">
     <meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="628">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://neon-xi.vercel.app/">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -24,9 +25,22 @@
     <meta property="twitter:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
-
-    <!-- Farcaster Frame Meta Tags -->
-    <meta name="fc:frame" content='{"version":"vNext","imageUrl":"https://i.ibb.co/HfcPqDfC/ogneon.jpg","button":{"title":"🎫 Buy Tickets","action":{"type":"launch_frame","name":"Neon Lottery","url":"https://neon-xi.vercel.app/?frameAction=buy","splashImageUrl":"https://i.ibb.co/hJdsnrjV/splashscreen.jpg","splashBackgroundColor":"#0f0f1a"}}}'>
+    
+    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
+    <meta name="fc:frame" content='{
+        "version": "next",
+        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "button": {
+            "title": "🎫 Купить билеты",
+            "action": {
+                "type": "launch_frame",
+                "name": "Neon Lottery",
+                "url": "https://neon-xi.vercel.app/",
+                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                "splashBackgroundColor": "#0f0f1a"
+            }
+        }
+    }' />
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -39,14 +53,28 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48">
-    
-    <!-- Next.js Chunks (пример) -->
-    <script src="/_next/static/chunks/webpack.js" async></script>
-    <script src="/_next/static/chunks/main.js" async></script>
-    
+
+    <!-- Farcaster SDK Initialization -->
+    <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check if running as Mini App
+        if (window.location.search.includes('miniapp=true')) {
+          const sdk = new FarcasterFrameSDK();
+          
+          // Show Mini App badge
+          const badge = document.createElement('div');
+          badge.className = 'miniapp-badge';
+          badge.textContent = 'Mini App';
+          document.body.appendChild(badge);
+          
+          // Call ready() when app is loaded
+          sdk.actions.ready()
+            .then(() => console.log('Mini App is ready'))
+            .catch(err => console.error('Failed to call ready:', err));
+        }
+      });
+    </script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -750,33 +778,34 @@
                     
                     <div style="margin-bottom: 15px; display: flex; gap: 12px;">
                         <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-clock"></i></div>
-                        <div>
-                            <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
+                            <div>
+                                <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
-                        <div>
-                            <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                        
+                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
+                            <div>
+                                <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
-                        <div>
-                            <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
+                        
+                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
+                            <div>
+                                <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                        <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
-                        <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
-                            <i class="fas fa-comments"></i> Join our Warpcast channel
-                        </a>
+                        
+                        <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
+                            <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
+                                <i class="fas fa-comments"></i> Join our Warpcast channel
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -784,14 +813,14 @@
 
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-        <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
+        <script src="https://unpkg.com/@farcaster/js-sdk@latest/dist/mjs/index.js"></script>
         <script src="https://warpcast.com/~/miniapp-sdk.js"></script>
         
         <script>
             // App Configuration
             const CONFIG = {
                 contractAddress: "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B",
-                contractAbi: [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                contractAbi: [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
                 baseChainId: '0x2105',
                 baseRpcUrl: 'https://mainnet.base.org',
                 baseExplorerUrl: 'https://basescan.org',
@@ -799,7 +828,8 @@
                 defaultGasPrice: 0.2,
                 gasLimitBuffer: 1.2,
                 defaultGasLimit: 200000,
-                ethPriceUSD: 3000
+                ethPriceUSD: 3000,
+                frameVersion: 'next'
             };
 
             // App State
@@ -819,37 +849,24 @@
             // Initialize the application
             document.addEventListener('DOMContentLoaded', async () => {
                 try {
-                    // Check if running in Warpcast MiniApp or Frame redirect
-                    const params = new URLSearchParams(window.location.search);
-                    const frameAction = params.get('frameAction');
-                    
-                    // Initialize Frame SDK first if available
+                    // Initialize Frame SDK first
                     if (window.FarcasterFrameSDK) {
                         await initializeFrame();
+                    } else {
+                        const script = document.createElement('script');
+                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
+                        script.onload = initializeFrame;
+                        document.head.appendChild(script);
                     }
                     
-                    // Check if running in MiniApp mode
-                    if (window.farcasterMiniApp || params.get('miniapp') === 'true') {
+                    // Check if running in Warpcast MiniApp
+                    if (window.farcasterMiniApp) {
                         AppState.isMiniApp = true;
+                        AppState.farcaster = window.farcasterMiniApp;
                         document.getElementById('miniapp-badge').style.display = 'block';
                         document.getElementById('miniapp-header').style.display = 'flex';
                         
-                        if (window.farcasterMiniApp) {
-                            await initializeMiniApp();
-                            
-                            // Call ready() when MiniApp is loaded
-                            try {
-                                await window.farcasterMiniApp.ready();
-                                console.log('MiniApp is ready');
-                                
-                                // If this is a buy action, open modal
-                                if (frameAction === 'buy') {
-                                    document.getElementById('buy-btn').click();
-                                }
-                            } catch (err) {
-                                console.error('Failed to call ready:', err);
-                            }
-                        }
+                        await initializeMiniApp();
                     } else {
                         await initializeWebApp();
                     }
@@ -872,34 +889,47 @@
                     AppState.frameSdk = window.FarcasterFrameSDK;
                     AppState.frameContext = await AppState.frameSdk.getContext();
                     
-                    // Call ready() for Frame
-                    await AppState.frameSdk.actions.ready();
-                    console.log('Frame is ready');
+                    // Log frame context for debugging
+                    console.log('Frame context:', AppState.frameContext);
                     
-                    // Handle frame actions
-                    const params = new URLSearchParams(window.location.search);
-                    if (params.get('frameAction') === 'buy') {
-                        try {
-                            await AppState.frameSdk.actions.launchMiniApp({
-                                url: window.location.href + '?miniapp=true&frameAction=buy',
-                                splashImageUrl: "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
-                                splashBackgroundColor: "#0f0f1a"
-                            });
-                        } catch (error) {
-                            console.error("Failed to launch MiniApp:", error);
-                            window.location.href = 'https://neon-xi.vercel.app/';
-                        }
-                    }
+                    // Setup frame event listeners
+                    setupFrameEventListeners();
+                    
+                    // Tell the frame we're ready
+                    await AppState.frameSdk.actions.ready();
                     
                 } catch (error) {
                     console.error("Frame initialization error:", error);
                 }
             }
 
+            // Setup frame event listeners
+            function setupFrameEventListeners() {
+                if (!AppState.frameSdk) return;
+                
+                // Primary button click
+                AppState.frameSdk.on('primaryButtonClick', () => {
+                    document.getElementById('buy-btn').click();
+                });
+                
+                // Frame added event
+                AppState.frameSdk.on('frameAdded', ({ notificationDetails }) => {
+                    showNotification("Frame added to your app!", "success");
+                    if (notificationDetails) {
+                        console.log('Notification details:', notificationDetails);
+                    }
+                });
+                
+                // Frame add rejected
+                AppState.frameSdk.on('frameAddRejected', ({ reason }) => {
+                    showNotification(`Frame add rejected: ${reason}`, "error");
+                });
+            }
+
             // Initialize MiniApp mode
             async function initializeMiniApp() {
                 try {
-                    AppState.farcaster = window.farcasterMiniApp;
+                    await AppState.farcaster.ready();
                     
                     // Request necessary permissions
                     const permissions = await AppState.farcaster.requestPermissions({
@@ -1697,8 +1727,6 @@
                 if (action === 'buy') {
                     if (AppState.isMiniApp) {
                         document.getElementById('buy-btn').click();
-                    } else if (AppState.frameSdk) {
-                        // Already handled in initializeFrame()
                     } else {
                         window.location.href = 'https://neon-xi.vercel.app/';
                     }
@@ -1721,7 +1749,7 @@
                 }, type === 'error' ? 5000 : 3000);
                 
                 // Show in MiniApp notifications if available
-                if (AppState.isMiniApp && AppState.farcaster) {
+                if (AppState.isMiniApp) {
                     AppState.farcaster.showNotification({
                         type: type,
                         message: message,
