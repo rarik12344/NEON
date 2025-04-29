@@ -26,13 +26,21 @@
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
     
-    <!-- Farcaster Frame Meta Tags -->
-    <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-    <meta property="fc:frame:image:aspect_ratio" content="1.91:1">
-    <meta property="fc:frame:button:1" content="🎟 Купить билеты">
-    <meta property="fc:frame:button:1:action" content="post_redirect">
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
+    <meta name="fc:frame" content='{
+        "version": "next",
+        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "button": {
+            "title": "🎫 Купить билеты",
+            "action": {
+                "type": "launch_frame",
+                "name": "Neon Lottery",
+                "url": "https://neon-xi.vercel.app/",
+                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                "splashBackgroundColor": "#0f0f1a"
+            }
+        }
+    }' />
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -41,30 +49,11 @@
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" as="script">
     <link rel="preload" href="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js" as="script">
     <link rel="preload" href="https://i.ibb.co/HfcPqDfC/ogneon.jpg" as="image" type="image/jpeg">
-
+    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Frame SDK Initialization -->
-    <script>
-      // Initialize SDK when in Mini App mode
-      if (window.location.search.includes('miniapp=true')) {
-        document.addEventListener('DOMContentLoaded', function() {
-          const sdk = new FarcasterFrameSDK();
-          
-          // Display Mini App badge
-          const badge = document.createElement('div');
-          badge.className = 'miniapp-badge';
-          badge.textContent = 'Mini App';
-          document.body.appendChild(badge);
-          
-          // Call ready() when content is loaded
-          sdk.actions.ready().catch(console.error);
-        });
-      }
-    </script>
-
+    
     <style>
         :root {
             --neon-blue: #00f3ff;
