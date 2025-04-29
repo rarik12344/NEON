@@ -1,22 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="--app-height: 100vh">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>✨ Neon Lottery | Daily ETH Draws on Base</title>
     
     <!-- Primary Meta Tags -->
-    <meta name="title" content="✨ Neon Lottery | Daily ETH Draws on Base">
+    <title>✨ Neon Lottery | Daily ETH Draws on Base</title>
     <meta name="description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Neon Lottery | Daily ETH Draws">
-    <meta property="og:description" content="Win ETH daily on Base Network">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    <meta property="og:title" content="✨ Neon Lottery | Daily ETH Draws on Base">
+    <meta property="og:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="628">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://neon-xi.vercel.app/">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -25,21 +24,9 @@
     <meta property="twitter:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
-    
-    <!-- Farcaster Frame Meta Tags (JSON format) -->
-    <meta name="fc:frame" content='{
-        "version": "vNext",
-        "image": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-        "imageAspectRatio": "1.91:1",
-        "buttons": [
-            {
-                "label": "🎫 Buy Tickets",
-                "action": "post_redirect",
-                "target": "https://neon-xi.vercel.app/?frameAction=buy"
-            }
-        ],
-        "postUrl": "https://neon-xi.vercel.app/api/frame"
-    }' />
+
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content='{"version":"vNext","imageUrl":"https://i.ibb.co/HfcPqDfC/ogneon.jpg","button":{"title":"🎫 Buy Tickets","action":{"type":"launch_frame","name":"Neon Lottery","url":"https://neon-xi.vercel.app/?frameAction=buy","splashImageUrl":"https://i.ibb.co/hJdsnrjV/splashscreen.jpg","splashBackgroundColor":"#0f0f1a"}}}'>
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -52,7 +39,14 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48">
+    
+    <!-- Next.js Chunks (пример) -->
+    <script src="/_next/static/chunks/webpack.js" async></script>
+    <script src="/_next/static/chunks/main.js" async></script>
+    
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -756,34 +750,33 @@
                     
                     <div style="margin-bottom: 15px; display: flex; gap: 12px;">
                         <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-clock"></i></div>
-                            <div>
-                                <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
-                            </div>
+                        <div>
+                            <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
                         </div>
-                        
-                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
-                            <div>
-                                <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
-                            </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
+                        <div>
+                            <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
                         </div>
-                        
-                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
-                            <div>
-                                <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
-                            </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
+                        <div>
+                            <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
                         </div>
-                        
-                        <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                            <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
-                            <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
-                                <i class="fas fa-comments"></i> Join our Warpcast channel
-                            </a>
-                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
+                        <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
+                            <i class="fas fa-comments"></i> Join our Warpcast channel
+                        </a>
                     </div>
                 </div>
             </div>
@@ -806,8 +799,7 @@
                 defaultGasPrice: 0.2,
                 gasLimitBuffer: 1.2,
                 defaultGasLimit: 200000,
-                ethPriceUSD: 3000,
-                frameVersion: 'vNext'
+                ethPriceUSD: 3000
             };
 
             // App State
@@ -834,11 +826,6 @@
                     // Initialize Frame SDK first if available
                     if (window.FarcasterFrameSDK) {
                         await initializeFrame();
-                    } else {
-                        const script = document.createElement('script');
-                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
-                        script.onload = initializeFrame;
-                        document.head.appendChild(script);
                     }
                     
                     // Check if running in MiniApp mode
