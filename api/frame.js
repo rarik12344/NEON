@@ -2,8 +2,18 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS, POST',
+      'Access-Control-Allow-Headers': 'Content-Type, X-Farcaster-Frame-Signature',
+    },
+  });
+}
+
 export async function GET() {
-  return NextResponse.json({
+  const response = NextResponse.json({
     version: "vNext",
     image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
     buttons: [
@@ -11,10 +21,13 @@ export async function GET() {
     ],
     postUrl: "https://neon-xi.vercel.app/api/frame"
   });
+
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  return response;
 }
 
 export async function POST() {
-  return NextResponse.json({
+  const response = NextResponse.json({
     version: "vNext",
     image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
     buttons: [
@@ -24,4 +37,7 @@ export async function POST() {
     ],
     postUrl: "https://neon-xi.vercel.app/api/frame"
   });
+
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  return response;
 }
