@@ -1,0 +1,35 @@
+// api/tx.js
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const amount = searchParams.get('amount') || '1';
+
+  // Calculate total cost
+  const ticketPrice = 0.0005; // ETH per ticket
+  const totalEth = (ticketPrice * parseInt(amount)).toFixed(6);
+
+  // Transaction data
+  const txData = {
+    chainId: 'eip155:8453', // Base chain ID
+    method: 'eth_sendTransaction',
+    params: {
+      abi: [{
+        "inputs": [{"internalType":"uint32","name":"_tickets","type":"uint32"}],
+        "name": "buyTickets",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      }],
+      to: '0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B', // Contract address
+      data: '0x', // Will be filled by the wallet
+      value: (BigInt(Math.round(parseFloat(totalEth) * 1e18))).toString(), // Value in wei
+    },
+  };
+
+  return new NextResponse(JSON.stringify(txData), {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
