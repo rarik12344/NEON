@@ -2,13 +2,20 @@
   "version": 2,
   "routes": [
     {
-      "src": "/api/frame-new",
-      "dest": "/api/frame-new.js",
-      "methods": ["GET", "POST", "OPTIONS"]
+      "src": "/api/frame",
+      "dest": "/api/frame.js",
+      "methods": ["GET", "POST"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=3600"
+      }
     },
     {
-      "src": "/api/frame",
-      "status": 404
+      "src": "/.well-known/farcaster.json",
+      "headers": {
+        "Cache-Control": "public, max-age=86400",
+        "Content-Type": "application/json"
+      }
     }
   ]
 }
