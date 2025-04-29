@@ -5,16 +5,16 @@
     "signature": "MHgxMmQ3MDRiZWJlMTJhYmZhOTM1YTVmZWQzMmI1YjAwYjFkNmVjYzUzNTkzZTQ0ZThhNmExNDFiNjYxNTY2YWNiNzYwZGQ4MTE1MDBkYjA5NmY1ZWJlMTk5OWY2MjQzYTc4ODZiNTViYTQ1ZjAxZmZiMzRkNjg5YzZkMzIwM2EwNTFj"
   },
   "frame": {
-    "version": "Next",
-    "name": "Neon Lottery",
-    "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
-    "homeUrl": "https://neon-xi.vercel.app/",
-    "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    "buttonTitle": "🎟 Buy Tickets",
-    "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
-    "splashBackgroundColor": "#0f0f1a",
-    "webhookUrl": "https://neon-xi.vercel.app/api/frame"
-  },
+  "version": "1",
+  "name": "Neon Lottery",
+  "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
+  "homeUrl": "https://neon-xi.vercel.app/",
+  "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+  "buttonTitle": "🎟 Buy Tickets",
+  "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+  "splashBackgroundColor": "#0f0f1a",
+  "webhookUrl": "https://neon-xi.vercel.app/api/frame"
+},
   "miniapp": {
     "version": "1",
     "name": "Neon Lottery",
