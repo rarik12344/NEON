@@ -26,7 +26,7 @@
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
     
-    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
+    <!-- Farcaster Frame Meta Tags -->
     <meta name="fc:frame" content='{
         "version": "next",
         "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
@@ -46,35 +46,15 @@
     <link rel="manifest" href="/.well-known/farcaster.json">
     
     <!-- Preload critical resources -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" as="script">
-    <link rel="preload" href="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" as="script" crossorigin="anonymous">
     <link rel="preload" href="https://i.ibb.co/HfcPqDfC/ogneon.jpg" as="image" type="image/jpeg">
     
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Farcaster SDK Initialization -->
-    <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Check if running as Mini App
-        if (window.location.search.includes('miniapp=true')) {
-          const sdk = new FarcasterFrameSDK();
-          
-          // Show Mini App badge
-          const badge = document.createElement('div');
-          badge.className = 'miniapp-badge';
-          badge.textContent = 'Mini App';
-          document.body.appendChild(badge);
-          
-          // Call ready() when app is loaded
-          sdk.actions.ready()
-            .then(() => console.log('Mini App is ready'))
-            .catch(err => console.error('Failed to call ready:', err));
-        }
-      });
-    </script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -778,44 +758,39 @@
                     
                     <div style="margin-bottom: 15px; display: flex; gap: 12px;">
                         <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-clock"></i></div>
-                            <div>
-                                <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
-                            </div>
+                        <div>
+                            <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
                         </div>
-                        
-                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
-                            <div>
-                                <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
-                            </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
+                        <div>
+                            <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
                         </div>
-                        
-                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
-                            <div>
-                                <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
-                            </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
+                        <div>
+                            <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
                         </div>
-                        
-                        <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                            <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
-                            <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
-                                <i class="fas fa-comments"></i> Join our Warpcast channel
-                            </a>
-                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
+                        <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
+                            <i class="fas fa-comments"></i> Join our Warpcast channel
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-        <script src="https://unpkg.com/@farcaster/js-sdk@latest/dist/mjs/index.js"></script>
-        <script src="https://warpcast.com/~/miniapp-sdk.js"></script>
-        
         <script>
             // App Configuration
             const CONFIG = {
@@ -849,16 +824,6 @@
             // Initialize the application
             document.addEventListener('DOMContentLoaded', async () => {
                 try {
-                    // Initialize Frame SDK first
-                    if (window.FarcasterFrameSDK) {
-                        await initializeFrame();
-                    } else {
-                        const script = document.createElement('script');
-                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
-                        script.onload = initializeFrame;
-                        document.head.appendChild(script);
-                    }
-                    
                     // Check if running in Warpcast MiniApp
                     if (window.farcasterMiniApp) {
                         AppState.isMiniApp = true;
@@ -883,49 +848,6 @@
                 }
             });
 
-            // Initialize Frame
-            async function initializeFrame() {
-                try {
-                    AppState.frameSdk = window.FarcasterFrameSDK;
-                    AppState.frameContext = await AppState.frameSdk.getContext();
-                    
-                    // Log frame context for debugging
-                    console.log('Frame context:', AppState.frameContext);
-                    
-                    // Setup frame event listeners
-                    setupFrameEventListeners();
-                    
-                    // Tell the frame we're ready
-                    await AppState.frameSdk.actions.ready();
-                    
-                } catch (error) {
-                    console.error("Frame initialization error:", error);
-                }
-            }
-
-            // Setup frame event listeners
-            function setupFrameEventListeners() {
-                if (!AppState.frameSdk) return;
-                
-                // Primary button click
-                AppState.frameSdk.on('primaryButtonClick', () => {
-                    document.getElementById('buy-btn').click();
-                });
-                
-                // Frame added event
-                AppState.frameSdk.on('frameAdded', ({ notificationDetails }) => {
-                    showNotification("Frame added to your app!", "success");
-                    if (notificationDetails) {
-                        console.log('Notification details:', notificationDetails);
-                    }
-                });
-                
-                // Frame add rejected
-                AppState.frameSdk.on('frameAddRejected', ({ reason }) => {
-                    showNotification(`Frame add rejected: ${reason}`, "error");
-                });
-            }
-
             // Initialize MiniApp mode
             async function initializeMiniApp() {
                 try {
@@ -948,16 +870,10 @@
                     AppState.account = wallet.address;
                     updateUI();
                     
-                    // Track analytics event
-                    AppState.farcaster.trackEvent('app_launched', {
-                        source: 'miniapp'
-                    });
-                    
                     showNotification("Warpcast wallet connected!", "success");
                     
                 } catch (error) {
                     console.error("MiniApp initialization error:", error);
-                    // Fallback to regular Web3 provider
                     AppState.web3 = new Web3(new Web3.providers.HttpProvider(CONFIG.baseRpcUrl));
                     showNotification("Failed to initialize MiniApp mode", "error");
                 }
@@ -1057,29 +973,10 @@
                         });
                         AppState.account = wallet.address;
                         updateUI();
-                        
-                        AppState.farcaster.trackEvent('wallet_connected', {
-                            wallet: AppState.account
-                        });
-                        
                         showNotification("Warpcast wallet connected!", "success");
                     } catch (error) {
                         console.error("MiniApp wallet connection error:", error);
                         showNotification("Connection failed", "error");
-                    }
-                } else if (AppState.frameSdk) {
-                    try {
-                        // Use Frame SDK wallet provider
-                        const accounts = await AppState.frameSdk.wallet.ethProvider.request({
-                            method: 'eth_requestAccounts'
-                        });
-                        
-                        AppState.account = accounts[0];
-                        updateUI();
-                        showNotification("Wallet connected via Frame", "success");
-                    } catch (error) {
-                        console.error("Frame wallet connection error:", error);
-                        showNotification("Failed to connect wallet", "error");
                     }
                 } else {
                     await connectMetaMask();
@@ -1125,8 +1022,7 @@
             // Check if connected to Base network
             function isBaseNetwork() {
                 return AppState.isMiniApp || 
-                       (window.ethereum && window.ethereum.chainId === CONFIG.baseChainId) ||
-                       (AppState.frameContext && AppState.frameContext.client?.chainId === CONFIG.baseChainId);
+                       (window.ethereum && window.ethereum.chainId === CONFIG.baseChainId);
             }
 
             // Add Base network to wallet
@@ -1273,32 +1169,7 @@
                     const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
                     const costWei = ticketPriceWei * ticketAmount;
                     
-                    if (AppState.frameSdk) {
-                        // Use Frame SDK for transaction
-                        const txHash = await AppState.frameSdk.wallet.ethProvider.request({
-                            method: 'eth_sendTransaction',
-                            params: [{
-                                to: CONFIG.contractAddress,
-                                value: costWei.toString(),
-                                data: AppState.contract.methods.buyTickets(ticketAmount).encodeABI(),
-                                chainId: parseInt(CONFIG.baseChainId, 16)
-                            }]
-                        });
-                        
-                        showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`, "success");
-                        document.getElementById('buy-modal').style.display = 'none';
-                        updateRoundInfo();
-                        
-                        // Track event if available
-                        if (AppState.frameSdk.trackEvent) {
-                            AppState.frameSdk.trackEvent('tickets_purchased', {
-                                ticketAmount,
-                                costWei,
-                                txHash
-                            });
-                        }
-                    } 
-                    else if (AppState.isMiniApp) {
+                    if (AppState.isMiniApp) {
                         const success = await confirmPurchaseMiniApp(ticketAmount, costWei.toString());
                         if (success) {
                             document.getElementById('buy-modal').style.display = 'none';
@@ -1361,13 +1232,6 @@
                         value: costWei,
                         data: AppState.contract.methods.buyTickets(ticketAmount).encodeABI(),
                         chainId: CONFIG.baseChainId
-                    });
-                    
-                    // Track purchase event
-                    AppState.farcaster.trackEvent('tickets_purchased', {
-                        ticketAmount,
-                        costWei,
-                        txHash
                     });
                     
                     showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`, "success");
@@ -1566,15 +1430,6 @@
                     const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
                     document.getElementById('referral-link').textContent = referralUrl;
                     
-                    // Add "Add Frame" button if SDK is available
-                    if (AppState.frameSdk) {
-                        const addFrameBtn = document.createElement('button');
-                        addFrameBtn.className = 'btn btn-purple';
-                        addFrameBtn.innerHTML = '<i class="fas fa-plus"></i> Add to Farcaster';
-                        addFrameBtn.onclick = addFrameToApp;
-                        document.getElementById('social-share').prepend(addFrameBtn);
-                    }
-                    
                     // Setup social share links
                     const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
                                      `💰 Win daily ETH prizes with transparent blockchain draws\n` +
@@ -1608,37 +1463,12 @@
                 }
             }
 
-            // Add frame to Farcaster app
-            async function addFrameToApp() {
-                if (!AppState.frameSdk) {
-                    showNotification("Frame SDK not available", "error");
-                    return;
-                }
-                
-                try {
-                    const result = await AppState.frameSdk.actions.addFrame();
-                    if (result.added) {
-                        showNotification("Frame added to your app!", "success");
-                    } else {
-                        showNotification(`Failed to add frame: ${result.reason}`, "error");
-                    }
-                } catch (error) {
-                    console.error("Error adding frame:", error);
-                    showNotification("Failed to add frame", "error");
-                }
-            }
-
             // Share in Warpcast (MiniApp)
             async function shareInWarpcast(text, url) {
                 try {
                     await AppState.farcaster.composeCast({
                         text: text,
                         embeds: url ? [{ url: url }] : undefined
-                    });
-                    
-                    // Track share event
-                    AppState.farcaster.trackEvent('shared', {
-                        platform: 'warpcast'
                     });
                     
                     showNotification("Post created on Warpcast!", "success");
@@ -1662,9 +1492,6 @@
                         }
                     });
                     
-                    // Track event
-                    AppState.farcaster.trackEvent('added_to_frames');
-                    
                     showNotification("Added to your Warpcast frames!", "success");
                 } catch (error) {
                     console.error("Error adding to frames:", error);
@@ -1682,10 +1509,6 @@
                 
                 navigator.clipboard.writeText(referralLink).then(() => {
                     showNotification("Link copied to clipboard!", "success");
-                    
-                    if (AppState.isMiniApp) {
-                        AppState.farcaster.trackEvent('referral_copied');
-                    }
                 }).catch(err => {
                     console.error('Failed to copy: ', err);
                     showNotification("Failed to copy link", "error");
