@@ -26,21 +26,12 @@
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
     
-    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
-    <meta name="fc:frame" content='{
-        "version": "next",
-        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-        "button": {
-            "title": "🎫 Купить билеты",
-            "action": {
-                "type": "launch_frame",
-                "name": "Neon Lottery",
-                "url": "https://neon-xi.vercel.app/",
-                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
-                "splashBackgroundColor": "#0f0f1a"
-            }
-        }
-    }' />
+    <!-- Farcaster Frame Meta Tags -->
+    <meta property="fc:frame" content="vNext">
+    <meta property="fc:frame:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
+    <meta property="fc:frame:image:aspect_ratio" content="1.91:1">
+    <meta property="fc:frame:button:1" content="🎟 Buy Tickets">
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -53,7 +44,14 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <!-- MiniApp Redirect -->
+    <script>
+      if (window.location.search.includes('miniapp=true')) {
+        window.location.href = 'https://neon-xi.vercel.app/api/frame?miniapp=true';
+      }
+    </script>
+
     <style>
         :root {
             --neon-blue: #00f3ff;
