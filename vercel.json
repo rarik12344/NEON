@@ -1,18 +1,22 @@
 {
   "version": 2,
-  "headers": [
+  "routes": [
     {
-      "source": "/.well-known/farcaster.json",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=86400" },
-        { "key": "Content-Type", "value": "application/json" }
-      ]
-    }
-  ],
-  "rewrites": [
+      "src": "/api/frame",
+      "dest": "/api/frame.js",
+      "methods": ["GET", "POST"]
+    },
     {
-      "source": "/api/frame",
-      "destination": "/api/frame.js"
+      "src": "/api/frame",
+      "dest": "/api/cors.js",
+      "methods": ["OPTIONS"]
+    },
+    {
+      "src": "/.well-known/farcaster.json",
+      "headers": {
+        "Cache-Control": "public, max-age=86400",
+        "Content-Type": "application/json"
+      }
     }
   ]
 }
