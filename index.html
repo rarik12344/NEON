@@ -33,7 +33,7 @@
         "button": {
             "title": "🎫 Купить билеты",
             "action": {
-                "type": "launch_frame",
+                "type": "launch_miniapp",
                 "name": "Neon Lottery",
                 "url": "https://neon-xi.vercel.app/",
                 "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
@@ -54,27 +54,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Farcaster SDK Initialization -->
-    <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Check if running as Mini App
-        if (window.location.search.includes('miniapp=true')) {
-          const sdk = new FarcasterFrameSDK();
-          
-          // Show Mini App badge
-          const badge = document.createElement('div');
-          badge.className = 'miniapp-badge';
-          badge.textContent = 'Mini App';
-          document.body.appendChild(badge);
-          
-          // Call ready() when app is loaded
-          sdk.actions.ready()
-            .then(() => console.log('Mini App is ready'))
-            .catch(err => console.error('Failed to call ready:', err));
-        }
-      });
-    </script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -849,24 +828,20 @@
             // Initialize the application
             document.addEventListener('DOMContentLoaded', async () => {
                 try {
-                    // Initialize Frame SDK first
-                    if (window.FarcasterFrameSDK) {
-                        await initializeFrame();
-                    } else {
-                        const script = document.createElement('script');
-                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
-                        script.onload = initializeFrame;
-                        document.head.appendChild(script);
-                    }
-                    
-                    // Check if running in Warpcast MiniApp
-                    if (window.farcasterMiniApp) {
+                    // Check if running in Warpcast MiniApp or Frame
+                    const params = new URLSearchParams(window.location.search);
+                    if (params.get('miniapp') === 'true' || window.farcasterMiniApp || 
+                        (window.FarcasterFrameSDK && params.get('frameAction') === 'buy')) {
+                        
                         AppState.isMiniApp = true;
-                        AppState.farcaster = window.farcasterMiniApp;
                         document.getElementById('miniapp-badge').style.display = 'block';
                         document.getElementById('miniapp-header').style.display = 'flex';
                         
-                        await initializeMiniApp();
+                        if (window.farcasterMiniApp) {
+                            await initializeMiniApp();
+                        } else if (window.FarcasterFrameSDK) {
+                            await initializeFrame();
+                        }
                     } else {
                         await initializeWebApp();
                     }
@@ -889,46 +864,29 @@
                     AppState.frameSdk = window.FarcasterFrameSDK;
                     AppState.frameContext = await AppState.frameSdk.getContext();
                     
-                    // Log frame context for debugging
+                    // If this is a frame with "buy" action, launch MiniApp
+                    const params = new URLSearchParams(window.location.search);
+                    if (params.get('frameAction') === 'buy' && !AppState.isMiniApp) {
+                        await AppState.frameSdk.actions.launchMiniApp({
+                            url: window.location.href,
+                            splashImageUrl: "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                            splashBackgroundColor: "#0f0f1a"
+                        });
+                        return;
+                    }
+                    
                     console.log('Frame context:', AppState.frameContext);
-                    
-                    // Setup frame event listeners
                     setupFrameEventListeners();
-                    
-                    // Tell the frame we're ready
                     await AppState.frameSdk.actions.ready();
-                    
                 } catch (error) {
                     console.error("Frame initialization error:", error);
                 }
             }
 
-            // Setup frame event listeners
-            function setupFrameEventListeners() {
-                if (!AppState.frameSdk) return;
-                
-                // Primary button click
-                AppState.frameSdk.on('primaryButtonClick', () => {
-                    document.getElementById('buy-btn').click();
-                });
-                
-                // Frame added event
-                AppState.frameSdk.on('frameAdded', ({ notificationDetails }) => {
-                    showNotification("Frame added to your app!", "success");
-                    if (notificationDetails) {
-                        console.log('Notification details:', notificationDetails);
-                    }
-                });
-                
-                // Frame add rejected
-                AppState.frameSdk.on('frameAddRejected', ({ reason }) => {
-                    showNotification(`Frame add rejected: ${reason}`, "error");
-                });
-            }
-
             // Initialize MiniApp mode
             async function initializeMiniApp() {
                 try {
+                    AppState.farcaster = window.farcasterMiniApp;
                     await AppState.farcaster.ready();
                     
                     // Request necessary permissions
@@ -992,8 +950,24 @@
                 document.getElementById('buy-btn').addEventListener('click', () => {
                     if (!AppState.account) {
                         showNotification("Please connect your wallet first", "error");
+                        
+                        // If this is a frame, try to connect wallet via Frame SDK
+                        if (AppState.frameSdk && !AppState.isMiniApp) {
+                            AppState.frameSdk.wallet.connect({
+                                chainId: CONFIG.baseChainId,
+                                rpcUrl: CONFIG.baseRpcUrl
+                            }).then(wallet => {
+                                AppState.account = wallet.address;
+                                updateUI();
+                                document.getElementById('buy-modal').style.display = 'flex';
+                            }).catch(error => {
+                                console.error("Wallet connection error:", error);
+                                showNotification("Failed to connect wallet", "error");
+                            });
+                        }
                         return;
                     }
+                    
                     document.getElementById('buy-modal').style.display = 'flex';
                     updateTicketCost();
                 });
@@ -1727,8 +1701,12 @@
                 if (action === 'buy') {
                     if (AppState.isMiniApp) {
                         document.getElementById('buy-btn').click();
-                    } else {
-                        window.location.href = 'https://neon-xi.vercel.app/';
+                    } else if (AppState.frameSdk) {
+                        AppState.frameSdk.actions.launchMiniApp({
+                            url: window.location.href,
+                            splashImageUrl: "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                            splashBackgroundColor: "#0f0f1a"
+                        });
                     }
                 }
             }
