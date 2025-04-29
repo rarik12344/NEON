@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export const runtime = 'edge'
+export const dynamic = 'force-dynamic'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -10,26 +11,35 @@ const CORS_HEADERS = {
 
 export async function GET() {
   try {
-    return new NextResponse(JSON.stringify({
+    const frameData = {
       version: "vNext",
       image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-      buttons: [{ label: "🎟 Buy Tickets", action: "post" }],
+      buttons: [{
+        label: "🎟 Buy Tickets",
+        action: "post"
+      }],
       postUrl: "https://neon-xi.vercel.app/api/frame"
-    }), {
+    }
+
+    return new NextResponse(JSON.stringify(frameData), {
+      status: 200,
       headers: {
         ...CORS_HEADERS,
         'Content-Type': 'application/json'
       }
     })
   } catch (error) {
-    console.error('Frame GET error:', error)
-    return new NextResponse(null, { status: 500 })
+    console.error('GET Error:', error)
+    return new NextResponse(JSON.stringify({ error: "Frame generation failed" }), {
+      status: 500,
+      headers: CORS_HEADERS
+    })
   }
 }
 
 export async function POST() {
   try {
-    return new NextResponse(JSON.stringify({
+    const frameData = {
       version: "vNext",
       image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
       buttons: [
@@ -38,14 +48,20 @@ export async function POST() {
         { label: "5 Tickets", action: "post" }
       ],
       postUrl: "https://neon-xi.vercel.app/api/frame"
-    }), {
+    }
+
+    return new NextResponse(JSON.stringify(frameData), {
+      status: 200,
       headers: {
         ...CORS_HEADERS,
         'Content-Type': 'application/json'
       }
     })
   } catch (error) {
-    console.error('Frame POST error:', error)
-    return new NextResponse(null, { status: 500 })
+    console.error('POST Error:', error)
+    return new NextResponse(JSON.stringify({ error: "Frame processing failed" }), {
+      status: 500,
+      headers: CORS_HEADERS
+    })
   }
 }
