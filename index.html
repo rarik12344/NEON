@@ -25,22 +25,18 @@
     <meta property="twitter:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
+
+    <!-- Farcaster Frame Meta Tags (исправленные) -->
+    <meta property="fc:frame" content='{"version":"vNext","image":"https://i.ibb.co/HfcPqDfC/ogneon.jpg","image:aspect_ratio":"1.91:1","buttons":[{"label":"🎫 Buy Tickets","action":"post_redirect"}],"post_url":"https://neon-xi.vercel.app/api/frame"}' />
     
-    <!-- Farcaster Frame Meta Tags -->
-    <meta property="fc:frame" content='{
-        "version": "vNext",
-        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-        "imageAspectRatio": "3:2",
-        "buttons": [
-            {
-                "index": 1,
-                "title": "🎫 Buy Tickets",
-                "action": "post"
-            }
-        ],
-        "postUrl": "https://neon-xi.vercel.app/api/frame"
-    }' />
-    
+    <!-- Альтернативный вариант для максимальной совместимости -->
+    <meta property="fc:frame:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg" />
+    <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
+    <meta property="fc:frame:button:1" content="🎫 Buy Tickets" />
+    <meta property="fc:frame:button:1:action" content="post_redirect" />
+    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame" />
+    <meta property="fc:frame:input:text" content="Enter ticket count" />
+
     <!-- Farcaster Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
     
@@ -52,8 +48,9 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
+        /* Ваши стили остаются без изменений */
         :root {
             --neon-blue: #00f3ff;
             --neon-pink: #ff00ff;
