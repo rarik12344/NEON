@@ -9,12 +9,14 @@
     <meta name="title" content="✨ Neon Lottery | Daily ETH Draws on Base">
     <meta name="description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
+    <meta property="og:title" content="Neon Lottery | Daily ETH Draws">
+    <meta property="og:description" content="Win ETH daily on Base Network">
+    <meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="628">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://neon-xi.vercel.app/">
-    <meta property="og:title" content="✨ Neon Lottery | Daily ETH Draws on Base">
-    <meta property="og:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
-    <meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -22,13 +24,22 @@
     <meta property="twitter:title" content="✨ Neon Lottery | Daily ETH Draws on Base">
     <meta property="twitter:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-
-    <!-- Farcaster Frame Meta Tags -->
-    <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-    <meta property="fc:frame:button:1" content="🎫 Buy Tickets">
-    <meta property="fc:frame:button:1:action" content="post_redirect">
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame">
+    <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
+    
+    <!-- Farcaster Frame Meta Tags (JSON format) -->
+    <meta name="fc:frame" content='{
+        "version": "vNext",
+        "image": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "imageAspectRatio": "1.91:1",
+        "buttons": [
+            {
+                "label": "🎫 Buy Tickets",
+                "action": "post_redirect",
+                "target": "https://neon-xi.vercel.app/?frameAction=buy"
+            }
+        ],
+        "postUrl": "https://neon-xi.vercel.app/api/frame"
+    }' />
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
@@ -780,14 +791,14 @@
 
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-        <script src="https://unpkg.com/@farcaster/js-sdk@latest/dist/mjs/index.js"></script>
+        <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
         <script src="https://warpcast.com/~/miniapp-sdk.js"></script>
         
         <script>
             // App Configuration
             const CONFIG = {
                 contractAddress: "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B",
-                contractAbi: [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                contractAbi: [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"function"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
                 baseChainId: '0x2105',
                 baseRpcUrl: 'https://mainnet.base.org',
                 baseExplorerUrl: 'https://basescan.org',
@@ -796,7 +807,7 @@
                 gasLimitBuffer: 1.2,
                 defaultGasLimit: 200000,
                 ethPriceUSD: 3000,
-                frameVersion: 'next'
+                frameVersion: 'vNext'
             };
 
             // App State
@@ -816,19 +827,41 @@
             // Initialize the application
             document.addEventListener('DOMContentLoaded', async () => {
                 try {
-                    // Check if running in Warpcast MiniApp or Frame
+                    // Check if running in Warpcast MiniApp or Frame redirect
                     const params = new URLSearchParams(window.location.search);
-                    if (params.get('miniapp') === 'true' || window.farcasterMiniApp || 
-                        (window.FarcasterFrameSDK && params.get('frameAction') === 'buy')) {
-                        
+                    const frameAction = params.get('frameAction');
+                    
+                    // Initialize Frame SDK first if available
+                    if (window.FarcasterFrameSDK) {
+                        await initializeFrame();
+                    } else {
+                        const script = document.createElement('script');
+                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
+                        script.onload = initializeFrame;
+                        document.head.appendChild(script);
+                    }
+                    
+                    // Check if running in MiniApp mode
+                    if (window.farcasterMiniApp || params.get('miniapp') === 'true') {
                         AppState.isMiniApp = true;
                         document.getElementById('miniapp-badge').style.display = 'block';
                         document.getElementById('miniapp-header').style.display = 'flex';
                         
                         if (window.farcasterMiniApp) {
                             await initializeMiniApp();
-                        } else if (window.FarcasterFrameSDK) {
-                            await initializeFrame();
+                            
+                            // Call ready() when MiniApp is loaded
+                            try {
+                                await window.farcasterMiniApp.ready();
+                                console.log('MiniApp is ready');
+                                
+                                // If this is a buy action, open modal
+                                if (frameAction === 'buy') {
+                                    document.getElementById('buy-btn').click();
+                                }
+                            } catch (err) {
+                                console.error('Failed to call ready:', err);
+                            }
                         }
                     } else {
                         await initializeWebApp();
@@ -852,20 +885,25 @@
                     AppState.frameSdk = window.FarcasterFrameSDK;
                     AppState.frameContext = await AppState.frameSdk.getContext();
                     
-                    // If this is a frame with "buy" action, launch MiniApp
+                    // Call ready() for Frame
+                    await AppState.frameSdk.actions.ready();
+                    console.log('Frame is ready');
+                    
+                    // Handle frame actions
                     const params = new URLSearchParams(window.location.search);
-                    if (params.get('frameAction') === 'buy' && !AppState.isMiniApp) {
-                        await AppState.frameSdk.actions.launchMiniApp({
-                            url: window.location.href,
-                            splashImageUrl: "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
-                            splashBackgroundColor: "#0f0f1a"
-                        });
-                        return;
+                    if (params.get('frameAction') === 'buy') {
+                        try {
+                            await AppState.frameSdk.actions.launchMiniApp({
+                                url: window.location.href + '?miniapp=true&frameAction=buy',
+                                splashImageUrl: "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                                splashBackgroundColor: "#0f0f1a"
+                            });
+                        } catch (error) {
+                            console.error("Failed to launch MiniApp:", error);
+                            window.location.href = 'https://neon-xi.vercel.app/';
+                        }
                     }
                     
-                    console.log('Frame context:', AppState.frameContext);
-                    setupFrameEventListeners();
-                    await AppState.frameSdk.actions.ready();
                 } catch (error) {
                     console.error("Frame initialization error:", error);
                 }
@@ -875,7 +913,6 @@
             async function initializeMiniApp() {
                 try {
                     AppState.farcaster = window.farcasterMiniApp;
-                    await AppState.farcaster.ready();
                     
                     // Request necessary permissions
                     const permissions = await AppState.farcaster.requestPermissions({
@@ -938,24 +975,8 @@
                 document.getElementById('buy-btn').addEventListener('click', () => {
                     if (!AppState.account) {
                         showNotification("Please connect your wallet first", "error");
-                        
-                        // If this is a frame, try to connect wallet via Frame SDK
-                        if (AppState.frameSdk && !AppState.isMiniApp) {
-                            AppState.frameSdk.wallet.connect({
-                                chainId: CONFIG.baseChainId,
-                                rpcUrl: CONFIG.baseRpcUrl
-                            }).then(wallet => {
-                                AppState.account = wallet.address;
-                                updateUI();
-                                document.getElementById('buy-modal').style.display = 'flex';
-                            }).catch(error => {
-                                console.error("Wallet connection error:", error);
-                                showNotification("Failed to connect wallet", "error");
-                            });
-                        }
                         return;
                     }
-                    
                     document.getElementById('buy-modal').style.display = 'flex';
                     updateTicketCost();
                 });
@@ -1690,11 +1711,9 @@
                     if (AppState.isMiniApp) {
                         document.getElementById('buy-btn').click();
                     } else if (AppState.frameSdk) {
-                        AppState.frameSdk.actions.launchMiniApp({
-                            url: window.location.href,
-                            splashImageUrl: "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
-                            splashBackgroundColor: "#0f0f1a"
-                        });
+                        // Already handled in initializeFrame()
+                    } else {
+                        window.location.href = 'https://neon-xi.vercel.app/';
                     }
                 }
             }
@@ -1715,7 +1734,7 @@
                 }, type === 'error' ? 5000 : 3000);
                 
                 // Show in MiniApp notifications if available
-                if (AppState.isMiniApp) {
+                if (AppState.isMiniApp && AppState.farcaster) {
                     AppState.farcaster.showNotification({
                         type: type,
                         message: message,
