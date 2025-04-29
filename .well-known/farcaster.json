@@ -5,22 +5,22 @@
     "signature": "MHgxMmQ3MDRiZWJlMTJhYmZhOTM1YTVmZWQzMmI1YjAwYjFkNmVjYzUzNTkzZTQ0ZThhNmExNDFiNjYxNTY2YWNiNzYwZGQ4MTE1MDBkYjA5NmY1ZWJlMTk5OWY2MjQzYTc4ODZiNTViYTQ1ZjAxZmZiMzRkNjg5YzZkMzIwM2EwNTFj"
   },
   "frame": {
-  "version": "1",
-  "name": "Neon Lottery",
-  "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
-  "homeUrl": "https://neon-xi.vercel.app/",
-  "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-  "buttonTitle": "🎟 Buy Tickets",
-  "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
-  "splashBackgroundColor": "#0f0f1a",
-  "webhookUrl": "https://neon-xi.vercel.app/api/frame"
-},
-  "miniapp": {
     "version": "1",
     "name": "Neon Lottery",
     "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
-    "permissions": ["identity", "wallet", "notifications"],
+    "homeUrl": "https://neon-xi.vercel.app/",
+    "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+    "buttonTitle": "🎟 Buy Tickets",
+    "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+    "splashBackgroundColor": "#0f0f1a",
+    "webhookUrl": "https://neon-xi.vercel.app/api/frame"
+  },
+  "miniapp": {
+    "version": "1.0.0",
+    "name": "Neon Lottery",
+    "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "launchUrl": "https://neon-xi.vercel.app/?miniapp=true",
+    "permissions": ["identity", "wallet", "notifications"],
     "supportedFrames": true,
     "chains": [
       {
@@ -33,8 +33,6 @@
     ],
     "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
     "splashBackgroundColor": "#0f0f1a",
-    "webhookUrl": "https://neon-xi.vercel.app/api/webhook",
-    "subtitle": "Daily ETH lottery on Base",
     "description": "Win Ethereum daily with transparent blockchain-powered draws",
     "screenshotUrls": [
       "https://i.ibb.co/x8hzZcFL/screen1.jpg",
@@ -42,10 +40,6 @@
       "https://i.ibb.co/ZzSwRT6Y/screen3.jpg"
     ],
     "primaryCategory": "finance",
-    "tags": ["ethereum", "lottery", "base", "prizes"],
-    "heroImageUrl": "https://i.ibb.co/KjHjK466/heroimage.jpg",
-    "ogTitle": "Neon Lottery Daily ETH Draws",
-    "ogDescription": "Transparent blockchain lottery with daily ETH prizes",
-    "ogImageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg"
+    "tags": ["ethereum", "lottery", "base", "prizes"]
   }
 }
