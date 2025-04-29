@@ -1,160 +1,132 @@
-import { createCanvas, registerFont } from 'canvas';
-import path from 'path';
+// api/image.js
+import { ImageResponse } from 'next/og';
+import { NextResponse } from 'next/server';
 
-// Register fonts (make sure fonts are in your project)
-registerFont(path.resolve('./fonts/Poppins-Bold.ttf'), { family: 'Poppins', weight: 'bold' });
-registerFont(path.resolve('./fonts/SpaceGrotesk-Bold.ttf'), { family: 'Space Grotesk', weight: 'bold' });
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const action = searchParams.get('action') || 'default';
+  const amount = searchParams.get('amount') || '1';
 
-const IMAGE_WIDTH = 1200;
-const IMAGE_HEIGHT = 628;
+  // Common styles
+  const commonStyles = {
+    background: '#0f0f1a',
+    color: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    padding: '20px',
+    fontFamily: '"Space Grotesk", sans-serif',
+    backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(0, 243, 255, 0.08) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.08) 0%, transparent 50%)',
+  };
 
-export default async function handler(req, res) {
-  try {
-    const { type = 'default', state = '' } = req.query;
-    
-    // Create canvas
-    const canvas = createCanvas(IMAGE_WIDTH, IMAGE_HEIGHT);
-    const ctx = canvas.getContext('2d');
-    
-    // Draw background
-    ctx.fillStyle = '#0f0f1a';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw gradient overlay
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, 'rgba(0, 243, 255, 0.1)');
-    gradient.addColorStop(1, 'rgba(255, 0, 255, 0.1)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw content based on type
-    switch(type) {
-      case 'buy':
-        drawBuyFrame(ctx, canvas.width, canvas.height, state);
-        break;
-      case 'winners':
-        drawWinnersFrame(ctx, canvas.width, canvas.height, state);
-        break;
-      case 'info':
-        drawInfoFrame(ctx, canvas.width, canvas.height, state);
-        break;
-      default:
-        drawDefaultFrame(ctx, canvas.width, canvas.height, state);
-    }
-    
-    // Set content type and send image
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.send(canvas.toBuffer());
-  } catch (error) {
-    console.error('Image generation error:', error);
-    res.status(500).send('Error generating image');
+  // Generate different images based on action
+  let content;
+  switch (action) {
+    case 'buy':
+      content = (
+        <div style={commonStyles}>
+          <h1 style={{ fontSize: '48px', color: '#00f3ff', marginBottom: '20px' }}>✨ NEON LOTTERY ✨</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Купить билеты</p>
+          <p style={{ fontSize: '18px', color: '#b8b8d3', marginBottom: '40px' }}>Выберите количество билетов для покупки</p>
+          <p style={{ fontSize: '16px', color: '#9d00ff' }}>1 билет = 0.0005 ETH (~$1.50)</p>
+        </div>
+      );
+      break;
+
+    case 'confirm':
+      const totalEth = (0.0005 * parseInt(amount)).toFixed(4);
+      const totalUsd = (1.5 * parseInt(amount)).toFixed(2);
+      content = (
+        <div style={commonStyles}>
+          <h1 style={{ fontSize: '48px', color: '#00f3ff', marginBottom: '20px' }}>✨ NEON LOTTERY ✨</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Подтверждение покупки</p>
+          <p style={{ fontSize: '20px', color: '#b8b8d3', marginBottom: '10px' }}>{amount} билет{amount === '1' ? '' : 'ов'}</p>
+          <p style={{ fontSize: '24px', color: '#ff00ff', marginBottom: '30px' }}>{totalEth} ETH (~${totalUsd})</p>
+          <p style={{ fontSize: '16px', color: '#9d00ff' }}>Включая комиссию сети (~$0.30)</p>
+        </div>
+      );
+      break;
+
+    case 'success':
+      content = (
+        <div style={commonStyles}>
+          <h1 style={{ fontSize: '48px', color: '#00ff88', marginBottom: '20px' }}>🎉 УСПЕХ! 🎉</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Билеты успешно куплены!</p>
+          <p style={{ fontSize: '18px', color: '#b8b8d3', marginBottom: '40px' }}>Спасибо за участие в розыгрыше</p>
+          <p style={{ fontSize: '16px', color: '#00f3ff' }}>Следующий розыгрыш через 12:34:56</p>
+        </div>
+      );
+      break;
+
+    case 'winners':
+      content = (
+        <div style={commonStyles}>
+          <h1 style={{ fontSize: '48px', color: '#00f3ff', marginBottom: '20px' }}>✨ NEON LOTTERY ✨</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Последние победители</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <span>Round #42</span>
+              <span style={{ color: '#ff00ff' }}>0.125 ETH</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <span>Round #41</span>
+              <span style={{ color: '#ff00ff' }}>0.098 ETH</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <span>Round #40</span>
+              <span style={{ color: '#ff00ff' }}>0.156 ETH</span>
+            </div>
+          </div>
+          <p style={{ fontSize: '16px', color: '#9d00ff' }}>Все транзакции верифицируемы на BaseScan</p>
+        </div>
+      );
+      break;
+
+    case 'info':
+      content = (
+        <div style={commonStyles}>
+          <h1 style={{ fontSize: '48px', color: '#00f3ff', marginBottom: '20px' }}>✨ NEON LOTTERY ✨</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Как это работает</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ color: '#00f3ff' }}>✓</span>
+              <span>Ежедневные розыгрыши ETH</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ color: '#00f3ff' }}>✓</span>
+              <span>Прозрачность на блокчейне</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ color: '#00f3ff' }}>✓</span>
+              <span>Мгновенные выплаты</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ color: '#00f3ff' }}>✓</span>
+              <span>Реферальные бонусы</span>
+            </div>
+          </div>
+          <p style={{ fontSize: '16px', color: '#9d00ff' }}>Все транзакции записываются в Base</p>
+        </div>
+      );
+      break;
+
+    default:
+      content = (
+        <div style={commonStyles}>
+          <h1 style={{ fontSize: '48px', color: '#00f3ff', marginBottom: '20px' }}>✨ NEON LOTTERY ✨</h1>
+          <p style={{ fontSize: '24px', marginBottom: '30px' }}>Ежедневные розыгрыши ETH на Base</p>
+          <p style={{ fontSize: '20px', color: '#ff00ff', marginBottom: '40px' }}>Следующий розыгрыш: 12:34:56</p>
+          <p style={{ fontSize: '18px', color: '#b8b8d3', marginBottom: '10px' }}>Текущий призовой фонд:</p>
+          <p style={{ fontSize: '24px', color: '#00ff88' }}>0.456 ETH (~$1,368)</p>
+        </div>
+      );
   }
-}
 
-function drawDefaultFrame(ctx, width, height) {
-  // Draw title
-  ctx.fillStyle = '#00f3ff';
-  ctx.font = 'bold 72px "Space Grotesk"';
-  ctx.textAlign = 'center';
-  ctx.fillText('NEON LOTTERY', width/2, 150);
-  
-  // Draw subtitle
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '36px "Poppins"';
-  ctx.fillText('Daily ETH Lottery on Base', width/2, 220);
-  
-  // Draw CTA
-  ctx.fillStyle = '#ff00ff';
-  ctx.font = 'bold 48px "Space Grotesk"';
-  ctx.fillText('Click to Play!', width/2, 400);
-}
-
-function drawBuyFrame(ctx, width, height) {
-  // Background
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(100, 100, width-200, height-200);
-  
-  // Title
-  ctx.fillStyle = '#00f3ff';
-  ctx.font = 'bold 60px "Space Grotesk"';
-  ctx.fillText('BUY TICKETS', width/2, 180);
-  
-  // Price
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '36px "Poppins"';
-  ctx.fillText('0.0005 ETH per ticket', width/2, 280);
-  
-  // Button hint
-  ctx.fillStyle = '#ff00ff';
-  ctx.font = 'bold 36px "Space Grotesk"';
-  ctx.fillText('Click below to buy', width/2, 380);
-}
-
-function drawWinnersFrame(ctx, width, height) {
-  // Background
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(100, 100, width-200, height-200);
-  
-  // Title
-  ctx.fillStyle = '#00f3ff';
-  ctx.font = 'bold 60px "Space Grotesk"';
-  ctx.fillText('RECENT WINNERS', width/2, 180);
-  
-  // Example winner
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '28px "Poppins"';
-  ctx.fillText('0x123...456 won 0.42 ETH', width/2, 280);
-  
-  // Button hint
-  ctx.fillStyle = '#ff00ff';
-  ctx.font = 'bold 36px "Space Grotesk"';
-  ctx.fillText('View all winners', width/2, 380);
-}
-
-function drawInfoFrame(ctx, width, height) {
-  // Background
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(100, 100, width-200, height-200);
-  
-  // Title
-  ctx.fillStyle = '#00f3ff';
-  ctx.font = 'bold 60px "Space Grotesk"';
-  ctx.fillText('HOW IT WORKS', width/2, 180);
-  
-  // Info text
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '24px "Poppins"';
-  wrapText(ctx, 'Daily ETH lottery with transparent blockchain draws on Base Network', 
-           width/2, 250, width-300, 30);
-  
-  // Button hint
-  ctx.fillStyle = '#ff00ff';
-  ctx.font = 'bold 36px "Space Grotesk"';
-  ctx.fillText('Learn more', width/2, 380);
-}
-
-// Helper function to wrap text
-function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-  const words = text.split(' ');
-  let line = '';
-  let testLine = '';
-  let lineCount = 0;
-  
-  for(let n = 0; n < words.length; n++) {
-    testLine = line + words[n] + ' ';
-    const metrics = ctx.measureText(testLine);
-    const testWidth = metrics.width;
-    
-    if (testWidth > maxWidth && n > 0) {
-      ctx.fillText(line, x, y);
-      line = words[n] + ' ';
-      y += lineHeight;
-      lineCount++;
-    } else {
-      line = testLine;
-    }
-  }
-  
-  ctx.fillText(line, x, y);
+  return new ImageResponse(content, {
+    width: 1200,
+    height: 630,
+  });
 }
