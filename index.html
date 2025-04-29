@@ -9,15 +9,15 @@
     <meta name="title" content="✨ Neon Lottery | Daily ETH Draws on Base">
     <meta name="description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    <!-- Open Graph -->
     <meta property="og:title" content="Neon Lottery | Daily ETH Draws">
     <meta property="og:description" content="Win ETH daily on Base Network">
     <meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="628">
-
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://neon-xi.vercel.app/">
@@ -25,19 +25,24 @@
     <meta property="twitter:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
-
-    <!-- Farcaster Frame Meta Tags (исправленные) -->
-    <meta property="fc:frame" content='{"version":"vNext","image":"https://i.ibb.co/HfcPqDfC/ogneon.jpg","image:aspect_ratio":"1.91:1","buttons":[{"label":"🎫 Buy Tickets","action":"post_redirect"}],"post_url":"https://neon-xi.vercel.app/api/frame"}' />
     
-    <!-- Альтернативный вариант для максимальной совместимости -->
-    <meta property="fc:frame:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg" />
-    <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-    <meta property="fc:frame:button:1" content="🎫 Buy Tickets" />
-    <meta property="fc:frame:button:1:action" content="post_redirect" />
-    <meta property="fc:frame:post_url" content="https://neon-xi.vercel.app/api/frame" />
-    <meta property="fc:frame:input:text" content="Enter ticket count" />
-
-    <!-- Farcaster Manifest -->
+    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
+    <meta name="fc:frame" content='{
+        "version": "next",
+        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "button": {
+            "title": "🎫 Купить билеты",
+            "action": {
+                "type": "launch_frame",
+                "name": "Neon Lottery",
+                "url": "https://neon-xi.vercel.app/",
+                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                "splashBackgroundColor": "#0f0f1a"
+            }
+        }
+    }' />
+    
+    <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
     
     <!-- Preload critical resources -->
@@ -48,9 +53,8 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <style>
-        /* Ваши стили остаются без изменений */
         :root {
             --neon-blue: #00f3ff;
             --neon-pink: #ff00ff;
@@ -804,7 +808,7 @@
                 gasLimitBuffer: 1.2,
                 defaultGasLimit: 200000,
                 ethPriceUSD: 3000,
-                frameVersion: 'vNext'
+                frameVersion: 'next'
             };
 
             // App State
