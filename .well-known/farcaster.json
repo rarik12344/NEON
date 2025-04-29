@@ -5,36 +5,22 @@
     "signature": "MHgxMmQ3MDRiZWJlMTJhYmZhOTM1YTVmZWQzMmI1YjAwYjFkNmVjYzUzNTkzZTQ0ZThhNmExNDFiNjYxNTY2YWNiNzYwZGQ4MTE1MDBkYjA5NmY1ZWJlMTk5OWY2MjQzYTc4ODZiNTViYTQ1ZjAxZmZiMzRkNjg5YzZkMzIwM2EwNTFj"
   },
   "frame": {
-    "version": "1",
+    "version": "vNext",
     "name": "Neon Lottery",
     "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "homeUrl": "https://neon-xi.vercel.app/",
     "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    "buttonTitle": "🎟 Купить билеты",
+    "buttonTitle": "🎟 Buy Tickets",
     "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
     "splashBackgroundColor": "#0f0f1a",
-    "webhookUrl": "https://neon-xi.vercel.app/api/webhook"
+    "webhookUrl": "https://neon-xi.vercel.app/api/frame"
   },
-  "triggers": [
-    {
-      "type": "cast",
-      "id": "buy-tickets",
-      "url": "https://neon-xi.vercel.app/?trigger=buy-tickets",
-      "name": "Buy Tickets"
-    },
-    {
-      "type": "composer",
-      "id": "share-lottery",
-      "url": "https://neon-xi.vercel.app/?trigger=share-lottery",
-      "name": "Share Lottery"
-    }
-  ],
   "miniapp": {
     "version": "1",
     "name": "Neon Lottery",
     "iconUrl": "https://i.ibb.co/rGGxZ9LL/neonlotteryicon.png",
     "permissions": ["identity", "wallet", "notifications"],
-    "launchUrl": "https://neon-xi.vercel.app/?miniapp=true&source=frame",
+    "launchUrl": "https://neon-xi.vercel.app/?miniapp=true",
     "supportedFrames": true,
     "chains": [
       {
@@ -59,6 +45,7 @@
     "tags": ["ethereum", "lottery", "base", "prizes"],
     "heroImageUrl": "https://i.ibb.co/KjHjK466/heroimage.jpg",
     "ogTitle": "Neon Lottery Daily ETH Draws",
-    "ogDescription": "Transparent blockchain lottery with daily ETH prizes"
+    "ogDescription": "Transparent blockchain lottery with daily ETH prizes",
+    "ogImageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg"
   }
 }
