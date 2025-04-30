@@ -26,13 +26,21 @@
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
     <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
     
-    <!-- Farcaster Frame Meta Tags -->
-<meta name="fc:frame" content="{&quot;version&quot;:&quot;next&quot;,&quot;imageUrl&quot;:&quot;https://i.ibb.co/HfcPqDfC/ogneon.jpg&quot;,&quot;buttons&quot;:[{&quot;title&quot;:&quot;🔗 Connect&quot;,&quot;action&quot;:{&quot;type&quot;:&quot;launch_web&quot;,&quot;url&quot;:&quot;https://neon-xi.vercel.app/connect&quot;}},{&quot;title&quot;:&quot;🎫 Buy Tickets&quot;,&quot;action&quot;:{&quot;type&quot;:&quot;launch_frame&quot;,&quot;name&quot;:&quot;buy_tickets&quot;,&quot;url&quot;:&quot;https://neon-xi.vercel.app/api/frame/buy&quot;,&quot;splashImageUrl&quot;:&quot;https://i.ibb.co/hJdsnrjV/splashscreen.jpg&quot;,&quot;splashBackgroundColor&quot;:&quot;#0f0f1a&quot;}},{&quot;title&quot;:&quot;🏆 Winners&quot;,&quot;action&quot;:{&quot;type&quot;:&quot;launch_frame&quot;,&quot;name&quot;:&quot;winners&quot;,&quot;url&quot;:&quot;https://neon-xi.vercel.app/api/frame/winners&quot;}},{&quot;title&quot;:&quot;ℹ️ Info&quot;,&quot;action&quot;:{&quot;type&quot;:&quot;launch_frame&quot;,&quot;name&quot;:&quot;info&quot;,&quot;url&quot;:&quot;https://neon-xi.vercel.app/api/frame/info&quot;}}],&quot;input&quot;:{&quot;text&quot;:&quot;Ticket amount&quot;,&quot;placeholder&quot;:&quot;1-100&quot;},&quot;state&quot;:{&quot;round&quot;:&quot;current&quot;,&quot;network&quot;:&quot;base&quot;}}" />
-
-<!-- Fallback OG Tags -->
-<meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-<meta property="og:title" content="✨ Neon Lottery | Daily ETH Draws">
-<meta property="og:description" content="Win ETH daily on Base Network">
+    <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
+    <meta name="fc:frame" content='{
+        "version": "next",
+        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "button": {
+            "title": "🎫 Купить билеты",
+            "action": {
+                "type": "launch_frame",
+                "name": "Neon Lottery",
+                "url": "https://neon-xi.vercel.app/",
+                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                "splashBackgroundColor": "#0f0f1a"
+            }
+        }
+    }' />
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
