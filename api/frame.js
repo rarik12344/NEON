@@ -1,37 +1,34 @@
-export const runtime = 'edge'
-export const dynamic = 'force-dynamic'
+// /api/frame.js
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    const { buttonIndex } = req.body;
 
-export async function GET() {
-  return new Response(JSON.stringify({
-    version: "vNext",
-    image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    buttons: [{
-      label: "🎟 Buy Tickets", 
-      action: "post"
-    }],
-    postUrl: "https://neon-xi.vercel.app/api/frame"
-  }), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+    // Обработка нажатия кнопки
+    if (buttonIndex === 1) {
+      return res.status(200).json({
+        type: 'frame',
+        frame: {
+          version: 'vNext',
+          image: 'https://i.ibb.co/HfcPqDfC/ogneon.jpg',
+          buttons: [
+            { label: '🎫 Купить билеты', action: 'post_redirect', target: 'https://neon-xi.vercel.app/' },
+          ],
+          postUrl: 'https://neon-xi.vercel.app/api/frame',
+        },
+      });
     }
-  })
-}
+  }
 
-export async function POST() {
-  return new Response(JSON.stringify({
-    version: "vNext",
-    image: "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    buttons: [
-      { label: "⬅️ Back", action: "post" },
-      { label: "1 Ticket", action: "post" },
-      { label: "5 Tickets", action: "post" }
-    ],
-    postUrl: "https://neon-xi.vercel.app/api/frame"
-  }), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    }
-  })
+  // Возврат фрейма по умолчанию для GET-запросов
+  res.status(200).json({
+    type: 'frame',
+    frame: {
+      version: 'vNext',
+      image: 'https://i.ibb.co/HfcPqDfC/ogneon.jpg',
+      buttons: [
+        { label: '🎫 Купить билеты', action: 'post_redirect', target: 'https://neon-xi.vercel.app/' },
+      ],
+      postUrl: 'https://neon-xi.vercel.app/api/frame',
+    },
+  });
 }
