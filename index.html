@@ -9,28 +9,111 @@
     <meta name="title" content="✨ Neon Lottery | Daily ETH Draws on Base">
     <meta name="description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    <!-- Open Graph -->
     <meta property="og:title" content="Neon Lottery | Daily ETH Draws">
     <meta property="og:description" content="Win ETH daily on Base Network">
     <meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="628">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://neon-xi.vercel.app/">
+    
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://neon-xi.vercel.app/">
     <meta property="twitter:title" content="✨ Neon Lottery | Daily ETH Draws on Base">
     <meta property="twitter:description" content="Win ETH daily! Transparent blockchain lottery on Base Network with instant payouts">
     <meta property="twitter:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+    <meta property="twitter:image:alt" content="Neon Lottery - Win ETH Daily on Base Network">
     
-    <!-- Icons -->
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content='{
+  "version": "next",
+  "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+  "postUrl": "https://neon-xi.vercel.app/api/frame",
+  "buttons": [
+    {
+      "title": "🔗 Connect Wallet",
+      "action": {
+        "type": "launch_web",
+        "url": "https://neon-xi.vercel.app/connect"
+      }
+    },
+    {
+      "title": "🎫 Buy Tickets",
+      "action": {
+        "type": "launch_frame",
+        "name": "buy_tickets",
+        "url": "https://neon-xi.vercel.app/api/buy-tickets-frame",
+        "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+        "splashBackgroundColor": "#0f0f1a"
+      }
+    },
+    {
+      "title": "🏆 View Winners",
+      "action": {
+        "type": "launch_frame",
+        "name": "winners",
+        "url": "https://neon-xi.vercel.app/api/winners-frame"
+      }
+    },
+    {
+      "title": "ℹ️ How It Works",
+      "action": {
+        "type": "launch_frame",
+        "name": "info",
+        "url": "https://neon-xi.vercel.app/api/info-frame"
+      }
+    }
+  ],
+  "input": {
+    "text": "Enter ticket amount",
+    "placeholder": "1-100 tickets"
+  },
+  "state": {
+    "round": "current",
+    "network": "base"
+  }
+}' />
+
+<!-- Fallback OG Tags -->
+<meta property="og:image" content="https://i.ibb.co/HfcPqDfC/ogneon.jpg">
+<meta property="og:title" content="✨ Neon Lottery | Daily ETH Draws">
+<meta property="og:description" content="Win ETH daily on Base Network">
+    
+    <!-- Farcaster Mini App Manifest -->
+    <link rel="manifest" href="/.well-known/farcaster.json">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" as="script">
+    <link rel="preload" href="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js" as="script">
+    <link rel="preload" href="https://i.ibb.co/HfcPqDfC/ogneon.jpg" as="image" type="image/jpeg">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Farcaster SDK Initialization -->
+    <script src="https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check if running as Mini App
+        if (window.location.search.includes('miniapp=true')) {
+          const sdk = new FarcasterFrameSDK();
+          
+          // Show Mini App badge
+          const badge = document.createElement('div');
+          badge.className = 'miniapp-badge';
+          badge.textContent = 'Mini App';
+          document.body.appendChild(badge);
+          
+          // Call ready() when app is loaded
+          sdk.actions.ready()
+            .then(() => console.log('Mini App is ready'))
+            .catch(err => console.error('Failed to call ready:', err));
+        }
+      });
+    </script>
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -416,6 +499,22 @@
             animation: shine 3s infinite;
         }
         
+        .miniapp-badge {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: var(--neon-pink);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+            box-shadow: 0 2px 10px rgba(255, 0, 255, 0.3);
+            display: none;
+        }
+        
         .social-share {
             display: flex;
             justify-content: center;
@@ -474,6 +573,37 @@
             color: var(--text-secondary);
         }
         
+        /* MiniApp specific styles */
+        .miniapp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .miniapp-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .miniapp-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .miniapp-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.9; }
             50% { transform: scale(1.05); opacity: 1; }
@@ -527,7 +657,21 @@
 </head>
 <body>
     <div id="app-container">
+        <div class="miniapp-badge" id="miniapp-badge">✨ Warpcast Mode</div>
+        
         <div class="container">
+            <div class="miniapp-header" id="miniapp-header" style="display: none;">
+                <div></div>
+                <div class="miniapp-actions">
+                    <button class="miniapp-btn" id="miniapp-share-btn" title="Share">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="miniapp-btn" id="miniapp-frame-btn" title="Add to Frames">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
             <h1>✨ NEON LOTTERY ✨</h1>
             
             <div class="network-warning" id="network-warning">
@@ -673,657 +817,985 @@
                     
                     <div style="margin-bottom: 15px; display: flex; gap: 12px;">
                         <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-clock"></i></div>
-                        <div>
-                            <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
+                            <div>
+                                <p style="font-weight: 500; margin-bottom: 4px;">Draw Schedule</p>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Each round lasts 24 hours with automatic draws.</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
-                        <div>
-                            <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                        
+                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-gift"></i></div>
+                            <div>
+                                <p style="font-weight: 500; margin-bottom: 4px;">Referral Rewards</p>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Active participants who invite friends may qualify for special rewards and future airdrops.</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px; display: flex; gap: 12px;">
-                        <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
-                        <div>
-                            <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
+                        
+                        <div style="margin-bottom: 15px; display: flex; gap: 12px;">
+                            <div style="color: var(--neon-blue); font-size: 1.2rem;"><i class="fas fa-history"></i></div>
+                            <div>
+                                <p style="font-weight: 500; margin-bottom: 4px;">Full History</p>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">All winners and transactions are permanently recorded on the Base blockchain.</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                        <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
-                        <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
-                            <i class="fas fa-comments"></i> Join our Warpcast channel
-                        </a>
+                        
+                        <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <p style="font-weight: 500; margin-bottom: 10px;">Questions?</p>
+                            <a href="https://warpcast.com/~/channel/neon-lottery" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: 500;">
+                                <i class="fas fa-comments"></i> Join our Warpcast channel
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Load Web3.js first -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    
-    <!-- Main Application Script -->
-    <script>
-        // App Configuration
-        const CONFIG = {
-            contractAddress: "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B",
-            contractAbi: [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
-            baseChainId: '0x2105',
-            baseRpcUrl: 'https://mainnet.base.org',
-            baseExplorerUrl: 'https://basescan.org',
-            currencySymbol: 'ETH',
-            defaultGasPrice: 0.2,
-            gasLimitBuffer: 1.2,
-            defaultGasLimit: 200000,
-            ethPriceUSD: 3000
-        };
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+        <script src="https://unpkg.com/@farcaster/js-sdk@latest/dist/mjs/index.js"></script>
+        <script src="https://warpcast.com/~/miniapp-sdk.js"></script>
+        
+        <script>
+            // App Configuration
+            const CONFIG = {
+                contractAddress: "0x6927648b3114B8B54FA5476Ec3BC3A52f1ab513B",
+                contractAbi: [{"inputs":[{"internalType":"uint256","name":"_initialTicketPriceETH","type":"uint256"},{"internalType":"address","name":"_feeWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RoundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"roundIndex","type":"uint256"}],"name":"RoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"roundIndex","type":"uint256"},{"indexed":false,"internalType":"uint32","name":"tickets","type":"uint32"}],"name":"TicketsPurchased","type":"event"},{"inputs":[{"internalType":"uint32","name":"_tickets","type":"uint32"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancelRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRoundIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentRoundInfo","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"},{"internalType":"bool","name":"canceled","type":"bool"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"roundIndex","type":"uint256"},{"internalType":"uint256","name":"participantIndex","type":"uint256"}],"name":"getParticipantInfo","outputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint32","name":"tickets","type":"uint32"},{"internalType":"uint64","name":"ticketFrom","type":"uint64"},{"internalType":"uint64","name":"ticketTo","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"prizePoolPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rounds","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isCanceled","type":"bool"},{"internalType":"uint256","name":"totalTickets","type":"uint256"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"address","name":"winner","type":"address"},{"internalType":"uint256","name":"prizeAmount","type":"uint256"},{"internalType":"uint256","name":"participantsCount","type":"uint256"},{"internalType":"bytes32","name":"randomnessSeed","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_prizePercent","type":"uint256"},{"internalType":"uint256","name":"_feePercent","type":"uint256"}],"name":"setDistributionPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_newWallet","type":"address"}],"name":"setFeeWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newPrice","type":"uint256"}],"name":"setTicketPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"ticketPriceETH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+                baseChainId: '0x2105',
+                baseRpcUrl: 'https://mainnet.base.org',
+                baseExplorerUrl: 'https://basescan.org',
+                currencySymbol: 'ETH',
+                defaultGasPrice: 0.2,
+                gasLimitBuffer: 1.2,
+                defaultGasLimit: 200000,
+                ethPriceUSD: 3000,
+                frameVersion: 'next'
+            };
 
-        // App State
-        const AppState = {
-            web3: null,
-            contract: null,
-            account: null,
-            currentRound: null,
-            ethPrice: 3000,
-            updateInterval: null
-        };
+            // App State
+            const AppState = {
+                web3: null,
+                contract: null,
+                account: null,
+                isMiniApp: false,
+                farcaster: null,
+                frameSdk: null,
+                frameContext: null,
+                currentRound: null,
+                ethPrice: 3000,
+                updateInterval: null
+            };
 
-        // Initialize the application after Web3 is loaded
-        window.addEventListener('load', async () => {
-            try {
-                // Initialize Web3
+            // Initialize the application
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
+                    // Initialize Frame SDK first
+                    if (window.FarcasterFrameSDK) {
+                        await initializeFrame();
+                    } else {
+                        const script = document.createElement('script');
+                        script.src = 'https://unpkg.com/@farcaster/frame-sdk@latest/dist/frame-sdk.umd.js';
+                        script.onload = initializeFrame;
+                        document.head.appendChild(script);
+                    }
+                    
+                    // Check if running in Warpcast MiniApp
+                    if (window.farcasterMiniApp) {
+                        AppState.isMiniApp = true;
+                        AppState.farcaster = window.farcasterMiniApp;
+                        document.getElementById('miniapp-badge').style.display = 'block';
+                        document.getElementById('miniapp-header').style.display = 'flex';
+                        
+                        await initializeMiniApp();
+                    } else {
+                        await initializeWebApp();
+                    }
+                    
+                    initializeContract();
+                    setupEventListeners();
+                    await updateEthPrice();
+                    startAutoUpdate();
+                    handleFrameActions();
+                    
+                } catch (error) {
+                    console.error("Initialization error:", error);
+                    showNotification("App initialization failed", "error");
+                }
+            });
+
+            // Initialize Frame
+            async function initializeFrame() {
+                try {
+                    AppState.frameSdk = window.FarcasterFrameSDK;
+                    AppState.frameContext = await AppState.frameSdk.getContext();
+                    
+                    // Log frame context for debugging
+                    console.log('Frame context:', AppState.frameContext);
+                    
+                    // Setup frame event listeners
+                    setupFrameEventListeners();
+                    
+                    // Tell the frame we're ready
+                    await AppState.frameSdk.actions.ready();
+                    
+                } catch (error) {
+                    console.error("Frame initialization error:", error);
+                }
+            }
+
+            // Setup frame event listeners
+            function setupFrameEventListeners() {
+                if (!AppState.frameSdk) return;
+                
+                // Primary button click
+                AppState.frameSdk.on('primaryButtonClick', () => {
+                    document.getElementById('buy-btn').click();
+                });
+                
+                // Frame added event
+                AppState.frameSdk.on('frameAdded', ({ notificationDetails }) => {
+                    showNotification("Frame added to your app!", "success");
+                    if (notificationDetails) {
+                        console.log('Notification details:', notificationDetails);
+                    }
+                });
+                
+                // Frame add rejected
+                AppState.frameSdk.on('frameAddRejected', ({ reason }) => {
+                    showNotification(`Frame add rejected: ${reason}`, "error");
+                });
+            }
+
+            // Initialize MiniApp mode
+            async function initializeMiniApp() {
+                try {
+                    await AppState.farcaster.ready();
+                    
+                    // Request necessary permissions
+                    const permissions = await AppState.farcaster.requestPermissions({
+                        permissions: ['identity', 'wallet', 'notifications']
+                    });
+                    
+                    // Initialize Web3 with MiniApp provider
+                    AppState.web3 = new Web3(AppState.farcaster.ethereum);
+                    
+                    // Connect wallet
+                    const wallet = await AppState.farcaster.connectWallet({
+                        chainId: CONFIG.baseChainId,
+                        rpcUrl: CONFIG.baseRpcUrl
+                    });
+                    
+                    AppState.account = wallet.address;
+                    updateUI();
+                    
+                    // Track analytics event
+                    AppState.farcaster.trackEvent('app_launched', {
+                        source: 'miniapp'
+                    });
+                    
+                    showNotification("Warpcast wallet connected!", "success");
+                    
+                } catch (error) {
+                    console.error("MiniApp initialization error:", error);
+                    // Fallback to regular Web3 provider
+                    AppState.web3 = new Web3(new Web3.providers.HttpProvider(CONFIG.baseRpcUrl));
+                    showNotification("Failed to initialize MiniApp mode", "error");
+                }
+            }
+
+            // Initialize web app mode
+            async function initializeWebApp() {
                 if (window.ethereum) {
                     AppState.web3 = new Web3(window.ethereum);
-                    await initializeWebApp();
-                } else if (window.web3) {
-                    AppState.web3 = new Web3(window.web3.currentProvider);
-                    await initializeWebApp();
+                    setupWalletEvents();
+                    await checkConnectedWallet();
                 } else {
                     AppState.web3 = new Web3(new Web3.providers.HttpProvider(CONFIG.baseRpcUrl));
                     showNotification("Web3 wallet not detected", "error");
                 }
-
-                // Initialize contract
-                initializeContract();
-                
-                // Setup event listeners
-                setupEventListeners();
-                
-                // Load initial data
-                await Promise.all([
-                    updateEthPrice(),
-                    updateRoundInfo()
-                ]);
-                
-                // Start auto-update
-                startAutoUpdate();
-                
-            } catch (error) {
-                console.error("Initialization error:", error);
-                showNotification("App initialization failed", "error");
             }
-        });
 
-        // Initialize web app mode
-        async function initializeWebApp() {
-            try {
-                // Check if already connected
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (accounts.length > 0) {
-                    AppState.account = accounts[0];
-                    updateUI();
-                }
-                
-                // Check network
-                await checkNetwork();
-                
-            } catch (error) {
-                console.error("Web app initialization error:", error);
-                throw error;
+            // Initialize contract
+            function initializeContract() {
+                AppState.contract = new AppState.web3.eth.Contract(
+                    CONFIG.contractAbi, 
+                    CONFIG.contractAddress
+                );
             }
-        }
 
-        // Initialize contract
-        function initializeContract() {
-            AppState.contract = new AppState.web3.eth.Contract(
-                CONFIG.contractAbi, 
-                CONFIG.contractAddress
-            );
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Connect wallet button
-            document.getElementById('connect-btn').addEventListener('click', connectWallet);
-            
-            // Buy tickets button
-            document.getElementById('buy-btn').addEventListener('click', () => {
-                if (!AppState.account) {
-                    showNotification("Please connect your wallet first", "error");
-                    return;
-                }
-                document.getElementById('buy-modal').style.display = 'flex';
-                updateTicketCost();
-            });
-            
-            // Ticket amount controls
-            document.getElementById('decrement-ticket').addEventListener('click', () => {
-                const input = document.getElementById('ticket-amount');
-                if (input.value > 1) input.value = parseInt(input.value) - 1;
-                updateTicketCost();
-            });
-            
-            document.getElementById('increment-ticket').addEventListener('click', () => {
-                const input = document.getElementById('ticket-amount');
-                if (input.value < 100) input.value = parseInt(input.value) + 1;
-                updateTicketCost();
-            });
-            
-            document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
-            
-            // Confirm purchase button
-            document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
-            
-            // Other buttons
-            document.getElementById('winners-btn').addEventListener('click', showWinners);
-            document.getElementById('invite-btn').addEventListener('click', inviteFriends);
-            document.getElementById('info-btn').addEventListener('click', () => {
-                document.getElementById('info-modal').style.display = 'flex';
-            });
-            document.getElementById('copy-link').addEventListener('click', copyReferralLink);
-            
-            // Modal close buttons
-            document.querySelectorAll('.close').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    btn.closest('.modal').style.display = 'none';
-                });
-            });
-            
-            // Modal backdrop clicks
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.style.display = 'none';
+            // Setup event listeners
+            function setupEventListeners() {
+                // Connect wallet button
+                document.getElementById('connect-btn').addEventListener('click', connectWallet);
+                
+                // Buy tickets button
+                document.getElementById('buy-btn').addEventListener('click', () => {
+                    if (!AppState.account) {
+                        showNotification("Please connect your wallet first", "error");
+                        return;
                     }
+                    document.getElementById('buy-modal').style.display = 'flex';
+                    updateTicketCost();
                 });
-            });
-        }
-
-        // Connect wallet handler
-        async function connectWallet() {
-            try {
-                if (!window.ethereum) {
-                    showNotification("Please install MetaMask!", "error");
-                    return;
+                
+                // Ticket amount controls
+                document.getElementById('decrement-ticket').addEventListener('click', () => {
+                    const input = document.getElementById('ticket-amount');
+                    if (input.value > 1) input.value = parseInt(input.value) - 1;
+                    updateTicketCost();
+                });
+                
+                document.getElementById('increment-ticket').addEventListener('click', () => {
+                    const input = document.getElementById('ticket-amount');
+                    if (input.value < 100) input.value = parseInt(input.value) + 1;
+                    updateTicketCost();
+                });
+                
+                document.getElementById('ticket-amount').addEventListener('input', updateTicketCost);
+                
+                // Confirm purchase button
+                document.getElementById('confirm-buy').addEventListener('click', confirmPurchase);
+                
+                // Other buttons
+                document.getElementById('winners-btn').addEventListener('click', showWinners);
+                document.getElementById('invite-btn').addEventListener('click', inviteFriends);
+                document.getElementById('info-btn').addEventListener('click', () => {
+                    document.getElementById('info-modal').style.display = 'flex';
+                });
+                document.getElementById('copy-link').addEventListener('click', copyReferralLink);
+                
+                // MiniApp specific buttons
+                if (AppState.isMiniApp) {
+                    document.getElementById('miniapp-share-btn').addEventListener('click', shareInWarpcast);
+                    document.getElementById('miniapp-frame-btn').addEventListener('click', addToFrames);
                 }
                 
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                AppState.account = accounts[0];
+                // Modal close buttons
+                document.querySelectorAll('.close').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btn.closest('.modal').style.display = 'none';
+                    });
+                });
                 
-                await checkNetwork();
-                
-                if (!isBaseNetwork()) {
+                // Modal backdrop clicks
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Connect wallet handler
+            async function connectWallet() {
+                if (AppState.isMiniApp) {
                     try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: CONFIG.baseChainId }],
+                        const wallet = await AppState.farcaster.connectWallet({
+                            chainId: CONFIG.baseChainId,
+                            rpcUrl: CONFIG.baseRpcUrl
                         });
+                        AppState.account = wallet.address;
+                        updateUI();
+                        
+                        AppState.farcaster.trackEvent('wallet_connected', {
+                            wallet: AppState.account
+                        });
+                        
+                        showNotification("Warpcast wallet connected!", "success");
                     } catch (error) {
-                        if (error.code === 4902) {
-                            await addBaseNetwork();
-                        } else {
-                            showNotification("Failed to switch to Base Network", "error");
+                        console.error("MiniApp wallet connection error:", error);
+                        showNotification("Connection failed", "error");
+                    }
+                } else if (AppState.frameSdk) {
+                    try {
+                        // Use Frame SDK wallet provider
+                        const accounts = await AppState.frameSdk.wallet.ethProvider.request({
+                            method: 'eth_requestAccounts'
+                        });
+                        
+                        AppState.account = accounts[0];
+                        updateUI();
+                        showNotification("Wallet connected via Frame", "success");
+                    } catch (error) {
+                        console.error("Frame wallet connection error:", error);
+                        showNotification("Failed to connect wallet", "error");
+                    }
+                } else {
+                    await connectMetaMask();
+                }
+            }
+
+            // Connect MetaMask handler
+            async function connectMetaMask() {
+                try {
+                    if (!window.ethereum) {
+                        showNotification("Please install MetaMask!", "error");
+                        return;
+                    }
+                    
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    AppState.account = accounts[0];
+                    
+                    await checkNetwork();
+                    
+                    if (!isBaseNetwork()) {
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: CONFIG.baseChainId }],
+                            });
+                        } catch (error) {
+                            if (error.code === 4902) {
+                                await addBaseNetwork();
+                            } else {
+                                showNotification("Failed to switch to Base Network", "error");
+                            }
                         }
                     }
-                }
-                
-                updateUI();
-                showNotification("Wallet connected successfully", "success");
-            } catch (error) {
-                console.error("Error connecting wallet:", error);
-                showNotification("Failed to connect wallet", "error");
-            }
-        }
-
-        // Check if connected to Base network
-        function isBaseNetwork() {
-            return window.ethereum && window.ethereum.chainId === CONFIG.baseChainId;
-        }
-
-        // Add Base network to wallet
-        async function addBaseNetwork() {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: CONFIG.baseChainId,
-                        chainName: 'Base Mainnet',
-                        nativeCurrency: {
-                            name: 'Ether',
-                            symbol: CONFIG.currencySymbol,
-                            decimals: 18
-                        },
-                        rpcUrls: [CONFIG.baseRpcUrl],
-                        blockExplorerUrls: [CONFIG.baseExplorerUrl]
-                    }],
-                });
-                document.getElementById('network-warning').style.display = 'none';
-            } catch (error) {
-                console.error("Error adding Base network:", error);
-                showNotification("Failed to add Base Network", "error");
-            }
-        }
-
-        // Check network in web mode
-        async function checkNetwork() {
-            if (!window.ethereum) return;
-            
-            try {
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                const isBase = (chainId === CONFIG.baseChainId);
-                
-                if (isBase) {
-                    document.getElementById('network-warning').style.display = 'none';
-                    if (AppState.account) {
-                        updateRoundInfo();
-                    }
-                } else {
-                    document.getElementById('network-warning').style.display = 'block';
-                    document.getElementById('buy-btn').disabled = true;
-                }
-            } catch (error) {
-                console.error("Error checking network:", error);
-            }
-        }
-
-        // Setup wallet events in web mode
-        function setupWalletEvents() {
-            if (window.ethereum) {
-                window.ethereum.on('accountsChanged', (accounts) => {
-                    AppState.account = accounts[0] || null;
+                    
                     updateUI();
-                    if (AppState.account) checkNetwork();
-                });
-                
-                window.ethereum.on('chainChanged', (chainId) => {
-                    checkNetwork();
-                    if (chainId === CONFIG.baseChainId) {
-                        window.location.reload();
-                    }
-                });
-            }
-        }
-
-        // Update UI based on current state
-        function updateUI() {
-            if (AppState.account) {
-                const shortAddress = `${AppState.account.substring(0, 6)}...${AppState.account.substring(38)}`;
-                document.getElementById('connect-btn').innerHTML = 
-                    `<i class="fas fa-check-circle"></i> ${shortAddress}`;
-                document.getElementById('connect-btn').classList.add('wallet-connected');
-                document.getElementById('buy-btn').disabled = false;
-                document.getElementById('user-tickets-container').style.display = 'flex';
-                
-                // Update referral link if invite modal is open
-                if (document.getElementById('invite-modal').style.display === 'flex') {
-                    const referralCode = AppState.account.substring(2, 8);
-                    document.getElementById('referral-link').textContent = 
-                        `https://neon-xi.vercel.app/?ref=${referralCode}`;
+                    showNotification("Wallet connected successfully", "success");
+                } catch (error) {
+                    console.error("Error connecting wallet:", error);
+                    showNotification("Failed to connect wallet", "error");
                 }
-            } else {
-                document.getElementById('connect-btn').innerHTML = 
-                    `<i class="fas fa-wallet"></i> Connect Wallet`;
-                document.getElementById('connect-btn').classList.remove('wallet-connected');
-                document.getElementById('buy-btn').disabled = true;
-                document.getElementById('user-tickets-container').style.display = 'none';
             }
-        }
 
-        // Update ticket cost calculation
-        async function updateTicketCost() {
-            const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
-            
-            try {
-                const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
-                const costWei = ticketPriceWei * ticketAmount;
-                const costEth = AppState.web3.utils.fromWei(costWei.toString(), 'ether');
-                document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${CONFIG.currencySymbol}`;
-                
-                if (AppState.account) {
-                    const gasEstimate = await AppState.contract.methods.buyTickets(ticketAmount)
-                        .estimateGas({ from: AppState.account, value: costWei.toString() });
-                    
-                    const gasPriceWei = AppState.web3.utils.toWei(CONFIG.defaultGasPrice.toString(), 'gwei');
-                    const gasCostEth = AppState.web3.utils.fromWei(
-                        (gasEstimate * CONFIG.gasLimitBuffer * gasPriceWei).toString(),
-                        'ether'
-                    );
-                    const gasCostUSD = (gasCostEth * AppState.ethPrice).toFixed(2);
-                    
-                    document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
-                } else {
-                    document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+            // Check if connected to Base network
+            function isBaseNetwork() {
+                return AppState.isMiniApp || 
+                       (window.ethereum && window.ethereum.chainId === CONFIG.baseChainId) ||
+                       (AppState.frameContext && AppState.frameContext.client?.chainId === CONFIG.baseChainId);
+            }
+
+            // Add Base network to wallet
+            async function addBaseNetwork() {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: CONFIG.baseChainId,
+                            chainName: 'Base Mainnet',
+                            nativeCurrency: {
+                                name: 'Ether',
+                                symbol: CONFIG.currencySymbol,
+                                decimals: 18
+                            },
+                            rpcUrls: [CONFIG.baseRpcUrl],
+                            blockExplorerUrls: [CONFIG.baseExplorerUrl]
+                        }],
+                    });
+                    document.getElementById('network-warning').style.display = 'none';
+                } catch (error) {
+                    console.error("Error adding Base network:", error);
+                    showNotification("Failed to add Base Network", "error");
                 }
-            } catch (error) {
-                console.error("Error getting ticket cost:", error);
-                const defaultCost = ticketAmount * 0.0005;
-                document.getElementById('total-cost').textContent = `${defaultCost.toFixed(6)} ${CONFIG.currencySymbol}`;
-                document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
             }
-        }
 
-        // Confirm purchase handler
-        async function confirmPurchase() {
-            const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
-            const confirmBtn = document.getElementById('confirm-buy');
-            const originalText = confirmBtn.innerHTML;
-            
-            try {
-                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                confirmBtn.disabled = true;
-                
-                const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
-                const costWei = ticketPriceWei * ticketAmount;
-                
-                const gasPriceWei = AppState.web3.utils.toWei(CONFIG.defaultGasPrice.toString(), 'gwei');
-                let gasLimit = CONFIG.defaultGasLimit;
+            // Check connected wallet in web mode
+            async function checkConnectedWallet() {
+                if (window.ethereum && window.ethereum.selectedAddress) {
+                    AppState.account = window.ethereum.selectedAddress;
+                    await checkNetwork();
+                    updateUI();
+                }
+            }
+
+            // Check network in web mode
+            async function checkNetwork() {
+                if (!window.ethereum) return;
                 
                 try {
-                    const estimatedGas = await AppState.contract.methods.buyTickets(ticketAmount)
-                        .estimateGas({ from: AppState.account, value: costWei.toString() });
-                    gasLimit = Math.floor(estimatedGas * CONFIG.gasLimitBuffer);
+                    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    const isBase = (chainId === CONFIG.baseChainId);
+                    
+                    if (isBase) {
+                        document.getElementById('network-warning').style.display = 'none';
+                        if (AppState.account) {
+                            updateRoundInfo();
+                        }
+                    } else {
+                        document.getElementById('network-warning').style.display = 'block';
+                        document.getElementById('buy-btn').disabled = true;
+                    }
                 } catch (error) {
-                    console.log("Using default gas limit", error);
+                    console.error("Error checking network:", error);
+                }
+            }
+
+            // Setup wallet events in web mode
+            function setupWalletEvents() {
+                if (window.ethereum) {
+                    window.ethereum.on('accountsChanged', (accounts) => {
+                        AppState.account = accounts[0] || null;
+                        updateUI();
+                        if (AppState.account) checkNetwork();
+                    });
+                    
+                    window.ethereum.on('chainChanged', (chainId) => {
+                        checkNetwork();
+                        if (chainId === CONFIG.baseChainId) {
+                            window.location.reload();
+                        }
+                    });
+                }
+            }
+
+            // Update UI based on current state
+            function updateUI() {
+                if (AppState.account) {
+                    const shortAddress = `${AppState.account.substring(0, 6)}...${AppState.account.substring(38)}`;
+                    document.getElementById('connect-btn').innerHTML = 
+                        `<i class="fas fa-check-circle"></i> ${shortAddress}`;
+                    document.getElementById('connect-btn').classList.add('wallet-connected');
+                    document.getElementById('buy-btn').disabled = false;
+                    document.getElementById('user-tickets-container').style.display = 'flex';
+                    
+                    // Update referral link if invite modal is open
+                    if (document.getElementById('invite-modal').style.display === 'flex') {
+                        const referralCode = AppState.account.substring(2, 8);
+                        document.getElementById('referral-link').textContent = 
+                            `https://neon-xi.vercel.app/?ref=${referralCode}`;
+                    }
+                } else {
+                    document.getElementById('connect-btn').innerHTML = 
+                        `<i class="fas fa-wallet"></i> Connect Wallet`;
+                    document.getElementById('connect-btn').classList.remove('wallet-connected');
+                    document.getElementById('buy-btn').disabled = true;
+                    document.getElementById('user-tickets-container').style.display = 'none';
+                }
+            }
+
+            // Update ticket cost calculation
+            async function updateTicketCost() {
+                const ticketAmount = parseInt(document.getElementById('ticket-amount').value) || 1;
+                
+                try {
+                    const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
+                    const costWei = ticketPriceWei * ticketAmount;
+                    const costEth = AppState.web3.utils.fromWei(costWei.toString(), 'ether');
+                    document.getElementById('total-cost').textContent = `${parseFloat(costEth).toFixed(6)} ${CONFIG.currencySymbol}`;
+                    
+                    if (!AppState.isMiniApp && AppState.account) {
+                        const gasEstimate = await AppState.contract.methods.buyTickets(ticketAmount)
+                            .estimateGas({ from: AppState.account, value: costWei.toString() });
+                        
+                        const gasPriceWei = AppState.web3.utils.toWei(CONFIG.defaultGasPrice.toString(), 'gwei');
+                        const gasCostEth = AppState.web3.utils.fromWei(
+                            (gasEstimate * CONFIG.gasLimitBuffer * gasPriceWei).toString(),
+                            'ether'
+                        );
+                        const gasCostUSD = (gasCostEth * AppState.ethPrice).toFixed(2);
+                        
+                        document.getElementById('gas-fee-estimate').textContent = `~$${gasCostUSD}`;
+                    } else {
+                        document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+                    }
+                } catch (error) {
+                    console.error("Error getting ticket cost:", error);
+                    const defaultCost = ticketAmount * 0.0005;
+                    document.getElementById('total-cost').textContent = `${defaultCost.toFixed(6)} ${CONFIG.currencySymbol}`;
+                    document.getElementById('gas-fee-estimate').textContent = `~$0.10-$0.50`;
+                }
+            }
+
+            // Confirm purchase handler
+            async function confirmPurchase() {
+                const ticketAmount = parseInt(document.getElementById('ticket-amount').value);
+                const confirmBtn = document.getElementById('confirm-buy');
+                const originalText = confirmBtn.innerHTML;
+                
+                try {
+                    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    confirmBtn.disabled = true;
+                    
+                    const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
+                    const costWei = ticketPriceWei * ticketAmount;
+                    
+                    if (AppState.frameSdk) {
+                        // Use Frame SDK for transaction
+                        const txHash = await AppState.frameSdk.wallet.ethProvider.request({
+                            method: 'eth_sendTransaction',
+                            params: [{
+                                to: CONFIG.contractAddress,
+                                value: costWei.toString(),
+                                data: AppState.contract.methods.buyTickets(ticketAmount).encodeABI(),
+                                chainId: parseInt(CONFIG.baseChainId, 16)
+                            }]
+                        });
+                        
+                        showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`, "success");
+                        document.getElementById('buy-modal').style.display = 'none';
+                        updateRoundInfo();
+                        
+                        // Track event if available
+                        if (AppState.frameSdk.trackEvent) {
+                            AppState.frameSdk.trackEvent('tickets_purchased', {
+                                ticketAmount,
+                                costWei,
+                                txHash
+                            });
+                        }
+                    } 
+                    else if (AppState.isMiniApp) {
+                        const success = await confirmPurchaseMiniApp(ticketAmount, costWei.toString());
+                        if (success) {
+                            document.getElementById('buy-modal').style.display = 'none';
+                            updateRoundInfo();
+                        }
+                    } else {
+                        const gasPriceWei = AppState.web3.utils.toWei(CONFIG.defaultGasPrice.toString(), 'gwei');
+                        let gasLimit = CONFIG.defaultGasLimit;
+                        
+                        try {
+                            const estimatedGas = await AppState.contract.methods.buyTickets(ticketAmount)
+                                .estimateGas({ from: AppState.account, value: costWei.toString() });
+                            gasLimit = Math.floor(estimatedGas * CONFIG.gasLimitBuffer);
+                        } catch (error) {
+                            console.log("Using default gas limit", error);
+                        }
+                        
+                        const tx = await AppState.contract.methods.buyTickets(ticketAmount).send({
+                            from: AppState.account,
+                            value: costWei.toString(),
+                            gas: gasLimit,
+                            gasPrice: gasPriceWei
+                        });
+                        
+                        const gasUsedEth = AppState.web3.utils.fromWei(
+                            (tx.gasUsed * tx.effectiveGasPrice).toString(),
+                            'ether'
+                        );
+                        const gasUsedUSD = (gasUsedEth * AppState.ethPrice).toFixed(2);
+                        
+                        showNotification(
+                            `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
+                            `Fee: $${gasUsedUSD}`,
+                            "success"
+                        );
+                        document.getElementById('buy-modal').style.display = 'none';
+                        updateRoundInfo();
+                    }
+                } catch (error) {
+                    console.error("Error buying tickets:", error);
+                    let errorMsg = "Failed to buy tickets";
+                    if (error.message.includes("rejected")) errorMsg = "Transaction rejected";
+                    if (error.message.includes("insufficient funds")) errorMsg = "Insufficient funds";
+                    if (error.message.includes("gas")) errorMsg = "Transaction failed (adjust gas)";
+                    showNotification(errorMsg, "error");
+                } finally {
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                }
+            }
+
+            // Confirm purchase in MiniApp mode
+            async function confirmPurchaseMiniApp(ticketAmount, costWei) {
+                try {
+                    // Show loading state in MiniApp
+                    AppState.farcaster.showLoading(true);
+                    
+                    const txHash = await AppState.farcaster.sendTransaction({
+                        to: CONFIG.contractAddress,
+                        value: costWei,
+                        data: AppState.contract.methods.buyTickets(ticketAmount).encodeABI(),
+                        chainId: CONFIG.baseChainId
+                    });
+                    
+                    // Track purchase event
+                    AppState.farcaster.trackEvent('tickets_purchased', {
+                        ticketAmount,
+                        costWei,
+                        txHash
+                    });
+                    
+                    showNotification(`Transaction sent: ${txHash.slice(0, 10)}...`, "success");
+                    
+                    // Show success notification in Warpcast
+                    AppState.farcaster.showNotification({
+                        type: 'success',
+                        message: `${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased!`,
+                        duration: 5000
+                    });
+                    
+                    return true;
+                } catch (error) {
+                    console.error("MiniApp transaction error:", error);
+                    
+                    // Show error notification in Warpcast
+                    AppState.farcaster.showNotification({
+                        type: 'error',
+                        message: 'Transaction failed',
+                        duration: 5000
+                    });
+                    
+                    showNotification("Transaction failed", "error");
+                    return false;
+                } finally {
+                    AppState.farcaster.showLoading(false);
+                }
+            }
+
+            // Update round information
+            async function updateRoundInfo() {
+                if (!AppState.contract) return;
+                
+                try {
+                    const roundInfo = await AppState.contract.methods.getCurrentRoundInfo().call();
+                    AppState.currentRound = {
+                        endTime: parseInt(roundInfo.endTime),
+                        prizePool: roundInfo.prizePool,
+                        participantsCount: parseInt(roundInfo.participantsCount)
+                    };
+                    
+                    // Display prize pool
+                    const prizePoolEth = AppState.web3.utils.fromWei(roundInfo.prizePool, 'ether');
+                    document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${CONFIG.currencySymbol}`;
+                    
+                    // Update countdown
+                    updateCountdown();
+                    
+                    // Update user tickets if account is connected
+                    if (AppState.account) {
+                        const currentRoundIndex = await AppState.contract.methods.currentRoundIndex().call();
+                        const round = await AppState.contract.methods.rounds(currentRoundIndex).call();
+                        const participantsCount = parseInt(round.participantsCount);
+                        
+                        let userTickets = 0;
+                        for (let i = 0; i < participantsCount; i++) {
+                            const participant = await AppState.contract.methods.getParticipantInfo(currentRoundIndex, i).call();
+                            if (participant.wallet.toLowerCase() === AppState.account.toLowerCase()) {
+                                userTickets += parseInt(participant.tickets);
+                            }
+                        }
+                        
+                        document.getElementById('user-tickets').textContent = userTickets;
+                    }
+                    
+                    // Update ticket price display
+                    await updateTicketPriceDisplay();
+                    
+                } catch (error) {
+                    console.error("Error updating round info:", error);
+                    document.getElementById('current-pool').textContent = "Loading...";
+                    document.getElementById('round-status').textContent = "Loading round info...";
+                }
+            }
+
+            // Update countdown timer
+            function updateCountdown() {
+                if (!AppState.currentRound?.endTime) return;
+                
+                const now = Math.floor(Date.now() / 1000);
+                const distance = AppState.currentRound.endTime - now;
+                
+                if (distance < 0) {
+                    document.getElementById('countdown').textContent = "00:00:00";
+                    document.getElementById('round-status').textContent = "Round Ended - Next round starting";
+                    return;
                 }
                 
-                const tx = await AppState.contract.methods.buyTickets(ticketAmount).send({
-                    from: AppState.account,
-                    value: costWei.toString(),
-                    gas: gasLimit,
-                    gasPrice: gasPriceWei
-                });
+                const hours = Math.floor(distance / 3600);
+                const minutes = Math.floor((distance % 3600) / 60);
+                const seconds = Math.floor(distance % 60);
                 
-                const gasUsedEth = AppState.web3.utils.fromWei(
-                    (tx.gasUsed * tx.effectiveGasPrice).toString(),
-                    'ether'
-                );
-                const gasUsedUSD = (gasUsedEth * AppState.ethPrice).toFixed(2);
+                document.getElementById('countdown').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 
-                showNotification(
-                    `🎉 ${ticketAmount} ticket${ticketAmount > 1 ? 's' : ''} purchased! ` +
-                    `Fee: $${gasUsedUSD}`,
-                    "success"
-                );
-                document.getElementById('buy-modal').style.display = 'none';
-                updateRoundInfo();
-            } catch (error) {
-                console.error("Error buying tickets:", error);
-                let errorMsg = "Failed to buy tickets";
-                if (error.message.includes("rejected")) errorMsg = "Transaction rejected";
-                if (error.message.includes("insufficient funds")) errorMsg = "Insufficient funds";
-                if (error.message.includes("gas")) errorMsg = "Transaction failed (adjust gas)";
-                showNotification(errorMsg, "error");
-            } finally {
-                confirmBtn.innerHTML = originalText;
-                confirmBtn.disabled = false;
+                const roundStatus = document.getElementById('round-status');
+                if (distance < 3600) {
+                    roundStatus.style.color = "var(--neon-pink)";
+                    roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
+                    roundStatus.textContent = `Round Ending Soon - ${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    roundStatus.style.color = "var(--text-secondary)";
+                    roundStatus.style.textShadow = "none";
+                    roundStatus.textContent = `Round Active - ${hours}h ${minutes}m ${seconds}s remaining`;
+                }
             }
-        }
 
-        // Update round information
-        async function updateRoundInfo() {
-            if (!AppState.contract) return;
-            
-            try {
-                const roundInfo = await AppState.contract.methods.getCurrentRoundInfo().call();
-                AppState.currentRound = {
-                    endTime: parseInt(roundInfo.endTime),
-                    prizePool: roundInfo.prizePool,
-                    participantsCount: parseInt(roundInfo.participantsCount)
-                };
+            // Start auto-update interval
+            function startAutoUpdate() {
+                if (AppState.updateInterval) {
+                    clearInterval(AppState.updateInterval);
+                }
                 
-                // Display prize pool
-                const prizePoolEth = AppState.web3.utils.fromWei(roundInfo.prizePool, 'ether');
-                document.getElementById('current-pool').textContent = `${parseFloat(prizePoolEth).toFixed(4)} ${CONFIG.currencySymbol}`;
+                updateRoundInfo();
                 
-                // Update countdown
-                updateCountdown();
-                
-                // Update user tickets if account is connected
-                if (AppState.account) {
-                    const currentRoundIndex = await AppState.contract.methods.currentRoundIndex().call();
-                    const round = await AppState.contract.methods.rounds(currentRoundIndex).call();
-                    const participantsCount = parseInt(round.participantsCount);
+                AppState.updateInterval = setInterval(() => {
+                    updateRoundInfo();
+                    updateCountdown();
+                }, 1000);
+            }
+
+            // Show winners modal
+            async function showWinners() {
+                try {
+                    document.getElementById('winners-content').innerHTML = 
+                        '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+                    document.getElementById('winners-modal').style.display = 'flex';
                     
-                    let userTickets = 0;
-                    for (let i = 0; i < participantsCount; i++) {
-                        const participant = await AppState.contract.methods.getParticipantInfo(currentRoundIndex, i).call();
-                        if (participant.wallet.toLowerCase() === AppState.account.toLowerCase()) {
-                            userTickets += parseInt(participant.tickets);
+                    const currentRoundIndex = await AppState.contract.methods.currentRoundIndex().call();
+                    let winnersHTML = '';
+                    
+                    // Show winners from previous rounds (up to 10 rounds back)
+                    const roundsToShow = Math.min(currentRoundIndex, 10);
+                    
+                    for (let i = currentRoundIndex - 1; i >= Math.max(0, currentRoundIndex - roundsToShow); i--) {
+                        const round = await AppState.contract.methods.rounds(i).call();
+                        
+                        if (round.winner !== '0x0000000000000000000000000000000000000000') {
+                            const prizeEth = AppState.web3.utils.fromWei(round.prizeAmount, 'ether');
+                            const winnerAddress = round.winner;
+                            
+                            winnersHTML += `
+                                <div class="winner-item">
+                                    <div>
+                                        <div><strong>Round #${i}</strong></div>
+                                        <div class="winner-address">
+                                            ${winnerAddress}
+                                        </div>
+                                        <a href="${CONFIG.baseExplorerUrl}/address/${winnerAddress}" 
+                                           target="_blank" 
+                                           class="view-on-basescan">
+                                            <i class="fas fa-external-link-alt"></i> View on BaseScan
+                                        </a>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
+                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                            ${new Date(round.endTime * 1000).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
                         }
                     }
                     
-                    document.getElementById('user-tickets').textContent = userTickets;
-                }
-                
-                // Update ticket price display
-                await updateTicketPriceDisplay();
-                
-            } catch (error) {
-                console.error("Error updating round info:", error);
-                document.getElementById('current-pool').textContent = "Loading...";
-                document.getElementById('round-status').textContent = "Loading round info...";
-            }
-        }
-
-        // Update countdown timer
-        function updateCountdown() {
-            if (!AppState.currentRound?.endTime) return;
-            
-            const now = Math.floor(Date.now() / 1000);
-            const distance = AppState.currentRound.endTime - now;
-            
-            if (distance < 0) {
-                document.getElementById('countdown').textContent = "00:00:00";
-                document.getElementById('round-status').textContent = "Round Ended - Next round starting";
-                return;
-            }
-            
-            const hours = Math.floor(distance / 3600);
-            const minutes = Math.floor((distance % 3600) / 60);
-            const seconds = Math.floor(distance % 60);
-            
-            document.getElementById('countdown').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            const roundStatus = document.getElementById('round-status');
-            if (distance < 3600) {
-                roundStatus.style.color = "var(--neon-pink)";
-                roundStatus.style.textShadow = "0 0 10px rgba(255, 0, 255, 0.5)";
-                roundStatus.textContent = `Round Ending Soon - ${hours}h ${minutes}m ${seconds}s`;
-            } else {
-                roundStatus.style.color = "var(--text-secondary)";
-                roundStatus.style.textShadow = "none";
-                roundStatus.textContent = `Round Active - ${hours}h ${minutes}m ${seconds}s remaining`;
-            }
-        }
-
-        // Start auto-update interval
-        function startAutoUpdate() {
-            if (AppState.updateInterval) {
-                clearInterval(AppState.updateInterval);
-            }
-            
-            updateRoundInfo();
-            
-            AppState.updateInterval = setInterval(() => {
-                updateRoundInfo();
-                updateCountdown();
-            }, 1000);
-        }
-
-        // Show winners modal
-        async function showWinners() {
-            try {
-                document.getElementById('winners-content').innerHTML = 
-                    '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-                document.getElementById('winners-modal').style.display = 'flex';
-                
-                const currentRoundIndex = await AppState.contract.methods.currentRoundIndex().call();
-                let winnersHTML = '';
-                
-                // Show winners from previous rounds (up to 10 rounds back)
-                const roundsToShow = Math.min(currentRoundIndex, 10);
-                
-                for (let i = currentRoundIndex - 1; i >= Math.max(0, currentRoundIndex - roundsToShow); i--) {
-                    const round = await AppState.contract.methods.rounds(i).call();
-                    
-                    if (round.winner !== '0x0000000000000000000000000000000000000000') {
-                        const prizeEth = AppState.web3.utils.fromWei(round.prizeAmount, 'ether');
-                        const winnerAddress = round.winner;
-                        
-                        winnersHTML += `
-                            <div class="winner-item">
-                                <div>
-                                    <div><strong>Round #${i}</strong></div>
-                                    <div class="winner-address">
-                                        ${winnerAddress}
-                                    </div>
-                                    <a href="${CONFIG.baseExplorerUrl}/address/${winnerAddress}" 
-                                       target="_blank" 
-                                       class="view-on-basescan">
-                                        <i class="fas fa-external-link-alt"></i> View on BaseScan
-                                    </a>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div><strong>${parseFloat(prizeEth).toFixed(4)} ETH</strong></div>
-                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                                        ${new Date(round.endTime * 1000).toLocaleDateString()}
-                                    </div>
-                                </div>
+                    if (winnersHTML === '') {
+                        winnersHTML = '<div style="text-align: center; padding: 20px;">No winners yet</div>';
+                    } else {
+                        winnersHTML = `
+                            <div style="margin-bottom: 15px; text-align: center;">
+                                <i class="fas fa-trophy" style="color: var(--neon-pink);"></i>
+                                <span>Recent Winners</span>
+                            </div>
+                            ${winnersHTML}
+                            <div style="margin-top: 20px; font-size: 0.8rem; text-align: center; color: var(--neon-blue);">
+                                All winners and transactions are permanently recorded on the blockchain
                             </div>
                         `;
                     }
+                    
+                    document.getElementById('winners-content').innerHTML = winnersHTML;
+                } catch (error) {
+                    console.error("Error loading winners:", error);
+                    document.getElementById('winners-content').innerHTML = 
+                        '<div style="text-align: center; padding: 20px; color: var(--neon-pink)">' +
+                        '<i class="fas fa-exclamation-triangle"></i> Failed to load winners</div>';
                 }
+            }
+
+            // Invite friends handler
+            async function inviteFriends() {
+                document.getElementById('invite-modal').style.display = 'flex';
                 
-                if (winnersHTML === '') {
-                    winnersHTML = '<div style="text-align: center; padding: 20px;">No winners yet</div>';
+                if (AppState.account) {
+                    const referralCode = AppState.account.substring(2, 8);
+                    const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
+                    document.getElementById('referral-link').textContent = referralUrl;
+                    
+                    // Add "Add Frame" button if SDK is available
+                    if (AppState.frameSdk) {
+                        const addFrameBtn = document.createElement('button');
+                        addFrameBtn.className = 'btn btn-purple';
+                        addFrameBtn.innerHTML = '<i class="fas fa-plus"></i> Add to Farcaster';
+                        addFrameBtn.onclick = addFrameToApp;
+                        document.getElementById('social-share').prepend(addFrameBtn);
+                    }
+                    
+                    // Setup social share links
+                    const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
+                                     `💰 Win daily ETH prizes with transparent blockchain draws\n` +
+                                     `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
+                                     `Use my referral link to get started:\n${referralUrl}\n\n` +
+                                     `#NeonLottery #BaseNetwork #ETH`;
+                    
+                    const encodedText = encodeURIComponent(shareText);
+                    const encodedUrl = encodeURIComponent(referralUrl);
+                    
+                    document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
+                    document.getElementById('warpcast-share').href = `https://warpcast.com/~/compose?text=${encodedText}`;
+                    document.getElementById('telegram-share').href = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+                    document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodedText}`;
+                    document.getElementById('facebook-share').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+                    document.getElementById('reddit-share').href = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent('Neon Lottery - Daily ETH Lottery on Base')}`;
+                    
+                    if (AppState.isMiniApp) {
+                        document.getElementById('warpcast-share').addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            try {
+                                await shareInWarpcast(shareText, referralUrl);
+                            } catch (error) {
+                                console.error("Error creating Warpcast post:", error);
+                                showNotification("Failed to create post", "error");
+                            }
+                        });
+                    }
                 } else {
-                    winnersHTML = `
-                        <div style="margin-bottom: 15px; text-align: center;">
-                            <i class="fas fa-trophy" style="color: var(--neon-pink);"></i>
-                            <span>Recent Winners</span>
-                        </div>
-                        ${winnersHTML}
-                        <div style="margin-top: 20px; font-size: 0.8rem; text-align: center; color: var(--neon-blue);">
-                            All winners and transactions are permanently recorded on the blockchain
-                        </div>
-                    `;
+                    document.getElementById('referral-link').textContent = "Connect wallet first";
+                }
+            }
+
+            // Add frame to Farcaster app
+            async function addFrameToApp() {
+                if (!AppState.frameSdk) {
+                    showNotification("Frame SDK not available", "error");
+                    return;
                 }
                 
-                document.getElementById('winners-content').innerHTML = winnersHTML;
-            } catch (error) {
-                console.error("Error loading winners:", error);
-                document.getElementById('winners-content').innerHTML = 
-                    '<div style="text-align: center; padding: 20px; color: var(--neon-pink)">' +
-                    '<i class="fas fa-exclamation-triangle"></i> Failed to load winners</div>';
+                try {
+                    const result = await AppState.frameSdk.actions.addFrame();
+                    if (result.added) {
+                        showNotification("Frame added to your app!", "success");
+                    } else {
+                        showNotification(`Failed to add frame: ${result.reason}`, "error");
+                    }
+                } catch (error) {
+                    console.error("Error adding frame:", error);
+                    showNotification("Failed to add frame", "error");
+                }
             }
-        }
 
-        // Invite friends handler
-        async function inviteFriends() {
-            document.getElementById('invite-modal').style.display = 'flex';
-            
-            if (AppState.account) {
-                const referralCode = AppState.account.substring(2, 8);
-                const referralUrl = `https://neon-xi.vercel.app/?ref=${referralCode}`;
-                document.getElementById('referral-link').textContent = referralUrl;
+            // Share in Warpcast (MiniApp)
+            async function shareInWarpcast(text, url) {
+                try {
+                    await AppState.farcaster.composeCast({
+                        text: text,
+                        embeds: url ? [{ url: url }] : undefined
+                    });
+                    
+                    // Track share event
+                    AppState.farcaster.trackEvent('shared', {
+                        platform: 'warpcast'
+                    });
+                    
+                    showNotification("Post created on Warpcast!", "success");
+                    return true;
+                } catch (error) {
+                    console.error("Error sharing in Warpcast:", error);
+                    showNotification("Failed to share", "error");
+                    return false;
+                }
+            }
+
+            // Add to frames (MiniApp)
+            async function addToFrames() {
+                try {
+                    await AppState.farcaster.addFrame({
+                        title: 'Neon Lottery',
+                        iconUrl: 'https://i.ibb.co/NdV9qyF/NEONLOTTERY.jpg',
+                        action: {
+                            type: 'launch_frame',
+                            url: window.location.href
+                        }
+                    });
+                    
+                    // Track event
+                    AppState.farcaster.trackEvent('added_to_frames');
+                    
+                    showNotification("Added to your Warpcast frames!", "success");
+                } catch (error) {
+                    console.error("Error adding to frames:", error);
+                    showNotification("Failed to add to frames", "error");
+                }
+            }
+
+            // Copy referral link
+            function copyReferralLink() {
+                const referralLink = document.getElementById('referral-link').textContent;
+                if (referralLink === "Connect wallet first") {
+                    showNotification("Please connect wallet first", "error");
+                    return;
+                }
                 
-                // Setup social share links
-                const shareText = `🎉 Join me in Neon Lottery on Base! 🎉\n\n` +
-                                 `💰 Win daily ETH prizes with transparent blockchain draws\n` +
-                                 `⏳ Next draw in: ${document.getElementById('countdown').textContent}\n\n` +
-                                 `Use my referral link to get started:\n${referralUrl}\n\n` +
-                                 `#NeonLottery #BaseNetwork #ETH`;
+                navigator.clipboard.writeText(referralLink).then(() => {
+                    showNotification("Link copied to clipboard!", "success");
+                    
+                    if (AppState.isMiniApp) {
+                        AppState.farcaster.trackEvent('referral_copied');
+                    }
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showNotification("Failed to copy link", "error");
+                });
+            }
+
+            // Update ETH price
+            async function updateEthPrice() {
+                try {
+                    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                    const data = await response.json();
+                    AppState.ethPrice = data.ethereum.usd;
+                    updateTicketPriceDisplay();
+                } catch (error) {
+                    console.error("Failed to fetch ETH price, using default:", error);
+                }
+            }
+
+            // Update ticket price display
+            async function updateTicketPriceDisplay() {
+                try {
+                    const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
+                    const ticketPriceEth = AppState.web3.utils.fromWei(ticketPriceWei, 'ether');
+                    const ticketPriceUSD = (ticketPriceEth * AppState.ethPrice).toFixed(2);
+                    document.getElementById('ticket-price').textContent = 
+                        `${parseFloat(ticketPriceEth).toFixed(6)} ETH (~$${ticketPriceUSD})`;
+                } catch (error) {
+                    console.error("Error fetching ticket price:", error);
+                    document.getElementById('ticket-price').textContent = 
+                        `${(1/AppState.ethPrice).toFixed(6)} ETH (~1.00 USD)`;
+                }
+            }
+
+            // Handle frame actions
+            function handleFrameActions() {
+                const params = new URLSearchParams(window.location.search);
+                const action = params.get('frameAction');
                 
-                const encodedText = encodeURIComponent(shareText);
-                const encodedUrl = encodeURIComponent(referralUrl);
+                if (action === 'buy') {
+                    if (AppState.isMiniApp) {
+                        document.getElementById('buy-btn').click();
+                    } else {
+                        window.location.href = 'https://neon-xi.vercel.app/';
+                    }
+                }
+            }
+
+            // Show notification
+            function showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> 
+                    ${message}
+                `;
+                document.body.appendChild(notification);
                 
-                document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${encodedText}`;
-                document.getElementById('warpcast-share').href = `https://warpcast.com/~/compose?text=${encodedText}`;
-                document.getElementById('telegram-share').href = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
-                document.getElementById('whatsapp-share').href = `https://wa.me/?text=${encodedText}`;
-                document.getElementById('facebook-share').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-                document.getElementById('reddit-share').href = `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodeURIComponent('Neon Lottery - Daily ETH Lottery on Base')}`;
-            } else {
-                document.getElementById('referral-link').textContent = "Connect wallet first";
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }, type === 'error' ? 5000 : 3000);
+                
+                // Show in MiniApp notifications if available
+                if (AppState.isMiniApp) {
+                    AppState.farcaster.showNotification({
+                        type: type,
+                        message: message,
+                        duration: type === 'error' ? 5000 : 3000
+                    });
+                }
             }
-        }
-
-        // Copy referral link
-        function copyReferralLink() {
-            const referralLink = document.getElementById('referral-link').textContent;
-            if (referralLink === "Connect wallet first") {
-                showNotification("Please connect wallet first", "error");
-                return;
-            }
-            
-            navigator.clipboard.writeText(referralLink).then(() => {
-                showNotification("Link copied to clipboard!", "success");
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showNotification("Failed to copy link", "error");
-            });
-        }
-
-        // Update ETH price
-        async function updateEthPrice() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-                const data = await response.json();
-                AppState.ethPrice = data.ethereum.usd;
-                updateTicketPriceDisplay();
-            } catch (error) {
-                console.error("Failed to fetch ETH price, using default:", error);
-            }
-        }
-
-        // Update ticket price display
-        async function updateTicketPriceDisplay() {
-            try {
-                const ticketPriceWei = await AppState.contract.methods.ticketPriceETH().call();
-                const ticketPriceEth = AppState.web3.utils.fromWei(ticketPriceWei, 'ether');
-                const ticketPriceUSD = (ticketPriceEth * AppState.ethPrice).toFixed(2);
-                document.getElementById('ticket-price').textContent = 
-                    `${parseFloat(ticketPriceEth).toFixed(6)} ETH (~$${ticketPriceUSD})`;
-            } catch (error) {
-                console.error("Error fetching ticket price:", error);
-                document.getElementById('ticket-price').textContent = 
-                    `${(1/AppState.ethPrice).toFixed(6)} ETH (~1.00 USD)`;
-            }
-        }
-
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> 
-                ${message}
-            `;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, type === 'error' ? 5000 : 3000);
-        }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
