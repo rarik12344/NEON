@@ -28,17 +28,19 @@
     
     <!-- Farcaster Frame Meta Tags (Updated for 2025 Spec) -->
     <meta name="fc:frame" content='{
-    "version": "vNext",
-    "image": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
-    "buttons": [
-        {
-            "label": "🎫 Купить билеты",
-            "action": "post_redirect",
-            "target": "https://neon-xi.vercel.app/api/frame"
+        "version": "next",
+        "imageUrl": "https://i.ibb.co/HfcPqDfC/ogneon.jpg",
+        "button": {
+            "title": "🎫 Buy ticket",
+            "action": {
+                "type": "launch_frame",
+                "name": "Neon Lottery",
+                "url": "https://neon-xi.vercel.app/",
+                "splashImageUrl": "https://i.ibb.co/hJdsnrjV/splashscreen.jpg",
+                "splashBackgroundColor": "#0f0f1a"
+            }
         }
-    ],
-    "postUrl": "https://neon-xi.vercel.app/api/frame"
-}' />
+    }' />
     
     <!-- Farcaster Mini App Manifest -->
     <link rel="manifest" href="/.well-known/farcaster.json">
